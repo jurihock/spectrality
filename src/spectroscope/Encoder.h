@@ -14,7 +14,7 @@ public :
   void open();
   void close();
 
-  void encode(std::span<uint8_t> video);
+  void encode(const std::span<uint8_t> video);
 
 private:
 

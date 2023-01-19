@@ -1,5 +1,6 @@
 #include <spectroscope/Spectroscope.h>
 
+#include <spectroscope/Colormap.h>
 #include <spectroscope/Encoder.h>
 
 #include <vector>

@@ -87,7 +87,7 @@ void Encoder::close()
   AVAssert(error);
 }
 
-void Encoder::encode(std::span<uint8_t> video)
+void Encoder::encode(const std::span<uint8_t> video)
 {
   int error;
 
