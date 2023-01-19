@@ -73,11 +73,7 @@ Encoder::Encoder(const std::string& filename, const size_t frameheight, const si
     throw std::runtime_error("Could not initialize video stream!");
   }
 
-  stream.video->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
-  stream.video->codecpar->codec_id = codec->id;
-  stream.video->codecpar->height = frameheight;
-  stream.video->codecpar->width = framewidth;
-
+  avcodec_parameters_from_context(stream.video->codecpar, context.codec);
   av_dump_format(context.format, 0, filename.c_str(), 1);
   avio_open(&context.format->pb, filename.c_str(), AVIO_FLAG_WRITE);
 
