@@ -15,171 +15,114 @@ Encoder::Encoder(const std::string& filename, const size_t frameheight, const si
   int error;
 
   const AVCodec* codec = avcodec_find_encoder_by_name("libvpx-vp9");
+  AVAssert("Codec \"libvpx-vp9\" not found!", codec);
 
-  if (!codec)
-  {
-    throw std::runtime_error("Codec \"libvpx-vp9\" not found!");
-  }
-
-  context.sws = sws_getContext(
+  context.sws = SwsContextPointer(sws_getContext(
     framewidth, frameheight, AV_PIX_FMT_BGR24,
     framewidth, frameheight, AV_PIX_FMT_YUV420P,
-    SWS_FAST_BILINEAR, nullptr, nullptr, nullptr);
+    SWS_FAST_BILINEAR, nullptr, nullptr, nullptr));
+  AVAssert("Could not initialize sws context!", context.sws.get());
 
-  if (!context.sws)
-  {
-    throw std::runtime_error("Could not initialize sws context!");
-  }
+  AVFormatContext* format;
+  error = avformat_alloc_output_context2(&format, nullptr, nullptr, filename.c_str());
+  AVAssert("Could not initialize format context!", error);
+  context.format = AVFormatContextPointer(format);
 
-  error = avformat_alloc_output_context2(&context.format, nullptr, nullptr, filename.c_str());
-
-  if (error < 0)
-  {
-    avformat_alloc_output_context2(&context.format, nullptr, "mpeg", filename.c_str());
-  }
-
-  if (error < 0)
-  {
-    throw std::runtime_error("Could not initialize format context!");
-  }
-
-  context.codec = avcodec_alloc_context3(codec);
-
-  if (!context.codec)
-  {
-    throw std::runtime_error("Could not initialize codec context!");
-  }
-
+  context.codec = AVCodecContextPointer(avcodec_alloc_context3(codec));
+  AVAssert("Could not initialize codec context!", context.codec.get());
   context.codec->height = frameheight;
   context.codec->width = framewidth;
   context.codec->time_base = { 1, framerate };
   context.codec->framerate = { framerate, 1 };
   context.codec->pix_fmt = AV_PIX_FMT_YUV420P;
-
   av_opt_set(context.codec->priv_data, "preset", "ultrafast", 0);
   av_opt_set(context.codec->priv_data, "crf", "32", 0);
+  error = avcodec_open2(context.codec.get(), codec, nullptr);
+  AVAssert("Could not open codec!", error);
 
-  error = avcodec_open2(context.codec, codec, NULL);
+  stream.video = avformat_new_stream(context.format.get(), codec);
+  AVAssert("Could not initialize video stream!", stream.video);
+  avcodec_parameters_from_context(stream.video->codecpar, context.codec.get());
+  av_dump_format(context.format.get(), 0, filename.c_str(), 1);
 
-  if (error < 0)
-  {
-    throw std::runtime_error("Could not initialize codec: " + std::string(av_err2str(error)) + "!");
-  }
-
-  stream.video = avformat_new_stream(context.format, codec);
-
-  if (!stream.video)
-  {
-    throw std::runtime_error("Could not initialize video stream!");
-  }
-
-  avcodec_parameters_from_context(stream.video->codecpar, context.codec);
-  av_dump_format(context.format, 0, filename.c_str(), 1);
-  avio_open(&context.format->pb, filename.c_str(), AVIO_FLAG_WRITE);
-
-  error = avformat_write_header(context.format, nullptr);
-
-  if (error < 0)
-  {
-    throw std::runtime_error("Could not initialize video stream: " + std::string(av_err2str(error)) + "!");
-  }
-
-  frame.bgr = av_frame_alloc();
-
-  if (!frame.bgr)
-  {
-    throw std::runtime_error("Could not allocate AVFrame!");
-  }
-
+  frame.bgr = AVFramePointer(av_frame_alloc());
+  AVAssert("Could not allocate AVFrame!", frame.bgr.get());
   frame.bgr->format = AV_PIX_FMT_BGR24;
   frame.bgr->height = frameheight;
   frame.bgr->width = framewidth;
-  error = av_frame_get_buffer(frame.bgr, 1);
+  error = av_frame_get_buffer(frame.bgr.get(), 1);
+  AVAssert("Could not allocate AVFrame!", error);
 
-  if (error < 0)
-  {
-    throw EncoderError("Could not allocate AVFrame!", error);
-  }
-
-  frame.yuv = av_frame_alloc();
-
-  if (!frame.yuv)
-  {
-    throw std::runtime_error("Could not allocate AVFrame!");
-  }
-
+  frame.yuv = AVFramePointer(av_frame_alloc());
+  AVAssert("Could not allocate AVFrame!", frame.yuv.get());
   frame.yuv->format = AV_PIX_FMT_YUV420P;
   frame.yuv->height = frameheight;
   frame.yuv->width = framewidth;
-  error = av_frame_get_buffer(frame.yuv, 1);
+  error = av_frame_get_buffer(frame.yuv.get(), 1);
+  AVAssert("Could not allocate AVFrame!", error);
 
-  if (error < 0)
-  {
-    throw EncoderError("Could not allocate AVFrame!", error);
-  }
-
-  packet = av_packet_alloc();
-
-  if (!packet)
-  {
-    throw std::runtime_error("Could not allocate AVPacket!");
-  }
+  packet = AVPacketPointer(av_packet_alloc());
+  AVAssert("Could not allocate AVPacket!", packet.get());
 }
 
-Encoder::~Encoder()
+void Encoder::open()
 {
-  av_packet_free(&packet);
-  av_frame_free(&frame.yuv);
-  av_frame_free(&frame.bgr);
-  avcodec_free_context(&context.codec);
-  avformat_free_context(context.format);
+  int error;
+
+  error = avio_open(&context.format->pb, filename.c_str(), AVIO_FLAG_WRITE);
+  AVAssert(error);
+
+  error = avformat_write_header(context.format.get(), nullptr);
+  AVAssert(error);
 }
 
-void Encoder::operator()()
+void Encoder::close()
 {
-  av_write_trailer(context.format);
-  avio_closep(&context.format->pb);
+  int error;
+
+  error = av_write_trailer(context.format.get());
+  AVAssert(error);
+
+  error = avio_closep(&context.format->pb);
+  AVAssert(error);
 }
 
-void Encoder::operator()(std::span<uint8_t> video)
+void Encoder::encode(std::span<uint8_t> video)
 {
-  sws_scale(
-    context.sws,
+  int error;
+
+  error = sws_scale(
+    context.sws.get(),
     frame.bgr->data, frame.bgr->linesize,
     0, frameheight,
     frame.yuv->data, frame.yuv->linesize);
+  AVAssert(error);
 
   frame.yuv->pts = framenumber++;
 
-  int error;
-
-  error = avcodec_send_frame(context.codec, frame.yuv);
-
-  if (error < 0)
-  {
-    throw EncoderError(error);
-  }
+  error = avcodec_send_frame(context.codec.get(), frame.yuv.get());
+  AVAssert(error);
 
   while (error >= 0)
   {
-    error = avcodec_receive_packet(context.codec, packet);
+    error = avcodec_receive_packet(context.codec.get(), packet.get());
 
     if (error == AVERROR(EAGAIN) || error == AVERROR_EOF)
     {
       return;
     }
-
-    if (error < 0)
+    else
     {
-      throw EncoderError(error);
+      AVAssert(error);
     }
 
-    av_packet_rescale_ts(packet, { 1, framerate }, stream.video->time_base);
+    av_packet_rescale_ts(packet.get(), { 1, framerate }, stream.video->time_base);
 
-    packet->stream_index = stream.video->index;
+    packet.get()->stream_index = stream.video->index;
 
-    av_interleaved_write_frame(context.format, packet);
+    error = av_interleaved_write_frame(context.format.get(), packet.get());
+    AVAssert(error);
 
-    av_packet_unref(packet);
+    av_packet_unref(packet.get());
   }
 }
