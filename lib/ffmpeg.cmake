@@ -1,4 +1,4 @@
-# https://ffmpeg.org/doxygen/trunk/index.html
+# https://ffmpeg.org/doxygen/trunk
 
 find_package(PkgConfig REQUIRED)
 
