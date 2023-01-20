@@ -9,6 +9,7 @@ else()
 endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/lib/cpm.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/lib/dr.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/ffmpeg.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/lib/opencv.cmake")
 

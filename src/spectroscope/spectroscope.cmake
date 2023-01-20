@@ -13,7 +13,7 @@ target_include_directories(${PROJECT_NAME}
   PRIVATE "${CMAKE_CURRENT_LIST_DIR}/..")
 
 target_link_libraries(${PROJECT_NAME}
-  PRIVATE ffmpeg opencv)
+  PRIVATE dr ffmpeg opencv)
 
 target_compile_features(${PROJECT_NAME}
   PRIVATE cxx_std_20)
