@@ -2,6 +2,7 @@
 
 #include <spectroscope/FFmpeg.h>
 
+#include <filesystem>
 #include <span>
 
 class Encoder
@@ -9,7 +10,7 @@ class Encoder
 
 public :
 
-  Encoder(const std::string& filename, const size_t frameheight, const size_t framewidth, const int framerate = 25);
+  Encoder(const std::filesystem::path& filename, const size_t frameheight, const size_t framewidth, const int framerate = 25);
 
   void open();
   void close();
@@ -18,7 +19,7 @@ public :
 
 private:
 
-  const std::string filename;
+  const std::filesystem::path filename;
   const size_t frameheight;
   const size_t framewidth;
   const int framerate;

@@ -16,7 +16,7 @@ public:
   {
   }
 
-  void tobgr(const double value, uint8_t& b, uint8_t& g, uint8_t& r)
+  void tobgr(const double value, uint8_t& b, uint8_t& g, uint8_t& r) const
   {
     const uint8_t intensity = static_cast<uint8_t>(
       0xFF * std::clamp(value * slope + intercept, 0.0, 1.0));
@@ -26,7 +26,7 @@ public:
     r = intensity;
   }
 
-  void tobgr(const std::span<double> values, const std::span<uint8_t> bgr)
+  void tobgr(const std::span<double> values, const std::span<uint8_t> bgr) const
   {
     for (size_t i = 0, j = 0; i < values.size(); ++i, j+=3)
     {

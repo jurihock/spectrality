@@ -5,7 +5,7 @@
 
 #include <spectroscope/Encoder.h>
 
-Encoder::Encoder(const std::string& filename, const size_t frameheight, const size_t framewidth, const int framerate) :
+Encoder::Encoder(const std::filesystem::path& filename, const size_t frameheight, const size_t framewidth, const int framerate) :
   filename(filename),
   frameheight(frameheight),
   framewidth(framewidth),
@@ -23,7 +23,7 @@ Encoder::Encoder(const std::string& filename, const size_t frameheight, const si
     SWS_FAST_BILINEAR, nullptr, nullptr, nullptr));
   AVAssert("Could not initialize sws context!", context.sws.get());
 
-  AVFormatContext* format;
+  AVFormatContext* format = nullptr;
   error = avformat_alloc_output_context2(&format, nullptr, nullptr, filename.c_str());
   AVAssert("Could not initialize format context!", error);
   context.format = AVFormatContextPointer(format);
@@ -90,6 +90,8 @@ void Encoder::close()
 void Encoder::encode(const std::span<uint8_t> video)
 {
   int error;
+
+  std::copy(video.data(), video.data() + video.size(), frame.bgr->data[0]);
 
   error = sws_scale(
     context.sws.get(),
