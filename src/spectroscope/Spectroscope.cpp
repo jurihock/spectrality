@@ -18,10 +18,10 @@ int main()
 {
   std::signal(SIGINT, onsignal);
 
-  const size_t height = 768;
-  const size_t width = 1024;
+  const size_t frameheight = 768;
+  const size_t framewidth = 1024;
 
-  SDFT<double, double> sdft(height);
+  SDFT<double, double> sdft(frameheight);
 
   int samplerate;
   std::vector<double> samples;
@@ -31,9 +31,9 @@ int main()
   audio.read(samples, samplerate);
   samples.resize(samples.size() * 2);
 
-  Renderer renderer(height, width, 100, samplerate);
+  Renderer renderer(frameheight, framewidth, 50, samplerate);
 
-  Encoder encoder("/tmp/face.mp4", height, width, 25, samplerate);
+  Encoder encoder("/tmp/face.mp4", frameheight, framewidth, 25, samplerate);
   encoder.open();
 
   ptrdiff_t progress = -1;
@@ -45,9 +45,6 @@ int main()
       break;
     }
 
-    sdft.sdft(samples[i], dft.data());
-    encoder.encode(renderer.render(dft));
-
     ptrdiff_t p = 10 * (i + 1) / samples.size();
 
     if (p > progress)
@@ -56,6 +53,17 @@ int main()
     }
 
     progress = p;
+
+    sdft.sdft(samples[i], dft.data());
+
+    renderer.render(dft);
+
+    if (i < samples.size() / 2)
+    {
+      continue;
+    }
+
+    encoder.encode(renderer.render());
   }
 
   encoder.close();

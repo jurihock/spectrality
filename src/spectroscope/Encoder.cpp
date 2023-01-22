@@ -103,7 +103,17 @@ void Encoder::encode(const std::span<uint8_t> video)
 
   int error;
 
-  std::copy(video.data(), video.data() + video.size(), frame.bgr->data[0]);
+  // TODO: use ffmpeg filter to transpose input image
+  for(size_t i = 0; i < frameheight * framewidth; ++i)
+  {
+    size_t y = i / framewidth;
+    size_t x = i % framewidth;
+    size_t j = x * frameheight + y;
+
+    frame.bgr->data[0][i * 3 + 0] = video[j * 3 + 0];
+    frame.bgr->data[0][i * 3 + 1] = video[j * 3 + 1];
+    frame.bgr->data[0][i * 3 + 2] = video[j * 3 + 2];
+  }
 
   error = sws_scale(
     context.sws.get(),

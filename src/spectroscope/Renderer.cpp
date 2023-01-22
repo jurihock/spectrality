@@ -29,22 +29,11 @@ std::span<uint8_t> Renderer::render(const std::span<std::complex<double>> dft)
     ++framenumber;
   }
 
-  for (size_t y = 0; y < frameheight; ++y)
-  {
-    for (size_t x = 1; x < framewidth; ++x)
-    {
-      size_t i = (y * framewidth + x) * 3;
-      size_t j = i - 3;
-
-      buffer[j + 0] = buffer[i + 0];
-      buffer[j + 1] = buffer[i + 1];
-      buffer[j + 2] = buffer[i + 2];
-    }
-  }
+  std::copy(buffer.begin() + frameheight * 3, buffer.end(), buffer.begin());
 
   for (size_t i = 0; i < std::min(dft.size(), frameheight); ++i)
   {
-    size_t j = ((i + 1) * framewidth - 1) * 3;
+    size_t j = ((framewidth - 1) * frameheight + i) * 3;
 
     double value = std::abs(dft[dft.size() - i - 1]);
 
