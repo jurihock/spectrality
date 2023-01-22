@@ -1,20 +1,39 @@
 #include <spectroscope/Renderer.h>
 
-Renderer::Renderer(const size_t height, const size_t width) :
-  height(height),
-  width(width),
+Renderer::Renderer(const size_t frameheight, const size_t framewidth, const int framerate, const int samplerate) :
+  frameheight(frameheight),
+  framewidth(framewidth),
+  framerate(framerate),
+  samplerate(samplerate),
+  modulo(samplerate / framerate),
+  framenumber(-1),
+  samplenumber(-1),
   colormap(-120, 0),
-  buffer(height * width * 3)
+  buffer(frameheight * framewidth * 3)
 {
+}
+
+std::span<uint8_t> Renderer::render()
+{
+  return buffer;
 }
 
 std::span<uint8_t> Renderer::render(const std::span<std::complex<double>> dft)
 {
-  for (size_t y = 0; y < height; ++y)
+  if (++samplenumber % modulo)
   {
-    for (size_t x = 1; x < width; ++x)
+    return buffer;
+  }
+  else
+  {
+    ++framenumber;
+  }
+
+  for (size_t y = 0; y < frameheight; ++y)
+  {
+    for (size_t x = 1; x < framewidth; ++x)
     {
-      size_t i = (y * width + x) * 3;
+      size_t i = (y * framewidth + x) * 3;
       size_t j = i - 3;
 
       buffer[j + 0] = buffer[i + 0];
@@ -23,9 +42,9 @@ std::span<uint8_t> Renderer::render(const std::span<std::complex<double>> dft)
     }
   }
 
-  for (size_t i = 0; i < std::min(dft.size(), height); ++i)
+  for (size_t i = 0; i < std::min(dft.size(), frameheight); ++i)
   {
-    size_t j = ((i + 1) * width - 1) * 3;
+    size_t j = ((i + 1) * framewidth - 1) * 3;
 
     double value = std::abs(dft[dft.size() - i - 1]);
 

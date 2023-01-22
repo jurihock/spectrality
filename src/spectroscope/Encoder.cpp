@@ -5,12 +5,15 @@
 
 #include <spectroscope/Encoder.h>
 
-Encoder::Encoder(const std::filesystem::path& filename, const size_t frameheight, const size_t framewidth, const int framerate) :
+Encoder::Encoder(const std::filesystem::path& filename, const size_t frameheight, const size_t framewidth, const int framerate, const int samplerate) :
   filename(filename),
   frameheight(frameheight),
   framewidth(framewidth),
   framerate(framerate),
-  framenumber(0)
+  samplerate(samplerate),
+  modulo(samplerate / framerate),
+  framenumber(-1),
+  samplenumber(-1)
 {
   int error;
 
@@ -89,6 +92,15 @@ void Encoder::close()
 
 void Encoder::encode(const std::span<uint8_t> video)
 {
+  if (++samplenumber % modulo)
+  {
+    return;
+  }
+  else
+  {
+    ++framenumber;
+  }
+
   int error;
 
   std::copy(video.data(), video.data() + video.size(), frame.bgr->data[0]);
@@ -100,7 +112,7 @@ void Encoder::encode(const std::span<uint8_t> video)
     frame.yuv->data, frame.yuv->linesize);
   AVAssert(error);
 
-  frame.yuv->pts = framenumber++;
+  frame.yuv->pts = framenumber;
 
   error = avcodec_send_frame(context.codec.get(), frame.yuv.get());
   AVAssert(error);

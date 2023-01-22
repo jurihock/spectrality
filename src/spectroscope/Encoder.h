@@ -10,7 +10,7 @@ class Encoder
 
 public :
 
-  Encoder(const std::filesystem::path& filename, const size_t frameheight, const size_t framewidth, const int framerate = 25);
+  Encoder(const std::filesystem::path& filename, const size_t frameheight, const size_t framewidth, const int framerate, const int samplerate);
 
   void open();
   void close();
@@ -23,8 +23,11 @@ private:
   const size_t frameheight;
   const size_t framewidth;
   const int framerate;
+  const int samplerate;
+  const int modulo;
 
-  uint64_t framenumber;
+  int64_t framenumber;
+  int64_t samplenumber;
 
   struct
   {

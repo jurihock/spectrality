@@ -21,7 +21,6 @@ int main()
   const size_t height = 768;
   const size_t width = 1024;
 
-  Renderer renderer(height, width);
   SDFT<double, double> sdft(height);
 
   int samplerate;
@@ -30,44 +29,33 @@ int main()
 
   Audio audio("face.wav");
   audio.read(samples, samplerate);
+  samples.resize(samples.size() * 2);
 
-  Encoder encoder("/tmp/face.mp4", height, width, samplerate);
+  Renderer renderer(height, width, 100, samplerate);
+
+  Encoder encoder("/tmp/face.mp4", height, width, 25, samplerate);
   encoder.open();
 
-  const size_t start = 3 * samplerate;
-  const size_t stop = 4 * samplerate;
+  ptrdiff_t progress = -1;
 
-  int progress = 0;
-
-  for (size_t i = 0; i < samples.size(); ++i)
+  for (ptrdiff_t i = 0; i < samples.size(); ++i)
   {
     if (cancel)
     {
       break;
     }
 
-    if (i < start)
-    {
-      continue;
-    }
+    sdft.sdft(samples[i], dft.data());
+    encoder.encode(renderer.render(dft));
 
-    if (i > stop)
-    {
-      break;
-    }
-
-    int p = int(100.0 * (i - start) / (stop - start));
+    ptrdiff_t p = 10 * (i + 1) / samples.size();
 
     if (p > progress)
     {
-      std::cout << p << "%" << std::endl;
+      std::cout << (p * 10) << "%" << std::endl;
     }
 
     progress = p;
-
-    sdft.sdft(samples[i], dft.data());
-
-    encoder.encode(renderer.render(dft));
   }
 
   encoder.close();
