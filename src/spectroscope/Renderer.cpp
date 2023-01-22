@@ -9,6 +9,7 @@ Renderer::Renderer(const size_t frameheight, const size_t framewidth, const int 
   framenumber(-1),
   samplenumber(-1),
   colormap(-120, 0),
+  chromesthesia(-120, 0),
   buffer(frameheight * framewidth * 3)
 {
 }
@@ -39,7 +40,8 @@ std::span<uint8_t> Renderer::render(const std::span<std::complex<double>> dft)
 
     value = 20 * std::log10(value);
 
-    colormap.tobgr(value, buffer[j + 0], buffer[j + 1], buffer[j + 2]);
+    // colormap.tobgr(value, buffer[j + 0], buffer[j + 1], buffer[j + 2]);
+    chromesthesia.tobgr(double(i) / dft.size(), value, buffer[j + 0], buffer[j + 1], buffer[j + 2]);
   }
 
   return buffer;

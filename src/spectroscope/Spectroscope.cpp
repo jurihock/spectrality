@@ -27,13 +27,13 @@ int main()
   std::vector<double> samples;
   std::vector<std::complex<double>> dft(sdft.size());
 
-  Audio audio("face.wav");
+  Audio audio("voice.wav");
   audio.read(samples, samplerate);
   samples.resize(samples.size() * 2);
 
-  Renderer renderer(frameheight, framewidth, 50, samplerate);
+  Renderer renderer(frameheight, framewidth, 100, samplerate);
 
-  Encoder encoder("/tmp/face.mp4", frameheight, framewidth, 25, samplerate);
+  Encoder encoder("/tmp/voice.mp4", frameheight, framewidth, 25, samplerate);
   encoder.open();
 
   ptrdiff_t progress = -1;

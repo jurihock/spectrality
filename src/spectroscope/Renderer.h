@@ -1,6 +1,7 @@
 #pragma once
 
 #include <spectroscope/Colormap.h>
+#include <spectroscope/Chromesthesia.h>
 
 #include <complex>
 #include <span>
@@ -28,6 +29,7 @@ private:
   int64_t samplenumber;
 
   const Colormap colormap;
+  const Chromesthesia chromesthesia;
 
   std::vector<uint8_t> buffer;
 
