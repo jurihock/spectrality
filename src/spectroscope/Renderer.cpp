@@ -41,7 +41,10 @@ std::span<uint8_t> Renderer::render(const std::span<std::complex<double>> dft)
     value = 20 * std::log10(value);
 
     // colormap.tobgr(value, buffer[j + 0], buffer[j + 1], buffer[j + 2]);
-    chromesthesia.tobgr(double(i) / dft.size(), value, buffer[j + 0], buffer[j + 1], buffer[j + 2]);
+
+    double f = 1.0 - double(i) / dft.size();
+
+    chromesthesia.tobgr(f, value, buffer[j + 0], buffer[j + 1], buffer[j + 2]);
   }
 
   return buffer;

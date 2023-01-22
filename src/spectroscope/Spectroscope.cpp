@@ -31,7 +31,7 @@ int main()
   audio.read(samples, samplerate);
   samples.resize(samples.size() * 2);
 
-  Renderer renderer(frameheight, framewidth, 100, samplerate);
+  Renderer renderer(frameheight, framewidth, 200, samplerate);
 
   Encoder encoder("/tmp/voice.mp4", frameheight, framewidth, 25, samplerate);
   encoder.open();

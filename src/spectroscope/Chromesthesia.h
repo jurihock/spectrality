@@ -29,7 +29,7 @@ public:
     i = std::clamp(i, 0.0, 1.0);
     i = std::pow(i, gamma);
 
-    const color::hsv<double> hsv({ 360 * index, 100, 100 * i });
+    const color::hsv<double> hsv({ 240 * index, 100, 100 * i });
     const color::bgr<uint8_t> bgr(hsv);
 
     b = color::get::blue(bgr);
