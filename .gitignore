@@ -4,5 +4,11 @@
 build*/
 cmake-build*/
 
+bin/
+obj/
+
 .DS_Store
 Thumbs.db
+
+*.mp3
+*.wav
