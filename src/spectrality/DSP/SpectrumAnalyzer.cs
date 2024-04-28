@@ -26,15 +26,17 @@ public class SpectrumAnalyzer
     var quality = -1;
     var latency = 0;
 
+    QDFT = new QDFT(samplerate, bandwidth, resolution, quality, latency);
+
     Logger.Info($"Initializing spectrum analyzer (" +
                 $"samplerate={samplerate}" + ", " +
-                $"timestep={Math.Ceiling(timestep * 1e+3)}" + ", " +
+                $"timestep={timestep:F3}" + ", " +
+                $"hopsize={Math.Ceiling(timestep * Samplerate)}" + ", " +
+                $"dftsize={QDFT.Size}" + ", " +
                 $"bandwidth=({bandwidth.Item1:F3}, {bandwidth.Item2:F3})" + ", " +
                 $"resolution={resolution}" + ", " +
                 $"quality={quality}" + ", " +
                 $"latency={latency}" + $").");
-
-    QDFT = new QDFT(samplerate, bandwidth, resolution, quality, latency);
   }
 
   public Spectrogram GetSpectrogram(Span<float> samples)
@@ -54,6 +56,9 @@ public class SpectrumAnalyzer
     var frequencies = qdft.Frequencies.Select(_ => (float)_).ToArray();
     var magnitudes = new float[hops, bins];
     var dft = new Complex[bins];
+
+    var bytes = hops * bins * (sizeof(float) + sizeof(int));
+    Logger.Info($"Approx. memory footprint {bytes:n0} bytes.");
 
     qdft.Reset();
 
