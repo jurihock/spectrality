@@ -23,13 +23,13 @@ public class ChromesthesiaSpectrogramImage : ISpectrogramImage
     Saturation = saturation;
   }
 
-  public OxyImage GetImage(Datagram spectrogram)
+  public OxyImage GetImage(Spectrogram spectrogram)
   {
-    var freqs = spectrogram.Y;
-    var magns = spectrogram.Z;
+    var data = spectrogram.Data;
+    var freqs = data.Y;
 
-    var m = magns.GetLength(0);
-    var n = magns.GetLength(1);
+    var m = data.Width;
+    var n = data.Height;
 
     var min = Limit.Item1;
     var max = Limit.Item2;
@@ -41,7 +41,8 @@ public class ChromesthesiaSpectrogramImage : ISpectrogramImage
 
     var colors = Enumerable
         .Range(0, n)
-        .Select(_ => 1.0 - Math.Clamp(scale.GetOctaveRatio(freqs[_]) / scale.Octaves.Length, 0.0, 1.0))
+        .Select(_ => scale.GetOctaveRatio(freqs[_]) / scale.Octaves.Length)
+        .Select(_ => 1.0 - Math.Clamp(_, 0.0, 1.0))
         .ToArray();
 
     var gamma = Math.Clamp(Gamma, 0.1, 10.0);
@@ -57,7 +58,7 @@ public class ChromesthesiaSpectrogramImage : ISpectrogramImage
       {
         var h = colors[j];
         var s = saturation;
-        var v = (double)magns[i, j];
+        var v = (double)data[i, j];
 
         v = Math.Clamp(v * slope - intercept, 0.0, 1.0);
         v = Math.Pow(v, gamma);

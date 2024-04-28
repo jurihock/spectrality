@@ -7,19 +7,19 @@ namespace Spectrality.Plot;
 
 public class SpectrogramSeries : XYAxisSeries
 {
-  private readonly ISpectrogramImage SpectrogramImage;
-  private readonly ICoordinateTransformation<DataPoint> CoordinateTransformation;
+  private ISpectrogramImage SpectrogramImage { get; init; }
+  private ICoordinateTransformation<DataPoint> CoordinateTransformation { get; init; }
 
-  public Datagram? Spectrogram { get; private set; }
+  public Spectrogram? Spectrogram { get; private set; }
   public OxyImage? Image { get; private set; }
 
-  public SpectrogramSeries(Datagram spectrogram)
+  public SpectrogramSeries(Spectrogram spectrogram)
   {
     SpectrogramImage = new ChromesthesiaSpectrogramImage((-120, 0));
 
     CoordinateTransformation = new CartesianCoordinateTransformation(
-      new LinearCoordinateTransformation(spectrogram.X),
-      new LogarithmicCoordinateTransformation(spectrogram.Y));
+      new LinearCoordinateTransformation(spectrogram.Data.X),
+      new LogarithmicCoordinateTransformation(spectrogram.Data.Y));
 
     Spectrogram = spectrogram;
     Image = SpectrogramImage.GetImage(spectrogram);
@@ -32,12 +32,12 @@ public class SpectrogramSeries : XYAxisSeries
       return;
     }
 
-    var spectrogram = Spectrogram.Value;
-    var image = Image ??= SpectrogramImage.GetImage(spectrogram);
+    var data = Spectrogram.Value.Data;
+    var image = Image ??= SpectrogramImage.GetImage(Spectrogram.Value);
 
     double left = 0;
-    double right = spectrogram.Width;
-    double bottom = spectrogram.Height;
+    double right = data.Width;
+    double bottom = data.Height;
     double top = 0;
 
     var dataPoint00 = new DataPoint(left, bottom);
@@ -77,11 +77,11 @@ public class SpectrogramSeries : XYAxisSeries
       return;
     }
 
-    var spectrogram = Spectrogram.Value;
+    var data = Spectrogram.Value.Data;
 
     double left = 0;
-    double right = spectrogram.Width;
-    double bottom = spectrogram.Height;
+    double right = data.Width;
+    double bottom = data.Height;
     double top = 0;
 
     var dataPoint00 = new DataPoint(left, bottom);
@@ -104,14 +104,15 @@ public class SpectrogramSeries : XYAxisSeries
       return base.GetNearestPoint(screenPoint, interpolate);
     }
 
-    var spectrogram = Spectrogram.Value;
+    var data = Spectrogram.Value.Data;
+    var meta = Spectrogram.Value.Meta;
 
     var virtualPoint = InverseTransform(screenPoint);
     var dataPoint = CoordinateTransformation.Backward(virtualPoint);
 
     double left = 0;
-    double right = spectrogram.Width;
-    double bottom = spectrogram.Height;
+    double right = data.Width;
+    double bottom = data.Height;
     double top = 0;
 
     int nearestX = (int)Math.Floor(dataPoint.X);
@@ -136,44 +137,43 @@ public class SpectrogramSeries : XYAxisSeries
 
     var scale = new Scale();
 
-    var values = new string[4, 3]
+    var table = new string[4, 3]
     {
       { "Note:", scale.GetNote(nearestVirtualPoint.Y), "" },
-      { "Magnitude:", Math.Round(spectrogram[nearestX, nearestY], 1).ToString("F1"), "dB" },
-      { "Frequency:", Math.Round(nearestVirtualPoint.Y, 1).ToString("F1"), "Hz" },
-      { "Timepoint:", Math.Round(nearestVirtualPoint.X, 3).ToString("F3"), "s" }
+      { meta.Z.Name + ":", data[nearestX, nearestY].ToString("F1"), meta.Z.Unit },
+      { meta.Y.Name + ":", nearestVirtualPoint.Y.ToString("F1"), meta.Y.Unit },
+      { meta.X.Name + ":", nearestVirtualPoint.X.ToString("F3"), meta.X.Unit }
     };
 
-    var cols = new int[values.GetLength(1)];
+    var cols = new int[table.GetLength(1)];
 
-    for (var i = 0; i < values.GetLength(0); i++)
+    for (var i = 0; i < table.GetLength(0); i++)
     {
-      for (var j = 0; j < values.GetLength(1); j++)
+      for (var j = 0; j < table.GetLength(1); j++)
       {
-        cols[j] = Math.Max(cols[j], values[i, j].Length);
+        cols[j] = Math.Max(cols[j], table[i, j].Length);
       }
     }
 
-    var rows = new string[values.GetLength(0)];
+    var rows = new string[table.GetLength(0)];
 
-    for (var i = 0; i < values.GetLength(0); i++)
+    for (var i = 0; i < table.GetLength(0); i++)
     {
-      var a = values[i, 0].PadRight(cols[0]);
-      var b = values[i, 1].PadLeft(cols[1]);
-      var c = values[i, 2].PadRight(cols[2]);
+      var a = table[i, 0].PadRight(cols[0]);
+      var b = table[i, 1].PadLeft(cols[1]);
+      var c = table[i, 2].PadRight(cols[2]);
 
       rows[i] = string.Join(' ', a, b, c);
     }
 
-    var trackerText = string.Join(
-      Environment.NewLine, rows);
+    var text = string.Join('\n', rows);
 
     return new TrackerHitResult
     {
       Series = this,
       DataPoint = nearestVirtualPoint,
       Position = trackerScreenPoint,
-      Text = trackerText
+      Text = text
     };
   }
 }

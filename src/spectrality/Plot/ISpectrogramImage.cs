@@ -5,5 +5,5 @@ namespace Spectrality.Plot;
 
 public interface ISpectrogramImage
 {
-  OxyImage GetImage(Datagram spectrogram);
+  OxyImage GetImage(Spectrogram spectrogram);
 }

@@ -11,7 +11,7 @@ class SpectrumAnalyzer
   public double Samplerate { get; private set; }
   public double Timestep { get; private set; }
 
-  private readonly QDFT QDFT;
+  private QDFT QDFT { get; init; }
 
   public SpectrumAnalyzer(double samplerate, double timestep)
   {
@@ -27,7 +27,7 @@ class SpectrumAnalyzer
     QDFT = new QDFT(samplerate, bandwidth, resolution, quality, latency);
   }
 
-  public Datagram GetSpectrogram(Span<float> samples)
+  public Spectrogram GetSpectrogram(Span<float> samples)
   {
     var watch = Stopwatch.GetTimestamp();
 
@@ -66,11 +66,35 @@ class SpectrumAnalyzer
 
     System.Console.WriteLine($"{Stopwatch.GetElapsedTime(watch).Milliseconds}ms");
 
-    return new Datagram
+    return new Spectrogram
     {
-      X = timepoints,
-      Y = frequencies,
-      Z = magnitudes
+      Data = new Datagram
+      {
+        X = timepoints,
+        Y = frequencies,
+        Z = magnitudes
+      },
+      Meta = new Metagram
+      {
+        X = new Metagram.AxisMeta
+        {
+          Name = "Timepoint",
+          Unit = "s",
+          Type = Metagram.AxisType.Linear
+        },
+        Y = new Metagram.AxisMeta
+        {
+          Name = "Frequency",
+          Unit = "Hz",
+          Type = Metagram.AxisType.Logarithmic
+        },
+        Z = new Metagram.AxisMeta
+        {
+          Name = "Magnitude",
+          Unit = "dB",
+          Type = Metagram.AxisType.Logarithmic
+        },
+      }
     };
   }
 }
