@@ -18,7 +18,7 @@ public class SpectrogramSeries : XYAxisSeries
     SpectrogramImage = new ChromesthesiaSpectrogramImage((-120, 0));
 
     CoordinateTransformation = new CartesianCoordinateTransformation(
-      new LinearCoordinateTransformation(spectrogram.Timestamps),
+      new LinearCoordinateTransformation(spectrogram.Timepoints),
       new LogarithmicCoordinateTransformation(spectrogram.Frequencies));
 
     Spectrogram = spectrogram;
