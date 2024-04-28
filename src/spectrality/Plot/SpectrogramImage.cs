@@ -1,17 +1,25 @@
 using System;
 using System.Linq;
 using OxyPlot;
+using Spectrality.Models;
+
+namespace Spectrality.Plot;
 
 class SpectrogramImage
 {
     public (double, double) Limit { get; private set; }
     public double Gamma { get; private set; }
+    public double Brightness { get; private set; }
     public double Saturation { get; private set; }
 
-    public SpectrogramImage((double, double) limit, double gamma = 1, double saturation = 1)
+    public SpectrogramImage((double, double) limit,
+                            double gamma = 1,
+                            double brightness = 1,
+                            double saturation = 1)
     {
         Limit = limit;
         Gamma = gamma;
+        Brightness = brightness;
         Saturation = saturation;
     }
 
@@ -29,16 +37,15 @@ class SpectrogramImage
         var slope = 1.0 / (max - min);
         var intercept = min / (max - min);
 
+        var scale = new Scale();
+
         var colors = Enumerable
             .Range(0, n)
-            .Select(_ => 1.0 - Math.Clamp(GetOctaveRatio(freqs[_]) / 10.0, 0.0, 1.0))
+            .Select(_ => 1.0 - Math.Clamp(scale.GetOctaveRatio(freqs[_]) / scale.Octaves.Length, 0.0, 1.0))
             .ToArray();
 
-        // var colors = Enumerable
-        //     .Range(0, n).Select(_ => 1.0 - Math.Clamp((double)_ / n, 0.0, 1.0))
-        //     .ToArray();
-
         var gamma = Math.Clamp(Gamma, 0.1, 10.0);
+        var brightness = Math.Clamp(Brightness, 0.1, 10.0);
         var saturation = (Saturation >= 0) ? Math.Clamp(Saturation, 0.0, 1.0) : 1.0;
         var highlighting = (Saturation < 0) ? Math.Clamp(Saturation, -1.0, 0.0) : 0.0;
 
@@ -54,6 +61,7 @@ class SpectrogramImage
 
                 v = Math.Clamp(v * slope - intercept, 0.0, 1.0);
                 v = Math.Pow(v, gamma);
+                v = Math.Clamp(v * brightness, 0.0, 1.0);
 
                 s += v * highlighting;
 
@@ -62,13 +70,5 @@ class SpectrogramImage
         }
 
         return OxyImage.Create(pixels, ImageFormat.Bmp);
-    }
-
-    private double GetOctaveRatio(double frequency)
-    {
-        var cp = 440;
-        var c0 = Math.Pow(2, -(9 + 4*12) / 12);
-
-        return Math.Log2(frequency / (c0 * cp));
     }
 }

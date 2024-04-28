@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Linq;
 using NAudio.Wave;
 using OxyPlot;
 using OxyPlot.Axes;
+using Spectrality.DSP;
+using Spectrality.Models;
+using Spectrality.Plot;
 
 namespace Spectrality.ViewModels;
 
@@ -30,7 +34,9 @@ public class MainWindowViewModel : ViewModelBase
         System.Console.WriteLine(m);
         System.Console.WriteLine();
 
-        var spectrogram = new SpectrumAnalyzer(reader.WaveFormat.SampleRate, 10e-3).GetSpectrogram(samples);
+        var analyzer = new SpectrumAnalyzer(reader.WaveFormat.SampleRate, 10e-3);
+
+        var spectrogram = analyzer.GetSpectrogram(samples);
 
         PlotModel = new PlotModel()
         {

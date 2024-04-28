@@ -2,16 +2,21 @@ using System;
 using System.Linq;
 using OxyPlot;
 using OxyPlot.Series;
+using Spectrality.Models;
+
+namespace Spectrality.Plot;
 
 class SpectrogramSeries : XYAxisSeries
 {
+    public SpectrogramImage SpectrogramImage { get; set; } = new((-120, 0));
+
     public Spectrogram? Spectrogram { get; private set; }
     public OxyImage? Image { get; private set; }
 
     public SpectrogramSeries(Spectrogram spectrogram)
     {
         Spectrogram = spectrogram;
-        Image = new SpectrogramImage((-120, 0)).GetImage(spectrogram);
+        Image = SpectrogramImage.GetImage(spectrogram);
     }
 
     public override void Render(IRenderContext rc)
@@ -21,7 +26,7 @@ class SpectrogramSeries : XYAxisSeries
             return;
         }
 
-        Image ??= new SpectrogramImage((-120, 0)).GetImage(Spectrogram.Value);
+        Image ??= SpectrogramImage.GetImage(Spectrogram.Value);
 
         var freqs = Spectrogram.Value.Frequencies;
         var times = Spectrogram.Value.Timestamps;

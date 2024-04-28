@@ -3,6 +3,8 @@ using System.Linq;
 using System.Numerics;
 using Nito.Collections;
 
+namespace Spectrality.DSP;
+
 class QDFT
 {
     public double Samplerate { get; private set; }
@@ -12,7 +14,7 @@ class QDFT
     public double Latency { get; private set; }
     public (double, double) Window { get; private set; }
 
-    public int Length { get; private set; }
+    public int Size { get; private set; }
 
     public double[] Frequencies { get; private set; }
     public double[] Qualities { get; private set; }
@@ -40,22 +42,22 @@ class QDFT
         Latency = latency;
         Window = (+0.5, -0.5);
 
-        Length = (int)Math.Ceiling(Resolution * Math.Log2(Bandwidth.Item2 / Bandwidth.Item1));
+        Size = (int)Math.Ceiling(Resolution * Math.Log2(Bandwidth.Item2 / Bandwidth.Item1));
 
-        Frequencies = new double[Length];
-        Qualities = new double[Length];
-        Latencies = new double[Length];
-        Periods = new int[Length];
-        Offsets = new int[Length];
-        Weights = new double[Length];
+        Frequencies = new double[Size];
+        Qualities = new double[Size];
+        Latencies = new double[Size];
+        Periods = new int[Size];
+        Offsets = new int[Size];
+        Weights = new double[Size];
 
-        Fiddles = new Complex[Length * 3];
-        Twiddles = new Complex[Length * 3];
+        Fiddles = new Complex[Size * 3];
+        Twiddles = new Complex[Size * 3];
 
         Bootstrap();
 
         Inputs = new Deque<double>(new double[Periods.First() + 1]);
-        Outputs = new Complex[Length * 3];
+        Outputs = new Complex[Size * 3];
     }
 
     private void Bootstrap()
@@ -63,7 +65,7 @@ class QDFT
         var alpha = Math.Pow(2.0, 1.0 / Resolution) - 1.0;
         var beta = (Quality < 0) ? (alpha * 24.7 / 0.108) : Quality;
 
-        for (int i = 0; i < Length; i++)
+        for (int i = 0; i < Size; i++)
         {
             var frequency = Bandwidth.Item1 * Math.Pow(2.0, i / Resolution);
 
@@ -93,7 +95,7 @@ class QDFT
 
         foreach (int k in new[] { -1, 0, +1 })
         {
-            for (int i = 0, j = 1; i < Length; ++i, j+=3)
+            for (int i = 0, j = 1; i < Size; ++i, j+=3)
             {
                 var fiddle = Complex.FromPolarCoordinates(
                     1.0, -2.0 * Math.PI * (Qualities[i] + k));
@@ -123,7 +125,7 @@ class QDFT
 
     public void Analyze(double sample, Span<Complex> dft)
     {
-        if (dft.Length != Length)
+        if (dft.Length != Size)
         {
             throw new ArgumentException();
         }
@@ -144,7 +146,7 @@ class QDFT
         inputs.RemoveFromFront();
         inputs.AddToBack(sample);
 
-        for (int i = 0, j = 1; i < Length; ++i, j+=3)
+        for (int i = 0, j = 1; i < Size; ++i, j+=3)
         {
           var period = periods[i];
           var offset = offsets[i];

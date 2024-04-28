@@ -1,3 +1,5 @@
+namespace Spectrality.Models;
+
 struct Spectrogram
 {
     public double Samplerate;
