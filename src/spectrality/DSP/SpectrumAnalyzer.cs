@@ -27,7 +27,7 @@ class SpectrumAnalyzer
     QDFT = new QDFT(samplerate, bandwidth, resolution, quality, latency);
   }
 
-  public Spectrogram GetSpectrogram(Span<float> samples)
+  public Datagram GetSpectrogram(Span<float> samples)
   {
     var watch = Stopwatch.GetTimestamp();
 
@@ -37,8 +37,8 @@ class SpectrumAnalyzer
     var hops = (int)Math.Ceiling(1.0 * samples.Length / hop);
     var bins = qdft.Size;
 
-    var timepoints = Enumerable.Range(0, hops).Select(_ => _ * Timestep).ToArray();
-    var frequencies = qdft.Frequencies;
+    var timepoints = Enumerable.Range(0, hops).Select(_ => (float)(_ * Timestep)).ToArray();
+    var frequencies = qdft.Frequencies.Select(_ => (float)_).ToArray();
     var magnitudes = new float[hops, bins];
     var dft = new Complex[bins];
 
@@ -66,12 +66,11 @@ class SpectrumAnalyzer
 
     System.Console.WriteLine($"{Stopwatch.GetElapsedTime(watch).Milliseconds}ms");
 
-    return new Spectrogram
+    return new Datagram
     {
-      Samplerate = Samplerate,
-      Timepoints = timepoints,
-      Frequencies = frequencies,
-      Magnitudes = magnitudes
+      X = timepoints,
+      Y = frequencies,
+      Z = magnitudes
     };
   }
 }

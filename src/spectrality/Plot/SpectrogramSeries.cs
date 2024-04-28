@@ -10,16 +10,16 @@ public class SpectrogramSeries : XYAxisSeries
   private readonly ISpectrogramImage SpectrogramImage;
   private readonly ICoordinateTransformation<DataPoint> CoordinateTransformation;
 
-  public Spectrogram? Spectrogram { get; private set; }
+  public Datagram? Spectrogram { get; private set; }
   public OxyImage? Image { get; private set; }
 
-  public SpectrogramSeries(Spectrogram spectrogram)
+  public SpectrogramSeries(Datagram spectrogram)
   {
     SpectrogramImage = new ChromesthesiaSpectrogramImage((-120, 0));
 
     CoordinateTransformation = new CartesianCoordinateTransformation(
-      new LinearCoordinateTransformation(spectrogram.Timepoints),
-      new LogarithmicCoordinateTransformation(spectrogram.Frequencies));
+      new LinearCoordinateTransformation(spectrogram.X),
+      new LogarithmicCoordinateTransformation(spectrogram.Y));
 
     Spectrogram = spectrogram;
     Image = SpectrogramImage.GetImage(spectrogram);
@@ -33,12 +33,11 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     var spectrogram = Spectrogram.Value;
-    var magns = spectrogram.Magnitudes;
     var image = Image ??= SpectrogramImage.GetImage(spectrogram);
 
     double left = 0;
-    double right = magns.GetLength(0);
-    double bottom = magns.GetLength(1);
+    double right = spectrogram.Width;
+    double bottom = spectrogram.Height;
     double top = 0;
 
     var dataPoint00 = new DataPoint(left, bottom);
@@ -79,11 +78,10 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     var spectrogram = Spectrogram.Value;
-    var magns = spectrogram.Magnitudes;
 
     double left = 0;
-    double right = magns.GetLength(0);
-    double bottom = magns.GetLength(1);
+    double right = spectrogram.Width;
+    double bottom = spectrogram.Height;
     double top = 0;
 
     var dataPoint00 = new DataPoint(left, bottom);
@@ -107,14 +105,13 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     var spectrogram = Spectrogram.Value;
-    var magns = spectrogram.Magnitudes;
 
     var virtualPoint = InverseTransform(screenPoint);
     var dataPoint = CoordinateTransformation.Backward(virtualPoint);
 
     double left = 0;
-    double right = magns.GetLength(0);
-    double bottom = magns.GetLength(1);
+    double right = spectrogram.Width;
+    double bottom = spectrogram.Height;
     double top = 0;
 
     int nearestX = (int)Math.Floor(dataPoint.X);
@@ -142,7 +139,7 @@ public class SpectrogramSeries : XYAxisSeries
     var values = new string[4, 3]
     {
       { "Note:", scale.GetNote(nearestVirtualPoint.Y), "" },
-      { "Magnitude:", Math.Round(magns[nearestX, nearestY], 1).ToString("F1"), "dB" },
+      { "Magnitude:", Math.Round(spectrogram[nearestX, nearestY], 1).ToString("F1"), "dB" },
       { "Frequency:", Math.Round(nearestVirtualPoint.Y, 1).ToString("F1"), "Hz" },
       { "Timepoint:", Math.Round(nearestVirtualPoint.X, 3).ToString("F3"), "s" }
     };

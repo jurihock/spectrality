@@ -23,6 +23,16 @@ public class LinearCoordinateTransformation : ICoordinateTransformation<double>
     Intercept = min;
   }
 
+  public LinearCoordinateTransformation(float[] values)
+  {
+    var min = values.Min();
+    var max = values.Max();
+    var num = values.Length;
+
+    Slope = (max - min) / (num - 1);
+    Intercept = min;
+  }
+
   public double Forward(double value)
   {
     return value * Slope + Intercept;
