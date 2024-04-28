@@ -6,112 +6,152 @@ using Spectrality.Models;
 
 namespace Spectrality.Plot;
 
-class SpectrogramSeries : XYAxisSeries
+public class SpectrogramSeries : XYAxisSeries
 {
-    public SpectrogramImage SpectrogramImage { get; set; } = new((-120, 0));
+  private SpectrogramImage SpectrogramImage { get; set; } = new((-120, 0));
+  private ICoordinateTransformationModel CoordinateTransformation { get; set; }
 
-    public Spectrogram? Spectrogram { get; private set; }
-    public OxyImage? Image { get; private set; }
+  public Spectrogram? Spectrogram { get; private set; }
+  public OxyImage? Image { get; private set; }
 
-    public SpectrogramSeries(Spectrogram spectrogram)
+  public SpectrogramSeries(Spectrogram spectrogram)
+  {
+    Spectrogram = spectrogram;
+    Image = SpectrogramImage.GetImage(spectrogram);
+
+    CoordinateTransformation = new LinearCoordinateTransformationModel(
+      spectrogram.Timestamps, spectrogram.Frequencies);
+  }
+
+  public override void Render(IRenderContext rc)
+  {
+    if (Spectrogram == null)
     {
-        Spectrogram = spectrogram;
-        Image = SpectrogramImage.GetImage(spectrogram);
+      return;
     }
 
-    public override void Render(IRenderContext rc)
+    var spectrogram = Spectrogram.Value;
+    var magns = spectrogram.Magnitudes;
+    var image = Image ??= SpectrogramImage.GetImage(spectrogram);
+
+    double left = 0;
+    double right = magns.GetLength(0);
+    double bottom = magns.GetLength(1);
+    double top = 0;
+
+    var dataPoint00 = new DataPoint(left, bottom);
+    var dataPoint11 = new DataPoint(right, top);
+
+    var virtualPoint00 = CoordinateTransformation.Forward(dataPoint00);
+    var virtualPoint11 = CoordinateTransformation.Forward(dataPoint11);
+
+    var screenPoint00 = Transform(virtualPoint00);
+    var screenPoint11 = Transform(virtualPoint11);
+
+    var screenRect = new OxyRect(screenPoint00, screenPoint11);
+
+    left = screenRect.Left;
+    top = screenRect.Top;
+    right = screenRect.Width;
+    bottom = screenRect.Height;
+
+    rc.DrawImage(
+      image,
+      left, top, right, bottom,
+      1, false);
+  }
+
+  protected override void UpdateMaxMin()
+  {
+    base.UpdateMaxMin();
+
+    if (Spectrogram == null)
     {
-        if (Spectrogram == null)
-        {
-            return;
-        }
+      MinX = 0;
+      MinY = 0;
 
-        Image ??= SpectrogramImage.GetImage(Spectrogram.Value);
+      MaxX = 0;
+      MaxY = 0;
 
-        var freqs = Spectrogram.Value.Frequencies;
-        var times = Spectrogram.Value.Timestamps;
-        var data = Spectrogram.Value.Magnitudes;
-
-        var m = data.GetLength(0);
-        var n = data.GetLength(1);
-
-        var dx = (times.Last() - times.First()) / m;
-        var left = times.First() - (dx * 0.5);
-        var right = times.Last() + (dx * 0.5);
-
-        var dy = (freqs.Last() - freqs.First()) / n;
-        var bottom = freqs.First() - (dy * 0.5);
-        var top = freqs.Last() + (dy * 0.5);
-
-        var v00 = new DataPoint(left, bottom);
-        var v11 = new DataPoint(right, top);
-
-        var s00 = Transform(v00);
-        var s11 = Transform(v11);
-
-        var rect = new OxyRect(s00, s11);
-
-        rc.DrawImage(
-            Image,
-            rect.Left, rect.Top, rect.Width, rect.Height,
-            1, false);
+      return;
     }
 
-    protected override void UpdateMaxMin()
+    var spectrogram = Spectrogram.Value;
+    var magns = spectrogram.Magnitudes;
+
+    double left = 0;
+    double right = magns.GetLength(0);
+    double bottom = magns.GetLength(1);
+    double top = 0;
+
+    var dataPoint00 = new DataPoint(left, bottom);
+    var dataPoint11 = new DataPoint(right, top);
+
+    var virtualPoint00 = CoordinateTransformation.Forward(dataPoint00);
+    var virtualPoint11 = CoordinateTransformation.Forward(dataPoint11);
+
+    MinX = Math.Min(virtualPoint00.X, virtualPoint11.X);
+    MaxX = Math.Max(virtualPoint00.X, virtualPoint11.X);
+
+    MinY = Math.Min(virtualPoint00.Y, virtualPoint11.Y);
+    MaxY = Math.Max(virtualPoint00.Y, virtualPoint11.Y);
+  }
+
+  public override TrackerHitResult GetNearestPoint(ScreenPoint screenPoint, bool interpolate)
+  {
+    if (Spectrogram == null)
     {
-        base.UpdateMaxMin();
-
-        if (Spectrogram == null)
-        {
-            return;
-        }
-
-        var times = Spectrogram.Value.Timestamps;
-        var freqs = Spectrogram.Value.Frequencies;
-        var magns = Spectrogram.Value.Magnitudes;
-
-        var m = magns.GetLength(0);
-        var n = magns.GetLength(1);
-
-        MinX = times.First();
-        MaxX = times.Last();
-
-        MinY = freqs.First();
-        MaxY = freqs.Last();
-
-        if (XAxis.IsLogarithmic())
-        {
-            var gx = Math.Log(MaxX / MinX) / (m - 1);
-
-            MinX *= Math.Exp(gx / -2);
-            MaxX *= Math.Exp(gx / 2);
-        }
-        else
-        {
-            var dx = (MaxX - MinX) / (m - 1);
-
-            MinX -= dx / 2;
-            MaxX += dx / 2;
-        }
-
-        if (YAxis.IsLogarithmic())
-        {
-            var gy = Math.Log(MaxY / MinY) / (n - 1);
-
-            MinY *= Math.Exp(gy / -2);
-            MaxY *= Math.Exp(gy / 2);
-        }
-        else
-        {
-            var dy = (MaxY - MinY) / (n - 1);
-
-            MinY -= dy / 2;
-            MaxY += dy / 2;
-        }
+      return base.GetNearestPoint(screenPoint, interpolate);
     }
 
-    public override TrackerHitResult GetNearestPoint(ScreenPoint point, bool interpolate)
+    var spectrogram = Spectrogram.Value;
+    var magns = spectrogram.Magnitudes;
+
+    var virtualPoint = InverseTransform(screenPoint);
+    var dataPoint = CoordinateTransformation.Backward(virtualPoint);
+
+    double left = 0;
+    double right = magns.GetLength(0);
+    double bottom = magns.GetLength(1);
+    double top = 0;
+
+    int nearestX = (int)Math.Floor(dataPoint.X);
+    int nearestY = (int)Math.Floor(dataPoint.Y);
+
+    if (nearestX < left || nearestX >= right)
     {
-        return base.GetNearestPoint(point, interpolate);
+      return base.GetNearestPoint(screenPoint, interpolate);
     }
+
+    if (nearestY < top || nearestY >= bottom)
+    {
+      return base.GetNearestPoint(screenPoint, interpolate);
+    }
+
+    var nearestDataPoint = new DataPoint(nearestX, nearestY);
+    var nearestVirtualPoint = CoordinateTransformation.Forward(nearestDataPoint);
+
+    var trackerDataPoint = new DataPoint(nearestX + 0.5, nearestY + 0.5);
+    var trackerVirtualPoint = CoordinateTransformation.Forward(trackerDataPoint);
+    var trackerScreenPoint = Transform(trackerVirtualPoint);
+
+    var valueX = Math.Round(nearestVirtualPoint.X, 3);
+    var valueY = Math.Round(nearestVirtualPoint.Y, 1);
+    var valueZ = Math.Round(magns[nearestX, nearestY], 1);
+
+    var text = string.Join(Environment.NewLine,
+    [
+      $"Timestamp: {valueX} s",
+      $"Frequency: {valueY} Hz",
+      $"Magnitude: {valueZ} dB"
+    ]);
+
+    return new TrackerHitResult
+    {
+      Series = this,
+      DataPoint = nearestVirtualPoint,
+      Position = trackerScreenPoint,
+      Text = text
+    };
+  }
 }

@@ -19,7 +19,6 @@ class SpectrumAnalyzer
         Interval = interval;
 
         var scale = new Scale();
-
         var bandwidth = (scale.GetFrequency("A1"), scale.GetFrequency("A8"));
         var resolution = 12 * 4;
         var quality = -1;

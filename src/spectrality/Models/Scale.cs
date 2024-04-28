@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace Spectrality.Models;
 
-class Scale
+public class Scale
 {
     public readonly string[] Notes =
         [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" ];
-    
+
     public readonly int[] Octaves =
         Enumerable.Range(-1, 12).ToArray();
 

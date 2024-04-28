@@ -11,10 +11,6 @@ namespace Spectrality.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    #pragma warning disable CA1822 // Mark members as static
-    public string Greeting => "Welcome to Avalonia!";
-    #pragma warning restore CA1822 // Mark members as static
-
     public PlotModel PlotModel { get; set; }
 
     public MainWindowViewModel()
@@ -40,10 +36,23 @@ public class MainWindowViewModel : ViewModelBase
 
         PlotModel = new PlotModel()
         {
-            Background = OxyColors.Black,
-            TextColor = OxyColors.White,
-            PlotAreaBorderColor = OxyColors.White
+          Background = OxyColors.Black,
+          TextColor = OxyColors.White,
+          PlotAreaBorderColor = OxyColors.White,
         };
+
+        PlotModel.Axes.Add(new LinearAxis()
+        {
+          Position = AxisPosition.Left,
+          TicklineColor = OxyColors.White
+        });
+
+        PlotModel.Axes.Add(new LinearAxis()
+        {
+          Position = AxisPosition.Bottom,
+          TicklineColor = OxyColors.White
+        });
+
         PlotModel.Series.Add(new SpectrogramSeries(spectrogram));
     }
 }

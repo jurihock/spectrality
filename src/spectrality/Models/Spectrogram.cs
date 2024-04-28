@@ -1,6 +1,6 @@
 namespace Spectrality.Models;
 
-struct Spectrogram
+public struct Spectrogram
 {
     public double Samplerate;
     public double[] Timestamps;

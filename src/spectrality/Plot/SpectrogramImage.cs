@@ -5,7 +5,7 @@ using Spectrality.Models;
 
 namespace Spectrality.Plot;
 
-class SpectrogramImage
+public class SpectrogramImage
 {
     public (double, double) Limit { get; private set; }
     public double Gamma { get; private set; }
