@@ -16,21 +16,21 @@ public class LogarithmicCoordinateTransformation : ICoordinateTransformation<dou
 
   public LogarithmicCoordinateTransformation(double[] values)
   {
-    var min = values.Min();
-    var max = values.Max();
+    var min = Math.Log(values.Min());
+    var max = Math.Log(values.Max());
     var num = values.Length;
 
-    Slope = Math.Log(max / min) / (num - 1);
+    Slope = (max - min) / (num - 1);
     Intercept = min;
   }
 
   public double Forward(double value)
   {
-    return Math.Exp(value * Slope) * Intercept;
+    return Math.Exp(value * Slope + Intercept);
   }
 
   public double Backward(double value)
   {
-    return Math.Log(value / Intercept) / Slope;
+    return (Math.Log(value) - Intercept) / Slope;
   }
 }
