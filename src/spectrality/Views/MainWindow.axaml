@@ -24,6 +24,7 @@
                 <Setter Property="Background" Value="White" />
                 <Setter Property="Foreground" Value="Black" />
                 <Setter Property="LineStroke" Value="White" />
+                <Setter Property="FontFamily" Value="Courier New, Courier, Monospace" />
             </Style>
         </oxy:PlotView.Styles>
     </oxy:PlotView>

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using OxyPlot;
 using OxyPlot.Series;
 using Spectrality.Models;
@@ -135,15 +136,22 @@ public class SpectrogramSeries : XYAxisSeries
     var trackerVirtualPoint = CoordinateTransformation.Forward(trackerDataPoint);
     var trackerScreenPoint = Transform(trackerVirtualPoint);
 
-    var valueX = Math.Round(nearestVirtualPoint.X, 3);
-    var valueY = Math.Round(nearestVirtualPoint.Y, 1);
-    var valueZ = Math.Round(magns[nearestX, nearestY], 1);
+    var values = new string[]
+    {
+      Math.Round(nearestVirtualPoint.X, 3).ToString("F3"),
+      Math.Round(nearestVirtualPoint.Y, 1).ToString("F1"),
+      Math.Round(magns[nearestX, nearestY], 1).ToString("F1")
+    };
+
+    var length = values.Select(_ => _.Length).Max();
+
+    values = values.Select(_ => _.PadLeft(length)).ToArray();
 
     var text = string.Join(Environment.NewLine,
     [
-      $"Timestamp: {valueX} s",
-      $"Frequency: {valueY} Hz",
-      $"Magnitude: {valueZ} dB"
+      $"Timestamp: {values[0]} s",
+      $"Frequency: {values[1]} Hz",
+      $"Magnitude: {values[2]} dB"
     ]);
 
     return new TrackerHitResult

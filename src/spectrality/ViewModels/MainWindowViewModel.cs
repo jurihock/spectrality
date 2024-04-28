@@ -54,8 +54,6 @@ public class MainWindowViewModel : ViewModelBase
           TicklineColor = OxyColors.White
         });
 
-        // OxyColors.
-
         PlotModel.Series.Add(new SpectrogramSeries(spectrogram));
     }
 }
