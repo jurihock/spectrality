@@ -78,7 +78,7 @@ class QDFT
             Periods[i] = (int)period;
 
             var offset = Math.Ceiling((Periods.First() - period)
-                * Math.Clamp(Latency * 0.5 + 0.5, 0.0, 1.0));
+                       * Math.Clamp(Latency * 0.5 + 0.5, 0.0, 1.0));
 
             Offsets[i] = (int)offset;
 

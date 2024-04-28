@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using OxyPlot;
 
 class SpectrogramImage
@@ -18,6 +17,7 @@ class SpectrogramImage
 
     public OxyImage GetImage(Spectrogram spectrogram)
     {
+        var freqs = spectrogram.Frequencies;
         var data = spectrogram.Magnitudes;
 
         var m = data.GetLength(0);
@@ -29,8 +29,16 @@ class SpectrogramImage
         var slope = 1.0 / (max - min);
         var intercept = min / (max - min);
 
-        var colors = Enumerable.Range(0, n).Select(_ => 1.0 - (double)_ / n).ToArray();
-        var gamma = Math.Clamp(Gamma, 0.1, 10);
+        var colors = Enumerable
+            .Range(0, n)
+            .Select(_ => 1.0 - Math.Clamp(GetOctaveRatio(freqs[_]) / 10.0, 0.0, 1.0))
+            .ToArray();
+
+        // var colors = Enumerable
+        //     .Range(0, n).Select(_ => 1.0 - Math.Clamp((double)_ / n, 0.0, 1.0))
+        //     .ToArray();
+
+        var gamma = Math.Clamp(Gamma, 0.1, 10.0);
         var saturation = (Saturation >= 0) ? Math.Clamp(Saturation, 0.0, 1.0) : 1.0;
         var highlighting = (Saturation < 0) ? Math.Clamp(Saturation, -1.0, 0.0) : 0.0;
 
@@ -54,5 +62,13 @@ class SpectrogramImage
         }
 
         return OxyImage.Create(pixels, ImageFormat.Bmp);
+    }
+
+    private double GetOctaveRatio(double frequency)
+    {
+        var cp = 440;
+        var c0 = Math.Pow(2, -(9 + 4*12) / 12);
+
+        return Math.Log2(frequency / (c0 * cp));
     }
 }
