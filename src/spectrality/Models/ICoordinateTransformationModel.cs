@@ -1,9 +1,7 @@
-using OxyPlot;
-
 namespace Spectrality.Models;
 
-public interface ICoordinateTransformationModel
+public interface ICoordinateTransformationModel<T>
 {
-  DataPoint Forward(DataPoint point);
-  DataPoint Backward(DataPoint point);
+  T Forward(T value);
+  T Backward(T value);
 }

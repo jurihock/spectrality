@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using OxyPlot;
 using OxyPlot.Series;
 using Spectrality.Models;
@@ -9,7 +8,7 @@ namespace Spectrality.Plot;
 public class SpectrogramSeries : XYAxisSeries
 {
   private SpectrogramImage SpectrogramImage { get; set; } = new((-120, 0));
-  private ICoordinateTransformationModel CoordinateTransformation { get; set; }
+  private ICoordinateTransformationModel<DataPoint> CoordinateTransformation { get; set; }
 
   public Spectrogram? Spectrogram { get; private set; }
   public OxyImage? Image { get; private set; }
@@ -19,8 +18,9 @@ public class SpectrogramSeries : XYAxisSeries
     Spectrogram = spectrogram;
     Image = SpectrogramImage.GetImage(spectrogram);
 
-    CoordinateTransformation = new LinearCoordinateTransformationModel(
-      spectrogram.Timestamps, spectrogram.Frequencies);
+    CoordinateTransformation = new CartesianCoordinateTransformationModel(
+      new LinearCoordinateTransformationModel(spectrogram.Timestamps),
+      new LogarithmicCoordinateTransformationModel(spectrogram.Frequencies));
   }
 
   public override void Render(IRenderContext rc)

@@ -36,12 +36,13 @@ public class MainWindowViewModel : ViewModelBase
 
         PlotModel = new PlotModel()
         {
+          PlotType = PlotType.XY,
           Background = OxyColors.Black,
           TextColor = OxyColors.White,
-          PlotAreaBorderColor = OxyColors.White,
+          PlotAreaBorderColor = OxyColors.White
         };
 
-        PlotModel.Axes.Add(new LinearAxis()
+        PlotModel.Axes.Add(new LogarithmicAxis()
         {
           Position = AxisPosition.Left,
           TicklineColor = OxyColors.White
@@ -52,6 +53,8 @@ public class MainWindowViewModel : ViewModelBase
           Position = AxisPosition.Bottom,
           TicklineColor = OxyColors.White
         });
+
+        // OxyColors.
 
         PlotModel.Series.Add(new SpectrogramSeries(spectrogram));
     }

@@ -20,7 +20,6 @@
     <oxy:PlotView Model="{Binding PlotModel}">
         <oxy:PlotView.Styles>
             <Style Selector="oxy|TrackerControl">
-                <Setter Property="BorderThickness" Value="1" />
                 <Setter Property="BorderBrush" Value="Black" />
                 <Setter Property="Background" Value="White" />
                 <Setter Property="Foreground" Value="Black" />
