@@ -1,19 +1,19 @@
 using System.Linq;
 
-namespace Spectrality.Models;
+namespace Spectrality.Plot;
 
-public class LinearCoordinateTransformationModel : ICoordinateTransformationModel<double>
+public class LinearCoordinateTransformation : ICoordinateTransformation<double>
 {
   public double Slope { get; private set; }
   public double Intercept { get; private set; }
 
-  public LinearCoordinateTransformationModel(double slope, double intercept)
+  public LinearCoordinateTransformation(double slope, double intercept)
   {
     Slope = slope;
     Intercept = intercept;
   }
 
-  public LinearCoordinateTransformationModel(double[] values)
+  public LinearCoordinateTransformation(double[] values)
   {
     var min = values.Min();
     var max = values.Max();

@@ -9,7 +9,7 @@ namespace Spectrality.Plot;
 public class SpectrogramSeries : XYAxisSeries
 {
   private readonly ISpectrogramImage SpectrogramImage;
-  private readonly ICoordinateTransformationModel<DataPoint> CoordinateTransformation;
+  private readonly ICoordinateTransformation<DataPoint> CoordinateTransformation;
 
   public Spectrogram? Spectrogram { get; private set; }
   public OxyImage? Image { get; private set; }
@@ -18,9 +18,9 @@ public class SpectrogramSeries : XYAxisSeries
   {
     SpectrogramImage = new ChromesthesiaSpectrogramImage((-120, 0));
 
-    CoordinateTransformation = new CartesianCoordinateTransformationModel(
-      new LinearCoordinateTransformationModel(spectrogram.Timestamps),
-      new LogarithmicCoordinateTransformationModel(spectrogram.Frequencies));
+    CoordinateTransformation = new CartesianCoordinateTransformation(
+      new LinearCoordinateTransformation(spectrogram.Timestamps),
+      new LogarithmicCoordinateTransformation(spectrogram.Frequencies));
 
     Spectrogram = spectrogram;
     Image = SpectrogramImage.GetImage(spectrogram);
