@@ -1,59 +1,44 @@
-﻿using System;
-using System.Linq;
-using NAudio.Wave;
-using OxyPlot;
+﻿using OxyPlot;
 using OxyPlot.Axes;
 using Spectrality.DSP;
-using Spectrality.Models;
+using Spectrality.IO;
 using Spectrality.Plot;
 
 namespace Spectrality.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public PlotModel PlotModel { get; set; }
+  public PlotModel PlotModel { get; set; }
 
-    public MainWindowViewModel()
+  public MainWindowViewModel()
+  {
+    var file = @"/Users/juho/Documents/Projects/spectrality/x.wav";
+
+    var reader = new AudioFileReader(file);
+    var (samples, samplerate) = reader.Read();
+
+    var analyzer = new SpectrumAnalyzer(samplerate, 10e-3);
+    var spectrogram = analyzer.GetSpectrogram(samples);
+
+    PlotModel = new PlotModel()
     {
-        var file = @"/Users/juho/Documents/Projects/spectrality/x.wav";
-        var reader = new AudioFileReader(file);
+      Background = OxyColors.Black,
+      TextColor = OxyColors.White,
+      PlotAreaBorderColor = OxyColors.White
+    };
 
-        System.Console.WriteLine(reader.WaveFormat.SampleRate);
-        System.Console.WriteLine(reader.WaveFormat.Channels);
-        System.Console.WriteLine(reader.WaveFormat.BitsPerSample);
-        System.Console.WriteLine(reader.Length);
+    PlotModel.Axes.Add(new LogarithmicAxis()
+    {
+      Position = AxisPosition.Left,
+      TicklineColor = OxyColors.White
+    });
 
-        var n = reader.Length / (reader.WaveFormat.BitsPerSample / 8);
-        var samples = new float[n];
-        var m = reader.Read(samples, 0, samples.Length);
-        System.Console.WriteLine(n);
-        System.Console.WriteLine(m);
-        System.Console.WriteLine();
+    PlotModel.Axes.Add(new LinearAxis()
+    {
+      Position = AxisPosition.Bottom,
+      TicklineColor = OxyColors.White
+    });
 
-        var analyzer = new SpectrumAnalyzer(reader.WaveFormat.SampleRate, 10e-3);
-
-        var spectrogram = analyzer.GetSpectrogram(samples);
-
-        PlotModel = new PlotModel()
-        {
-          PlotType = PlotType.XY,
-          Background = OxyColors.Black,
-          TextColor = OxyColors.White,
-          PlotAreaBorderColor = OxyColors.White
-        };
-
-        PlotModel.Axes.Add(new LogarithmicAxis()
-        {
-          Position = AxisPosition.Left,
-          TicklineColor = OxyColors.White
-        });
-
-        PlotModel.Axes.Add(new LinearAxis()
-        {
-          Position = AxisPosition.Bottom,
-          TicklineColor = OxyColors.White
-        });
-
-        PlotModel.Series.Add(new SpectrogramSeries(spectrogram));
-    }
+    PlotModel.Series.Add(new SpectrogramSeries(spectrogram));
+  }
 }

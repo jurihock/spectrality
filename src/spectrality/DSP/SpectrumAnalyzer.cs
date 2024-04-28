@@ -6,12 +6,12 @@ using Spectrality.Models;
 
 namespace Spectrality.DSP;
 
-class SpectrumAnalyzer
+public class SpectrumAnalyzer
 {
   private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
-  public double Samplerate { get; private set; }
-  public double Timestep { get; private set; }
+  public double Samplerate { get; private init; }
+  public double Timestep { get; private init; }
 
   private QDFT QDFT { get; init; }
 
