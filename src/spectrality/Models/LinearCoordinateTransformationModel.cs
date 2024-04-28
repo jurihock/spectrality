@@ -28,7 +28,7 @@ public class LinearCoordinateTransformationModel : ICoordinateTransformationMode
       var min = valuesX.Min();
       var max = valuesX.Max();
 
-      SlopeX = (max - min) / num;
+      SlopeX = (max - min) / (num - 1);
       InterceptX = min;
     }
     else
@@ -43,7 +43,7 @@ public class LinearCoordinateTransformationModel : ICoordinateTransformationMode
       var min = valuesY.Min();
       var max = valuesY.Max();
 
-      SlopeY = (max - min) / num;
+      SlopeY = (max - min) / (num - 1);
       InterceptY = min;
     }
     else
