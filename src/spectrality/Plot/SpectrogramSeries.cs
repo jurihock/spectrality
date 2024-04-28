@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using OxyPlot;
 using OxyPlot.Series;
 using Spectrality.Models;
@@ -138,30 +137,46 @@ public class SpectrogramSeries : XYAxisSeries
     var trackerVirtualPoint = CoordinateTransformation.Forward(trackerDataPoint);
     var trackerScreenPoint = Transform(trackerVirtualPoint);
 
-    var values = new string[]
+    var scale = new Scale();
+
+    var values = new string[4, 3]
     {
-      Math.Round(nearestVirtualPoint.X, 3).ToString("F3"),
-      Math.Round(nearestVirtualPoint.Y, 1).ToString("F1"),
-      Math.Round(magns[nearestX, nearestY], 1).ToString("F1")
+      { "Note:", scale.GetNote(nearestVirtualPoint.Y), "" },
+      { "Magnitude:", Math.Round(magns[nearestX, nearestY], 1).ToString("F1"), "dB" },
+      { "Frequency:", Math.Round(nearestVirtualPoint.Y, 1).ToString("F1"), "Hz" },
+      { "Timepoint:", Math.Round(nearestVirtualPoint.X, 3).ToString("F3"), "s" }
     };
 
-    var length = values.Select(_ => _.Length).Max();
+    var cols = new int[values.GetLength(1)];
 
-    values = values.Select(_ => _.PadLeft(length)).ToArray();
+    for (var i = 0; i < values.GetLength(0); i++)
+    {
+      for (var j = 0; j < values.GetLength(1); j++)
+      {
+        cols[j] = Math.Max(cols[j], values[i, j].Length);
+      }
+    }
 
-    var text = string.Join(Environment.NewLine,
-    [
-      $"Timestamp: {values[0]} s",
-      $"Frequency: {values[1]} Hz",
-      $"Magnitude: {values[2]} dB"
-    ]);
+    var rows = new string[values.GetLength(0)];
+
+    for (var i = 0; i < values.GetLength(0); i++)
+    {
+      var a = values[i, 0].PadRight(cols[0]);
+      var b = values[i, 1].PadLeft(cols[1]);
+      var c = values[i, 2].PadRight(cols[2]);
+
+      rows[i] = string.Join(' ', a, b, c);
+    }
+
+    var trackerText = string.Join(
+      Environment.NewLine, rows);
 
     return new TrackerHitResult
     {
       Series = this,
       DataPoint = nearestVirtualPoint,
       Position = trackerScreenPoint,
-      Text = text
+      Text = trackerText
     };
   }
 }

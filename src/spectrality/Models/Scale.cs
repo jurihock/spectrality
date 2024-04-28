@@ -26,6 +26,14 @@ public class Scale
         C0 = a4 * Math.Pow(2.0, -(9.0 + 4.0 * 12.0) / 12.0);
     }
 
+    public string GetNote(double frequency)
+    {
+      var semitone = GetSemitone(frequency);
+      var octave = GetOctave(frequency);
+
+      return Notes[semitone] + octave.ToString();
+    }
+
     public int GetSemitone(string note)
     {
         var chars = string.Concat(note.ToUpper().Where(ValidNoteChars.Contains));
