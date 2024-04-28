@@ -8,6 +8,8 @@ namespace Spectrality.DSP;
 
 class SpectrumAnalyzer
 {
+  private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
   public double Samplerate { get; private set; }
   public double Timestep { get; private set; }
 
@@ -24,11 +26,22 @@ class SpectrumAnalyzer
     var quality = -1;
     var latency = 0;
 
+    Logger.Info($"Initializing spectrum analyzer (" +
+                $"samplerate={samplerate}" + ", " +
+                $"timestep={Math.Ceiling(timestep * 1e+3)}" + ", " +
+                $"bandwidth=({bandwidth.Item1:F3}, {bandwidth.Item2:F3})" + ", " +
+                $"resolution={resolution}" + ", " +
+                $"quality={quality}" + ", " +
+                $"latency={latency}" + $").");
+
     QDFT = new QDFT(samplerate, bandwidth, resolution, quality, latency);
   }
 
   public Spectrogram GetSpectrogram(Span<float> samples)
   {
+    var duration = TimeSpan.FromSeconds(samples.Length / Samplerate);
+    Logger.Info($"Begin analyzing {samples.Length} samples of {duration.TotalSeconds:F3}s duration.");
+
     var watch = Stopwatch.GetTimestamp();
 
     var qdft = QDFT;
@@ -64,7 +77,8 @@ class SpectrumAnalyzer
       }
     }
 
-    System.Console.WriteLine($"{Stopwatch.GetElapsedTime(watch).Milliseconds}ms");
+    var elapsed = Stopwatch.GetElapsedTime(watch);
+    Logger.Info($"Analysis completed in {elapsed.TotalSeconds:F3}s.");
 
     return new Spectrogram
     {

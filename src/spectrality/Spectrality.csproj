@@ -23,6 +23,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Nito.Collections.Deque" Version="1.2.1" />
+    <PackageReference Include="NLog" Version="5.3.1" />
     <PackageReference Include="Oxyplot.Avalonia" Version="2.1.0-Avalonia11" />
   </ItemGroup>
 </Project>
