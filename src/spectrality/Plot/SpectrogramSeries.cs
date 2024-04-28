@@ -33,7 +33,7 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     var data = Spectrogram.Value.Data;
-    var image = Image ??= SpectrogramImage.GetImage(Spectrogram.Value);
+    var image = Image ?? throw new InvalidOperationException();
 
     double left = 0;
     double right = data.Width;
