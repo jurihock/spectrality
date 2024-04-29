@@ -11,7 +11,6 @@ public class SpectrogramSeries : XYAxisSeries
   private ICoordinateTransformation<DataPoint> CoordinateTransformation { get; init; }
 
   public Spectrogram? Spectrogram { get; private set; }
-  public Bitmap? Bitmap { get; private set; }
 
   public SpectrogramSeries(Spectrogram spectrogram)
   {
@@ -22,7 +21,7 @@ public class SpectrogramSeries : XYAxisSeries
       new LogarithmicCoordinateTransformation(spectrogram.Data.Y));
 
     Spectrogram = spectrogram;
-    Bitmap = SpectrogramBitmap.GetBitmap(spectrogram);
+    SpectrogramBitmap.RenderBitmap(spectrogram);
   }
 
   public override void Render(IRenderContext rc)
@@ -33,7 +32,7 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     var data = Spectrogram.Value.Data;
-    var image = Bitmap?.ToOxyImage() ?? throw new InvalidOperationException();
+    var image = Spectrogram.Value.Bitmap.ToOxyImage();
 
     double left = 0;
     double right = data.Width;

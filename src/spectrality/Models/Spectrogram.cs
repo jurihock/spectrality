@@ -4,4 +4,5 @@ public readonly struct Spectrogram
 {
   public Datagram Data { get; init; }
   public Metagram Meta { get; init; }
+  public Bitmap Bitmap { get; init; }
 }

@@ -113,7 +113,8 @@ public class SpectrumAnalyzer
           Unit = "dB",
           Type = Metagram.AxisType.Logarithmic
         },
-      }
+      },
+      Bitmap = new Bitmap(magnitudes.GetLength(0), magnitudes.GetLength(1))
     };
   }
 }

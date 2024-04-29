@@ -23,7 +23,7 @@ public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
     Saturation = saturation;
   }
 
-  public Bitmap GetBitmap(Spectrogram spectrogram)
+  public void RenderBitmap(Spectrogram spectrogram)
   {
     var data = spectrogram.Data;
     var freqs = data.Y;
@@ -50,7 +50,7 @@ public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
     var saturation = (Saturation >= 0) ? Math.Clamp(Saturation, 0.0, 1.0) : 1.0;
     var highlighting = (Saturation < 0) ? Math.Clamp(Saturation, -1.0, 0.0) : 0.0;
 
-    var bitmap = new Bitmap(width, height);
+    var bitmap = spectrogram.Bitmap;
 
     for (var x = 0; x < width; x++)
     {
@@ -74,7 +74,5 @@ public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
         pixel.B = color.B;
       }
     }
-
-    return bitmap;
   }
 }
