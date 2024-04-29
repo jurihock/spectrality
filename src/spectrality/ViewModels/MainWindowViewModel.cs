@@ -27,16 +27,18 @@ public class MainWindowViewModel : ViewModelBase
       PlotAreaBorderColor = OxyColors.White
     };
 
-    PlotModel.Axes.Add(new LogarithmicAxis()
-    {
-      Position = AxisPosition.Left,
-      TicklineColor = OxyColors.White
-    });
-
     PlotModel.Axes.Add(new LinearAxis()
     {
       Position = AxisPosition.Bottom,
       TicklineColor = OxyColors.White
+    });
+
+    PlotModel.Axes.Add(new LogarithmicAxis()
+    {
+      Position = AxisPosition.Left,
+      TicklineColor = OxyColors.White,
+      IsPanEnabled = false,
+      IsZoomEnabled = false
     });
 
     PlotModel.Series.Add(new SpectrogramSeries(spectrogram));

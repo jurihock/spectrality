@@ -68,11 +68,9 @@ public class SpectrogramSeries : XYAxisSeries
     if (Spectrogram == null)
     {
       MinX = 0;
-      MinY = 0;
-
       MaxX = 0;
+      MinY = 0;
       MaxY = 0;
-
       return;
     }
 
