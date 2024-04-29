@@ -14,7 +14,7 @@ public class AudioFileReader
     Path = path;
   }
 
-  public (float[], double) Read(int channel = 0)
+  public (float[], double) Read(int channel = 0, double start = 0, double limit = 0)
   {
     Logger.Info($"Reading audio file \"{Path}\".");
 
@@ -24,9 +24,28 @@ public class AudioFileReader
     var samplerate = (double)format.SampleRate;
     var channels = format.Channels;
     var length = (int)(reader.Length / (format.BitsPerSample / 8));
+    var read = (offset: 0, count: length);
+
+    if (start > 0)
+    {
+      read.offset = (int)(start * samplerate);
+      read.offset /= channels;
+      read.offset *= channels;
+    }
+
+    if (limit > 0)
+    {
+      read.count = (int)(limit * samplerate);
+      read.count /= channels;
+      read.count *= channels;
+    }
+
+    read.offset = Math.Min(read.offset, length);
+    read.count = Math.Min(read.count, length - read.offset);
+    length = read.count;
 
     var samples = new float[length];
-    var result = reader.Read(samples, 0, length);
+    var result = reader.Read(samples, read.offset, read.count);
 
     Debug.Assert(result == length);
 
