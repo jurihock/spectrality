@@ -67,10 +67,11 @@ public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
         s += v * highlighting;
 
         var color = OxyColor.FromHsv(h, s, v);
+        ref var pixel = ref bitmap[x, y];
 
-        bitmap[x, y].R = color.R;
-        bitmap[x, y].G = color.G;
-        bitmap[x, y].B = color.B;
+        pixel.R = color.R;
+        pixel.G = color.G;
+        pixel.B = color.B;
       }
     }
 
