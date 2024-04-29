@@ -7,22 +7,22 @@ namespace Spectrality.Plot;
 
 public class SpectrogramSeries : XYAxisSeries
 {
-  private ISpectrogramImage SpectrogramImage { get; init; }
+  private ISpectrogramBitmap SpectrogramBitmap { get; init; }
   private ICoordinateTransformation<DataPoint> CoordinateTransformation { get; init; }
 
   public Spectrogram? Spectrogram { get; private set; }
-  public OxyImage? Image { get; private set; }
+  public Bitmap? Bitmap { get; private set; }
 
   public SpectrogramSeries(Spectrogram spectrogram)
   {
-    SpectrogramImage = new ChromesthesiaSpectrogramImage((-120, 0));
+    SpectrogramBitmap = new ChromesthesiaSpectrogramBitmap((-120, 0));
 
     CoordinateTransformation = new CartesianCoordinateTransformation(
       new LinearCoordinateTransformation(spectrogram.Data.X),
       new LogarithmicCoordinateTransformation(spectrogram.Data.Y));
 
     Spectrogram = spectrogram;
-    Image = SpectrogramImage.GetImage(spectrogram);
+    Bitmap = SpectrogramBitmap.GetBitmap(spectrogram);
   }
 
   public override void Render(IRenderContext rc)
@@ -33,7 +33,7 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     var data = Spectrogram.Value.Data;
-    var image = Image ?? throw new InvalidOperationException();
+    var image = Bitmap?.ToOxyImage() ?? throw new InvalidOperationException();
 
     double left = 0;
     double right = data.Width;
@@ -43,11 +43,11 @@ public class SpectrogramSeries : XYAxisSeries
     var dataPoint00 = new DataPoint(left, bottom);
     var dataPoint11 = new DataPoint(right, top);
 
-    var virtualPoint00 = CoordinateTransformation.Forward(dataPoint00);
-    var virtualPoint11 = CoordinateTransformation.Forward(dataPoint11);
+    var worldPoint00 = CoordinateTransformation.Forward(dataPoint00);
+    var worldPoint11 = CoordinateTransformation.Forward(dataPoint11);
 
-    var screenPoint00 = Transform(virtualPoint00);
-    var screenPoint11 = Transform(virtualPoint11);
+    var screenPoint00 = Transform(worldPoint00);
+    var screenPoint11 = Transform(worldPoint11);
 
     var screenRect = new OxyRect(screenPoint00, screenPoint11);
 
@@ -87,14 +87,14 @@ public class SpectrogramSeries : XYAxisSeries
     var dataPoint00 = new DataPoint(left, bottom);
     var dataPoint11 = new DataPoint(right, top);
 
-    var virtualPoint00 = CoordinateTransformation.Forward(dataPoint00);
-    var virtualPoint11 = CoordinateTransformation.Forward(dataPoint11);
+    var worldPoint00 = CoordinateTransformation.Forward(dataPoint00);
+    var worldPoint11 = CoordinateTransformation.Forward(dataPoint11);
 
-    MinX = Math.Min(virtualPoint00.X, virtualPoint11.X);
-    MaxX = Math.Max(virtualPoint00.X, virtualPoint11.X);
+    MinX = Math.Min(worldPoint00.X, worldPoint11.X);
+    MaxX = Math.Max(worldPoint00.X, worldPoint11.X);
 
-    MinY = Math.Min(virtualPoint00.Y, virtualPoint11.Y);
-    MaxY = Math.Max(virtualPoint00.Y, virtualPoint11.Y);
+    MinY = Math.Min(worldPoint00.Y, worldPoint11.Y);
+    MaxY = Math.Max(worldPoint00.Y, worldPoint11.Y);
   }
 
   public override TrackerHitResult GetNearestPoint(ScreenPoint screenPoint, bool interpolate)
@@ -107,8 +107,8 @@ public class SpectrogramSeries : XYAxisSeries
     var data = Spectrogram.Value.Data;
     var meta = Spectrogram.Value.Meta;
 
-    var virtualPoint = InverseTransform(screenPoint);
-    var dataPoint = CoordinateTransformation.Backward(virtualPoint);
+    var worldPoint = InverseTransform(screenPoint);
+    var dataPoint = CoordinateTransformation.Backward(worldPoint);
 
     double left = 0;
     double right = data.Width;
@@ -129,20 +129,20 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     var nearestDataPoint = new DataPoint(nearestX, nearestY);
-    var nearestVirtualPoint = CoordinateTransformation.Forward(nearestDataPoint);
+    var nearestWorldPoint = CoordinateTransformation.Forward(nearestDataPoint);
 
     var trackerDataPoint = new DataPoint(nearestX + 0.5, nearestY + 0.5);
-    var trackerVirtualPoint = CoordinateTransformation.Forward(trackerDataPoint);
-    var trackerScreenPoint = Transform(trackerVirtualPoint);
+    var trackerWorldPoint = CoordinateTransformation.Forward(trackerDataPoint);
+    var trackerScreenPoint = Transform(trackerWorldPoint);
 
     var scale = new Scale();
 
     var table = new string[4, 3]
     {
-      { "Note:", scale.GetNote(nearestVirtualPoint.Y), "" },
+      { "Note:", scale.GetNote(nearestWorldPoint.Y), "" },
       { meta.Z.Name + ":", data[nearestX, nearestY].ToString("F1"), meta.Z.Unit },
-      { meta.Y.Name + ":", nearestVirtualPoint.Y.ToString("F1"), meta.Y.Unit },
-      { meta.X.Name + ":", nearestVirtualPoint.X.ToString("F3"), meta.X.Unit }
+      { meta.Y.Name + ":", nearestWorldPoint.Y.ToString("F1"), meta.Y.Unit },
+      { meta.X.Name + ":", nearestWorldPoint.X.ToString("F3"), meta.X.Unit }
     };
 
     var cols = new int[table.GetLength(1)];
@@ -171,7 +171,7 @@ public class SpectrogramSeries : XYAxisSeries
     return new TrackerHitResult
     {
       Series = this,
-      DataPoint = nearestVirtualPoint,
+      DataPoint = nearestWorldPoint,
       Position = trackerScreenPoint,
       Text = text
     };

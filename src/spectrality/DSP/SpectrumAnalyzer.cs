@@ -58,7 +58,7 @@ public class SpectrumAnalyzer
     var dft = new Complex[bins];
 
     var bytes = hops * bins * (sizeof(float) + sizeof(int));
-    Logger.Info($"Approx. memory footprint {bytes:n0} bytes.");
+    Logger.Info($"Approx. memory footprint {bytes:N0} bytes.");
 
     qdft.Reset();
 

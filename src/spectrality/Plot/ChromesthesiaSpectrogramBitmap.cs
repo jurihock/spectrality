@@ -5,17 +5,17 @@ using Spectrality.Models;
 
 namespace Spectrality.Plot;
 
-public class ChromesthesiaSpectrogramImage : ISpectrogramImage
+public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
 {
   public (double, double) Limit { get; private set; }
   public double Gamma { get; private set; }
   public double Brightness { get; private set; }
   public double Saturation { get; private set; }
 
-  public ChromesthesiaSpectrogramImage((double, double) limit,
-                                       double gamma = 1,
-                                       double brightness = 1,
-                                       double saturation = 1)
+  public ChromesthesiaSpectrogramBitmap((double, double) limit,
+                                        double gamma = 1,
+                                        double brightness = 1,
+                                        double saturation = 1)
   {
     Limit = limit;
     Gamma = gamma;
@@ -23,13 +23,13 @@ public class ChromesthesiaSpectrogramImage : ISpectrogramImage
     Saturation = saturation;
   }
 
-  public OxyImage GetImage(Spectrogram spectrogram)
+  public Bitmap GetBitmap(Spectrogram spectrogram)
   {
     var data = spectrogram.Data;
     var freqs = data.Y;
 
-    var m = data.Width;
-    var n = data.Height;
+    var width = data.Width;
+    var height = data.Height;
 
     var min = Limit.Item1;
     var max = Limit.Item2;
@@ -40,25 +40,25 @@ public class ChromesthesiaSpectrogramImage : ISpectrogramImage
     var scale = new Scale();
 
     var colors = Enumerable
-        .Range(0, n)
-        .Select(_ => scale.GetOctaveRatio(freqs[_]) / scale.Octaves.Length)
-        .Select(_ => 1.0 - Math.Clamp(_, 0.0, 1.0))
-        .ToArray();
+      .Range(0, height)
+      .Select(_ => scale.GetOctaveRatio(freqs[_]) / scale.Octaves.Length)
+      .Select(_ => 1.0 - Math.Clamp(_, 0.0, 1.0))
+      .ToArray();
 
     var gamma = Math.Clamp(Gamma, 0.1, 10.0);
     var brightness = Math.Clamp(Brightness, 0.1, 10.0);
     var saturation = (Saturation >= 0) ? Math.Clamp(Saturation, 0.0, 1.0) : 1.0;
     var highlighting = (Saturation < 0) ? Math.Clamp(Saturation, -1.0, 0.0) : 0.0;
 
-    var pixels = new OxyColor[m, n];
+    var bitmap = new Bitmap(width, height);
 
-    for (var i = 0; i < m; i++)
+    for (var x = 0; x < width; x++)
     {
-      for (var j = 0; j < n; j++)
+      for (var y = 0; y < height; y++)
       {
-        var h = colors[j];
+        var h = colors[y];
         var s = saturation;
-        var v = (double)data[i, j];
+        var v = (double)data[x, y];
 
         v = Math.Clamp(v * slope - intercept, 0.0, 1.0);
         v = Math.Pow(v, gamma);
@@ -66,10 +66,14 @@ public class ChromesthesiaSpectrogramImage : ISpectrogramImage
 
         s += v * highlighting;
 
-        pixels[i, j] = OxyColor.FromHsv(h, s, v);
+        var color = OxyColor.FromHsv(h, s, v);
+
+        bitmap[x, y].R = color.R;
+        bitmap[x, y].G = color.G;
+        bitmap[x, y].B = color.B;
       }
     }
 
-    return OxyImage.Create(pixels, ImageFormat.Bmp);
+    return bitmap;
   }
 }
