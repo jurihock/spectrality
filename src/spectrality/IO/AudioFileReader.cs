@@ -29,14 +29,12 @@ public class AudioFileReader
     if (start > 0)
     {
       read.offset = (int)(start * samplerate);
-      read.offset /= channels;
       read.offset *= channels;
     }
 
     if (limit > 0)
     {
       read.count = (int)(limit * samplerate);
-      read.count /= channels;
       read.count *= channels;
     }
 
