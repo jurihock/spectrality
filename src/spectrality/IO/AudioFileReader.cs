@@ -24,52 +24,48 @@ public class AudioFileReader
     var samplerate = (double)format.SampleRate;
     var channels = format.Channels;
     var bytes = format.BitsPerSample / 8;
-    var length = (int)(reader.Length / bytes);
+    var samples = (int)(reader.Length / bytes / channels);
 
     if (offset > 0)
     {
       var newoffset = (int)(offset * samplerate);
 
-      newoffset *= channels;
-      length -= newoffset;
+      newoffset = Math.Min(newoffset, samples);
 
-      newoffset *= bytes;
-      reader.Position = newoffset;
+      samples -= newoffset;
+      reader.Position = newoffset * channels * bytes;
     }
 
     if (limit > 0)
     {
-      var newlength = (int)(limit * samplerate);
+      var newsamples = (int)(limit * samplerate);
 
-      newlength *= channels;
-      length = Math.Min(newlength, length);
+      samples = Math.Min(newsamples, samples);
     }
 
-    var samples = new float[length];
-    var result = reader.Read(samples, 0, length);
+    var buffer = new float[samples * channels];
+    var result = reader.Read(buffer, 0, buffer.Length);
 
-    Debug.Assert(result == length);
+    Debug.Assert(result == buffer.Length);
 
     if (channels > 1)
     {
       channel = (channel < 0) ? channels + channel : channel;
       channel = Math.Clamp(channel, 0, channels - 1);
 
-      length /= channels;
-
-      for (int i = 0, j = channel; i < length; i++, j+=channels)
+      for (int i = 0, j = channel; i < samples; i++, j+=channels)
       {
-        samples[i] = samples[j];
+        buffer[i] = buffer[j];
       }
 
-      Array.Resize(ref samples, length);
+      Array.Resize(ref buffer, samples);
     }
 
-    Debug.Assert(samples.Length == length);
+    Debug.Assert(buffer.Length == samples);
 
-    var duration = TimeSpan.FromSeconds(length / samplerate);
-    Logger.Info($"Read {length} samples of {duration.TotalSeconds:F3}s duration at {samplerate}Hz.");
+    var duration = TimeSpan.FromSeconds(samples / samplerate);
+    Logger.Info($"Read {samples} samples of {duration.TotalSeconds:F3}s duration at {samplerate}Hz.");
 
-    return (samples, samplerate);
+    return (buffer, samplerate);
   }
 }
