@@ -87,13 +87,14 @@ public class SpectrumAnalyzer
 
   private static AnalysisBag Prepare(PrepareBag bag)
   {
+    var scale = new Scale();
+
     var samples = bag.Samples;
     var samplerate = bag.Samplerate;
     var timestep = bag.Timestep;
     var progress = bag.Progress;
     var cancellation = bag.Cancellation;
 
-    var scale = new Scale();
     var bandwidth = (scale.GetFrequency(bag.Bandwidth.Item1), scale.GetFrequency(bag.Bandwidth.Item2));
     var resolution = bag.Resolution;
     var quality = bag.Quality;
