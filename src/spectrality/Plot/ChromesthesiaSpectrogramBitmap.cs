@@ -52,9 +52,13 @@ public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
     var highlighting = (Saturation < 0) ? Math.Clamp(Saturation, -1.0, 0.0) : 0.0;
 
     var bitmap = spectrogram.Bitmap;
+    var tags = spectrogram.Tags;
 
     for (var x = 0; x < width; x++)
     {
+      if (tags[x] != Spectrogram.Tag.Analyzed)
+        continue;
+
       for (var y = 0; y < height; y++)
       {
         var h = colors[y];
@@ -74,6 +78,8 @@ public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
         pixel.G = color.G;
         pixel.B = color.B;
       }
+
+      tags[x] = Spectrogram.Tag.Rendered;
     }
   }
 }

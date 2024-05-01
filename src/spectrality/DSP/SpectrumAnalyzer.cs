@@ -125,8 +125,6 @@ public class SpectrumAnalyzer
     var frequencies = qdft.Frequencies.Select(freq => (float)freq).ToArray();
     var magnitudes = new float[chunks.Length, dftsize];
 
-    magnitudes.Fill(float.MinValue);
-
     var spectrogram = new Spectrogram
     {
       Data = new Datagram
@@ -154,9 +152,10 @@ public class SpectrumAnalyzer
           Name = "Magnitude",
           Unit = "dB",
           Type = Metagram.AxisType.Logarithmic
-        },
+        }
       },
-      Bitmap = new Bitmap(magnitudes.GetLength(0), magnitudes.GetLength(1))
+      Bitmap = new Bitmap(magnitudes.GetLength(0), magnitudes.GetLength(1)),
+      Tags = new Spectrogram.Tag[magnitudes.GetLength(0)]
     };
 
     footprint = GC.GetTotalMemory(false) - footprint;
@@ -175,6 +174,8 @@ public class SpectrumAnalyzer
 
   private static Spectrogram Analyze(AnalysisBag bag)
   {
+    var entrypoint = Stopwatch.GetTimestamp();
+
     var spectrogram = bag.Spectrogram;
     var samples = bag.Samples;
     var chunks = bag.Chunks;
@@ -185,8 +186,8 @@ public class SpectrumAnalyzer
     var duration = TimeSpan.FromSeconds(samples.Length / qdft.Samplerate);
     Logger.Info($"Analyzing {samples.Length} samples of {duration.TotalSeconds:F3}s duration.");
 
-    var watch = Stopwatch.GetTimestamp();
     var magnitudes = spectrogram.Data.Z;
+    var tags = spectrogram.Tags;
     var dft = new Complex[qdft.Size];
 
     try
@@ -208,6 +209,8 @@ public class SpectrumAnalyzer
           magnitudes[j, i] = (float)dft[i].Decibel();
         }
 
+        tags[j] = Spectrogram.Tag.Analyzed;
+
         progress?.Report(100.0 * j / chunks.Length);
 
         for (var i = 1; i < chunk.Length; i++)
@@ -223,7 +226,7 @@ public class SpectrumAnalyzer
       progress?.Report(100.0);
     }
 
-    var elapsed = Stopwatch.GetElapsedTime(watch);
+    var elapsed = Stopwatch.GetElapsedTime(entrypoint);
     Logger.Info($"Analysis completed in {elapsed.TotalSeconds:F3}s.");
 
     return spectrogram;
