@@ -45,41 +45,39 @@ public class SpectrumAnalyzer
     Logger.Info($"Begin analyzing {samples.Length} samples of {duration.TotalSeconds:F3}s duration.");
 
     var watch = Stopwatch.GetTimestamp();
-
     var qdft = QDFT;
 
-    var hop = (int)Math.Ceiling(1.0 * Timestep * Samplerate);
-    var hops = (int)Math.Ceiling(1.0 * samples.Length / hop);
-    var bins = qdft.Size;
+    var hopsize = (int)Math.Ceiling(Timestep * Samplerate);
+    var dftsize = qdft.Size;
 
-    var timepoints = Enumerable.Range(0, hops).Select(_ => (float)(_ * Timestep)).ToArray();
-    var frequencies = qdft.Frequencies.Select(_ => (float)_).ToArray();
-    var magnitudes = new float[hops, bins];
-    var dft = new Complex[bins];
+    var chunks = Enumerable.Range(0, samples.Length).Chunk(hopsize).ToArray();
+    var timepoints = chunks.Select(chunk => (float)(chunk.First() / Samplerate)).ToArray();
+    var frequencies = qdft.Frequencies.Select(freq => (float)freq).ToArray();
+    var magnitudes = new float[chunks.Length, dftsize];
+    var dft = new Complex[dftsize];
 
-    var bytes = hops * bins * (sizeof(float) + sizeof(int));
+    var bytes = chunks.Length * dftsize * (sizeof(float) + sizeof(int));
     Logger.Info($"Approx. memory footprint {bytes:N0} bytes.");
 
     qdft.Reset();
 
-    for (var i = 0; i < samples.Length; i++)
+    var j = 0;
+
+    foreach (var chunk in chunks)
     {
-      qdft.Analyze(samples[i], dft);
+      qdft.Analyze(samples[chunk[0]], dft);
 
-      if (i % hop != 0)
-        continue;
-
-      var t = i / hop;
-
-      for (var j = 0; j < bins; j++)
+      for (var i = 0; i < dft.Length; i++)
       {
-        var magnitude = dft[j].Magnitude;
-
-        magnitude = 20.0 * Math.Log10(
-          magnitude + double.Epsilon);
-
-        magnitudes[t, j] = (float)magnitude;
+        magnitudes[j, i] = (float)dft[i].Decibel();
       }
+
+      for (var i = 1; i < chunk.Length; i++)
+      {
+        qdft.Analyze(samples[chunk[i]], dft);
+      }
+
+      j++;
     }
 
     var elapsed = Stopwatch.GetElapsedTime(watch);
