@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading;
 using System.Threading.Tasks;
 using Spectrality.Extensions;
 using Spectrality.Misc;
@@ -9,21 +10,41 @@ using Spectrality.Models;
 
 namespace Spectrality.DSP;
 
-public readonly struct SpectrumAnalysisBag
-{
-  public Spectrogram Spectrogram { get; init; }
-  public float[] Samples { get; init; }
-  public int[][] Chunks { get; init; }
-  public QDFT QDFT { get; init; }
-  public IProgress<double>? Progress { get; init; }
-}
-
 public class SpectrumAnalyzer
 {
+  private readonly struct PrepareBag
+  {
+    public float[] Samples { get; init; } = [];
+    public double Samplerate { get; init; }
+    public double Timestep { get; init; }
+    public IProgress<double>? Progress { get; init; }
+    public CancellationToken? Cancellation { get; init; }
+
+    public (string, string) Bandwidth { get; init; } = ("A1", "A8");
+    public double Resolution { get; init; } = 12 * 4;
+    public double Quality { get; init; } = -1;
+    public double Latency { get; init; } = 0;
+
+    public PrepareBag() {}
+  }
+
+  private readonly struct AnalysisBag
+  {
+    public Spectrogram Spectrogram { get; init; }
+    public float[] Samples { get; init; }
+    public int[][] Chunks { get; init; }
+    public QDFT QDFT { get; init; }
+    public IProgress<double>? Progress { get; init; }
+    public CancellationToken? Cancellation { get; init; }
+  }
+
   private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
   public double Samplerate { get; private init; }
   public double Timestep { get; private init; }
+
+  public IProgress<double>? ProgressCallback { get; init; }
+  public CancellationToken? CancellationToken { get; init; }
 
   public SpectrumAnalyzer(double samplerate, double timestep)
   {
@@ -31,26 +52,52 @@ public class SpectrumAnalyzer
     Timestep = timestep;
   }
 
-  public Spectrogram GetSpectrogram(float[] samples, IProgress<double>? progress = null)
+  public Spectrogram GetSpectrogram(float[] samples)
   {
-    return Analyze(Prepare(Samplerate, Timestep, samples, progress));
+    var prebag = new PrepareBag
+    {
+      Samples = samples,
+      Samplerate = Samplerate,
+      Timestep = Timestep,
+      Progress = ProgressCallback,
+      Cancellation = CancellationToken
+    };
+
+    return Analyze(Prepare(prebag));
   }
 
-  public (Spectrogram, Task) GetSpectrogramTask(float[] samples, IProgress<double>? progress = null)
+  public (Spectrogram, Task) GetSpectrogramTask(float[] samples)
   {
-    var bag = Prepare(Samplerate, Timestep, samples, progress);
+    var prebag = new PrepareBag
+    {
+      Samples = samples,
+      Samplerate = Samplerate,
+      Timestep = Timestep,
+      Progress = ProgressCallback,
+      Cancellation = CancellationToken
+    };
+
+    var bag = Prepare(prebag);
+
+    var spectrogram = bag.Spectrogram;
     var task = new Task(() => { Analyze(bag); });
 
-    return (bag.Spectrogram, task);
+    return (spectrogram, task);
   }
 
-  private static SpectrumAnalysisBag Prepare(double samplerate, double timestep, float[] samples, IProgress<double>? progress)
+  private static AnalysisBag Prepare(PrepareBag bag)
   {
+    var samples = bag.Samples;
+    var samplerate = bag.Samplerate;
+    var timestep = bag.Timestep;
+    var progress = bag.Progress;
+    var cancellation = bag.Cancellation;
+
     var scale = new Scale();
-    var bandwidth = (scale.GetFrequency("A1"), scale.GetFrequency("A8"));
-    var resolution = 12 * 4;
-    var quality = -1;
-    var latency = 0;
+    var bandwidth = (scale.GetFrequency(bag.Bandwidth.Item1), scale.GetFrequency(bag.Bandwidth.Item2));
+    var resolution = bag.Resolution;
+    var quality = bag.Quality;
+    var latency = bag.Latency;
 
     var qdft = new QDFT(samplerate, bandwidth, resolution, quality, latency);
 
@@ -110,26 +157,28 @@ public class SpectrumAnalyzer
       Bitmap = new Bitmap(magnitudes.GetLength(0), magnitudes.GetLength(1))
     };
 
-    return new SpectrumAnalysisBag
+    return new AnalysisBag
     {
       Spectrogram = spectrogram,
       Samples = samples,
       Chunks = chunks,
       QDFT = qdft,
-      Progress = progress
+      Progress = progress,
+      Cancellation = cancellation
     };
   }
 
-  private static Spectrogram Analyze(SpectrumAnalysisBag bag)
+  private static Spectrogram Analyze(AnalysisBag bag)
   {
     var spectrogram = bag.Spectrogram;
     var samples = bag.Samples;
     var chunks = bag.Chunks;
     var qdft = bag.QDFT;
     var progress = bag.Progress;
+    var cancellation = bag.Cancellation;
 
     var duration = TimeSpan.FromSeconds(samples.Length / qdft.Samplerate);
-    Logger.Info($"Begin analyzing {samples.Length} samples of {duration.TotalSeconds:F3}s duration.");
+    Logger.Info($"Analyzing {samples.Length} samples of {duration.TotalSeconds:F3}s duration.");
 
     var watch = Stopwatch.GetTimestamp();
     var magnitudes = spectrogram.Data.Z;
@@ -141,6 +190,12 @@ public class SpectrumAnalyzer
 
       foreach (var chunk in chunks)
       {
+        if (cancellation?.IsCancellationRequested ?? false)
+        {
+          Logger.Info($"Cancelling analysis at {100 * j / chunks.Length}%.");
+          break;
+        }
+
         qdft.Analyze(samples[chunk[0]], dft);
 
         for (var i = 0; i < dft.Length; i++)

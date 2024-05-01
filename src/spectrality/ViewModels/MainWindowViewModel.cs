@@ -32,6 +32,8 @@ public class MainWindowViewModel : ViewModelBase
     var (samples, samplerate) = reader.Read();
 
     var bottleneck = new Bottleneck();
+    var cancellation = new CancellationTokenSource();
+
     var progress = new Progress<double>(percent =>
     {
       if (percent < 100)
@@ -45,8 +47,13 @@ public class MainWindowViewModel : ViewModelBase
       }
     });
 
-    var analyzer = new SpectrumAnalyzer(samplerate, 10e-3);
-    var (spectrogram, task) = analyzer.GetSpectrogramTask(samples, progress);
+    var analyzer = new SpectrumAnalyzer(samplerate, 10e-3)
+    {
+      ProgressCallback = progress,
+      CancellationToken = cancellation.Token
+    };
+
+    var (spectrogram, task) = analyzer.GetSpectrogramTask(samples);
 
     PlotModel.Spectrogram = spectrogram;
 
