@@ -23,7 +23,6 @@ public class SpectrumAnalyzer
     public (string, string) Bandwidth { get; init; } = ("A1", "A8");
     public double Resolution { get; init; } = 12 * 4;
     public double Quality { get; init; } = -1;
-    public double Latency { get; init; } = 0;
 
     public PrepareBag() {}
   }
@@ -98,9 +97,8 @@ public class SpectrumAnalyzer
     var bandwidth = (scale.GetFrequency(bag.Bandwidth.Item1), scale.GetFrequency(bag.Bandwidth.Item2));
     var resolution = bag.Resolution;
     var quality = bag.Quality;
-    var latency = bag.Latency;
 
-    var qdft = new QDFT(samplerate, bandwidth, resolution, quality, latency);
+    var qdft = new QDFT(samplerate, bandwidth, resolution, quality);
 
     Logger.Info($"Preparing for spectral analysis (" +
                 $"samplerate={samplerate}" + ", " +
@@ -109,8 +107,7 @@ public class SpectrumAnalyzer
                 $"dftsize={qdft.Size}" + ", " +
                 $"bandwidth=({bandwidth.Item1:F3}, {bandwidth.Item2:F3})" + ", " +
                 $"resolution={resolution}" + ", " +
-                $"quality={quality}" + ", " +
-                $"latency={latency}" + $").");
+                $"quality={quality}" + $").");
 
     var hopsize = (int)Math.Ceiling(timestep * samplerate);
     var dftsize = qdft.Size;
