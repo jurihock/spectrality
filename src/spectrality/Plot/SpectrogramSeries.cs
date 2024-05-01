@@ -50,8 +50,6 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     SpectrogramBitmap.RenderBitmap(spectrogram.Value);
-
-    PlotModel?.InvalidatePlot(false);
   }
 
   public override void Render(IRenderContext rc)

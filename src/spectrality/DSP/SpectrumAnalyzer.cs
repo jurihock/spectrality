@@ -134,25 +134,33 @@ public class SpectrumAnalyzer
     var watch = Stopwatch.GetTimestamp();
     var magnitudes = spectrogram.Data.Z;
     var dft = new Complex[qdft.Size];
-    var j = 0;
 
-    foreach (var chunk in chunks)
+    try
     {
-      qdft.Analyze(samples[chunk[0]], dft);
+      var j = 0;
 
-      for (var i = 0; i < dft.Length; i++)
+      foreach (var chunk in chunks)
       {
-        magnitudes[j, i] = (float)dft[i].Decibel();
+        qdft.Analyze(samples[chunk[0]], dft);
+
+        for (var i = 0; i < dft.Length; i++)
+        {
+          magnitudes[j, i] = (float)dft[i].Decibel();
+        }
+
+        progress?.Report(100.0 * j / chunks.Length);
+
+        for (var i = 1; i < chunk.Length; i++)
+        {
+          qdft.Analyze(samples[chunk[i]], dft);
+        }
+
+        j++;
       }
-
-      progress?.Report(100.0 * j / (chunks.Length - 1));
-
-      for (var i = 1; i < chunk.Length; i++)
-      {
-        qdft.Analyze(samples[chunk[i]], dft);
-      }
-
-      j++;
+    }
+    finally
+    {
+      progress?.Report(100.0);
     }
 
     var elapsed = Stopwatch.GetElapsedTime(watch);
