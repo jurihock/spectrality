@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using OxyPlot;
+using Spectrality.Misc;
 using Spectrality.Models;
 
 namespace Spectrality.Plot;

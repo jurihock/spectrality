@@ -2,6 +2,8 @@ using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
+namespace Spectrality.Extensions;
+
 public static class MathExtensions
 {
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

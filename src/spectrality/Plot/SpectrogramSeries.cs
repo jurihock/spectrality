@@ -1,38 +1,70 @@
 using System;
 using OxyPlot;
 using OxyPlot.Series;
+using Spectrality.Extensions;
+using Spectrality.Misc;
 using Spectrality.Models;
 
 namespace Spectrality.Plot;
 
 public class SpectrogramSeries : XYAxisSeries
 {
-  private ISpectrogramBitmap SpectrogramBitmap { get; init; }
-  private ICoordinateTransformation<DataPoint> CoordinateTransformation { get; init; }
+  private ISpectrogramBitmap SpectrogramBitmap { get; set; }
+  private ICoordinateTransformation<DataPoint> CoordinateTransformation { get; set; }
 
-  public Spectrogram? Spectrogram { get; private set; }
+  private Spectrogram? spectrogram;
+  public Spectrogram? Spectrogram
+  {
+    get => spectrogram;
+    set
+    {
+      spectrogram = value;
 
-  public SpectrogramSeries(Spectrogram spectrogram)
+      if (spectrogram != null)
+      {
+        CoordinateTransformation = new CartesianCoordinateTransformation(
+          new LinearCoordinateTransformation(spectrogram.Value.Data.X),
+          new LogarithmicCoordinateTransformation(spectrogram.Value.Data.Y));
+      }
+
+      Update();
+    }
+  }
+
+  public SpectrogramSeries()
   {
     SpectrogramBitmap = new ChromesthesiaSpectrogramBitmap((-120, 0));
 
     CoordinateTransformation = new CartesianCoordinateTransformation(
-      new LinearCoordinateTransformation(spectrogram.Data.X),
-      new LogarithmicCoordinateTransformation(spectrogram.Data.Y));
-
-    Spectrogram = spectrogram;
-    SpectrogramBitmap.RenderBitmap(spectrogram);
+      new LinearCoordinateTransformation(),
+      new LogarithmicCoordinateTransformation());
   }
 
-  public override void Render(IRenderContext rc)
+  public void Update()
   {
-    if (Spectrogram == null)
+    var spectrogram = Spectrogram;
+
+    if (spectrogram == null)
     {
       return;
     }
 
-    var data = Spectrogram.Value.Data;
-    var image = Spectrogram.Value.Bitmap.ToOxyImage();
+    SpectrogramBitmap.RenderBitmap(spectrogram.Value);
+
+    PlotModel?.InvalidatePlot(false);
+  }
+
+  public override void Render(IRenderContext rc)
+  {
+    var spectrogram = Spectrogram;
+
+    if (spectrogram == null)
+    {
+      return;
+    }
+
+    var data = spectrogram.Value.Data;
+    var image = spectrogram.Value.Bitmap.ToOxyImage();
 
     double left = 0;
     double right = data.Width;
@@ -65,7 +97,9 @@ public class SpectrogramSeries : XYAxisSeries
   {
     base.UpdateMaxMin();
 
-    if (Spectrogram == null)
+    var spectrogram = Spectrogram;
+
+    if (spectrogram == null)
     {
       MinX = 0;
       MaxX = 0;
@@ -74,7 +108,7 @@ public class SpectrogramSeries : XYAxisSeries
       return;
     }
 
-    var data = Spectrogram.Value.Data;
+    var data = spectrogram.Value.Data;
 
     double left = 0;
     double right = data.Width;
@@ -96,13 +130,15 @@ public class SpectrogramSeries : XYAxisSeries
 
   public override TrackerHitResult GetNearestPoint(ScreenPoint screenPoint, bool interpolate)
   {
-    if (Spectrogram == null)
+    var spectrogram = Spectrogram;
+
+    if (spectrogram == null)
     {
       return base.GetNearestPoint(screenPoint, interpolate);
     }
 
-    var data = Spectrogram.Value.Data;
-    var meta = Spectrogram.Value.Meta;
+    var data = spectrogram.Value.Data;
+    var meta = spectrogram.Value.Meta;
 
     var worldPoint = InverseTransform(screenPoint);
     var dataPoint = CoordinateTransformation.Backward(worldPoint);

@@ -7,7 +7,7 @@ public class LinearCoordinateTransformation : ICoordinateTransformation<double>
   public double Slope { get; private set; }
   public double Intercept { get; private set; }
 
-  public LinearCoordinateTransformation(double slope, double intercept)
+  public LinearCoordinateTransformation(double slope = 1, double intercept = 0)
   {
     Slope = slope;
     Intercept = intercept;

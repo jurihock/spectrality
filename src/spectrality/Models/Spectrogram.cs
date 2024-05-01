@@ -1,3 +1,5 @@
+using Spectrality.Misc;
+
 namespace Spectrality.Models;
 
 public readonly struct Spectrogram

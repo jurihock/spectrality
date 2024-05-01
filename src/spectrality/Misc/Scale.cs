@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Spectrality.Models;
+namespace Spectrality.Misc;
 
 public sealed class Scale
 {

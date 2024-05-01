@@ -8,7 +8,7 @@ public class LogarithmicCoordinateTransformation : ICoordinateTransformation<dou
   public double Slope { get; private set; }
   public double Intercept { get; private set; }
 
-  public LogarithmicCoordinateTransformation(double slope, double intercept)
+  public LogarithmicCoordinateTransformation(double slope = 1, double intercept = 0)
   {
     Slope = slope;
     Intercept = intercept;

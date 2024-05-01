@@ -1,6 +1,6 @@
 using System;
 
-namespace Spectrality.Models;
+namespace Spectrality.Misc;
 
 public sealed class Deque<T>
 {

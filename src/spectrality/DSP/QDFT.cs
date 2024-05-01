@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using System.Numerics;
-using Spectrality.Models;
+using Spectrality.Misc;
 
 namespace Spectrality.DSP;
 
-class QDFT
+public sealed class QDFT
 {
   public double Samplerate { get; private set; }
   public (double, double) Bandwidth { get; private set; }
@@ -56,7 +56,7 @@ class QDFT
 
     Bootstrap();
 
-    Inputs = new Deque<double>(Periods.First() + 1);
+    Inputs = new Deque<double>(Periods.First());
     Outputs = new Complex[Size * 3];
   }
 

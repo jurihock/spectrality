@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Spectrality.Models;
+namespace Spectrality.Misc;
 
 public sealed partial class Bitmap
 {
