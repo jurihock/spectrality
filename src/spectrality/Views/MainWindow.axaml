@@ -17,16 +17,29 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <oxy:PlotView Model="{Binding PlotModel}">
-        <oxy:PlotView.Styles>
-            <Style Selector="oxy|TrackerControl">
-                <Setter Property="BorderBrush" Value="Black" />
-                <Setter Property="Background" Value="White" />
-                <Setter Property="Foreground" Value="Black" />
-                <Setter Property="LineStroke" Value="White" />
-                <Setter Property="FontFamily" Value="Courier New, Courier, Monospace" />
-            </Style>
-        </oxy:PlotView.Styles>
-    </oxy:PlotView>
+    <Grid RowDefinitions="*,*">
+        <oxy:PlotView Model="{Binding PlotModel1}" Grid.Row="0">
+            <oxy:PlotView.Styles>
+                <Style Selector="oxy|TrackerControl">
+                    <Setter Property="BorderBrush" Value="Black" />
+                    <Setter Property="Background" Value="White" />
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="LineStroke" Value="White" />
+                    <Setter Property="FontFamily" Value="Courier New, Courier, Monospace" />
+                </Style>
+            </oxy:PlotView.Styles>
+        </oxy:PlotView>
+        <oxy:PlotView Model="{Binding PlotModel2}" Grid.Row="1">
+            <oxy:PlotView.Styles>
+                <Style Selector="oxy|TrackerControl">
+                    <Setter Property="BorderBrush" Value="Black" />
+                    <Setter Property="Background" Value="White" />
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="LineStroke" Value="White" />
+                    <Setter Property="FontFamily" Value="Courier New, Courier, Monospace" />
+                </Style>
+            </oxy:PlotView.Styles>
+        </oxy:PlotView>
+    </Grid>
 
 </Window>

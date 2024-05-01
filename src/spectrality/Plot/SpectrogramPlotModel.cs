@@ -6,10 +6,10 @@ namespace Spectrality.Plot;
 
 public class SpectrogramPlotModel : PlotModel
 {
-  private LinearAxis AxisX { get; init; }
-  private LogarithmicAxis AxisY { get; init; }
+  public LinearAxis AxisX { get; init; }
+  public LogarithmicAxis AxisY { get; init; }
 
-  private SpectrogramSeries SpectrogramSeries { get; init; }
+  public SpectrogramSeries SpectrogramSeries { get; init; }
 
   public Spectrogram? Spectrogram
   {
