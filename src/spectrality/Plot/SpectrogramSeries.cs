@@ -54,7 +54,7 @@ public class SpectrogramSeries : XYAxisSeries
 
   public SpectrogramSeries()
   {
-    SpectrogramBitmap = new ChromesthesiaSpectrogramBitmap((-120, 0));
+    SpectrogramBitmap = new ChromesthesiaSpectrogramBitmap();
 
     CoordinateTransformation = new CartesianCoordinateTransformation(
       new LinearCoordinateTransformation(),

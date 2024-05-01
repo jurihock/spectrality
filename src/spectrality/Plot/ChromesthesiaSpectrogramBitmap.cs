@@ -13,6 +13,14 @@ public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
   public double Brightness { get; private set; }
   public double Saturation { get; private set; }
 
+  public ChromesthesiaSpectrogramBitmap()
+  {
+    Limit = (-120, 0);
+    Gamma = 2;
+    Brightness = 1;
+    Saturation = -0.5;
+  }
+
   public ChromesthesiaSpectrogramBitmap((double, double) limit,
                                         double gamma = 1,
                                         double brightness = 1,
