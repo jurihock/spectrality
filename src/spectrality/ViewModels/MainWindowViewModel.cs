@@ -10,6 +10,8 @@ namespace Spectrality.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+  private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
   public SpectrogramPlotModel PlotModel { get; set; }
 
   public MainWindowViewModel()
@@ -19,7 +21,24 @@ public class MainWindowViewModel : ViewModelBase
     new Task(() =>
     {
       Thread.Sleep(1000);
-      Test();
+
+      try
+      {
+        Test();
+      }
+      catch (Exception exception)
+      {
+        var message = exception.Message;
+
+        if (message.Length > 100)
+        {
+          message = string.Concat(
+            message.AsSpan(0, 100),
+            "...");
+        }
+
+        Logger.Error(message);
+      }
     })
     .Start();
   }
