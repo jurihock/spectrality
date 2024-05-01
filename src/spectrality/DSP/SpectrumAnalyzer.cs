@@ -117,8 +117,9 @@ public class SpectrumAnalyzer
 
     var chunks = Enumerable.Range(0, samples.Length).Chunk(hopsize).ToArray();
 
-    var bytes = chunks.Length * dftsize * (sizeof(float) + sizeof(int));
-    Logger.Info($"Approx. memory footprint {bytes:N0} bytes.");
+    var footprint = chunks.LongLength * dftsize * (sizeof(float) + sizeof(int));
+    Logger.Info($"Approximated memory footprint {footprint:N0} bytes.");
+    footprint = GC.GetTotalMemory(true);
 
     var timepoints = chunks.Select(chunk => (float)(chunk.First() / samplerate)).ToArray();
     var frequencies = qdft.Frequencies.Select(freq => (float)freq).ToArray();
@@ -157,6 +158,9 @@ public class SpectrumAnalyzer
       },
       Bitmap = new Bitmap(magnitudes.GetLength(0), magnitudes.GetLength(1))
     };
+
+    footprint = GC.GetTotalMemory(false) - footprint;
+    Logger.Info($"Measured memory footprint {footprint:N0} bytes.");
 
     return new AnalysisBag
     {
