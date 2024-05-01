@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using OxyPlot.Axes;
@@ -105,7 +104,7 @@ public class MainWindowViewModel : ViewModelBase
       }
     });
 
-    var analyzer = new SpectrumAnalyzer(samplerate, 10e-3)
+    var analyzer = new SpectrumAnalyzer(samplerate)
     {
       ProgressCallback = progress,
       CancellationToken = cancellation.Token

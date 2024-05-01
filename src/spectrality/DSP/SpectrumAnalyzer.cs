@@ -45,7 +45,7 @@ public class SpectrumAnalyzer
   public IProgress<double>? ProgressCallback { get; init; }
   public CancellationToken? CancellationToken { get; init; }
 
-  public SpectrumAnalyzer(double samplerate, double timestep)
+  public SpectrumAnalyzer(double samplerate, double timestep = 10e-3)
   {
     Samplerate = samplerate;
     Timestep = timestep;
