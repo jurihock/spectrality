@@ -9,6 +9,8 @@ namespace Spectrality.Plot;
 
 public class SpectrogramSeries : XYAxisSeries
 {
+  private readonly object ImageSyncRoot = new();
+
   private ISpectrogramBitmap SpectrogramBitmap { get; set; }
   private ICoordinateTransformation<DataPoint> CoordinateTransformation { get; set; }
 
@@ -18,16 +20,35 @@ public class SpectrogramSeries : XYAxisSeries
     get => spectrogram;
     set
     {
-      spectrogram = value;
-
-      if (spectrogram != null)
+      lock(ImageSyncRoot)
       {
+        spectrogram = value;
+
+        if (spectrogram == null)
+        {
+          return;
+        }
+
         CoordinateTransformation = new CartesianCoordinateTransformation(
           new LinearCoordinateTransformation(spectrogram.Value.Data.X),
           new LogarithmicCoordinateTransformation(spectrogram.Value.Data.Y));
-      }
 
-      Update();
+        SpectrogramBitmap.RenderBitmap(spectrogram.Value);
+
+        image = spectrogram.Value.Bitmap.ToOxyImage();
+      }
+    }
+  }
+
+  private OxyImage? image;
+  private OxyImage? Image
+  {
+    get
+    {
+      lock (ImageSyncRoot)
+      {
+        return image;
+      }
     }
   }
 
@@ -50,6 +71,11 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     SpectrogramBitmap.RenderBitmap(spectrogram.Value);
+
+    lock (ImageSyncRoot)
+    {
+      image = spectrogram.Value.Bitmap.ToOxyImage();
+    }
   }
 
   public override void Render(IRenderContext rc)
@@ -62,7 +88,7 @@ public class SpectrogramSeries : XYAxisSeries
     }
 
     var data = spectrogram.Value.Data;
-    var image = spectrogram.Value.Bitmap.ToOxyImage();
+    var image = Image ?? spectrogram.Value.Bitmap.ToOxyImage();
 
     double left = 0;
     double right = data.Width;
