@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Spectrality.Models;
 
-public class Scale
+public sealed class Scale
 {
     public readonly string[] Notes =
         [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" ];

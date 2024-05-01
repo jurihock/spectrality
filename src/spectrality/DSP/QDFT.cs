@@ -1,173 +1,165 @@
 using System;
 using System.Linq;
 using System.Numerics;
-using Nito.Collections;
+using Spectrality.Models;
 
 namespace Spectrality.DSP;
 
 class QDFT
 {
-    public double Samplerate { get; private set; }
-    public (double, double) Bandwidth { get; private set; }
-    public double Resolution { get; private set; }
-    public double Quality { get; private set; }
-    public double Latency { get; private set; }
-    public (double, double) Window { get; private set; }
+  public double Samplerate { get; private set; }
+  public (double, double) Bandwidth { get; private set; }
+  public double Resolution { get; private set; }
+  public double Quality { get; private set; }
+  public double Latency { get; private set; }
+  public (double, double) Window { get; private set; }
 
-    public int Size { get; private set; }
+  public int Size { get; private set; }
 
-    public double[] Frequencies { get; private set; }
-    public double[] Qualities { get; private set; }
-    public double[] Latencies { get; private set; }
-    public int[] Periods { get; private set; }
-    public int[] Offsets { get; private set; }
-    public double[] Weights { get; private set; }
+  public double[] Frequencies { get; private set; }
+  public double[] Qualities { get; private set; }
+  public double[] Latencies { get; private set; }
+  public int[] Periods { get; private set; }
+  public int[] Offsets { get; private set; }
+  public double[] Weights { get; private set; }
 
-    public Complex[] Fiddles { get; private set; }
-    public Complex[] Twiddles { get; private set; }
+  public Complex[] Fiddles { get; private set; }
+  public Complex[] Twiddles { get; private set; }
 
-    private Deque<double> Inputs { get; set; }
-    private Complex[] Outputs { get; set; }
+  private Deque<double> Inputs { get; set; }
+  private Complex[] Outputs { get; set; }
 
-    public QDFT(double samplerate,
-                (double, double) bandwidth,
-                double resolution = 24,
-                double quality = 0,
-                double latency = 0)
+  public QDFT(double samplerate,
+              (double, double) bandwidth,
+              double resolution = 24,
+              double quality = 0,
+              double latency = 0)
+  {
+    Samplerate = samplerate;
+    Bandwidth = bandwidth;
+    Resolution = resolution;
+    Quality = quality;
+    Latency = latency;
+    Window = (+0.5, -0.5);
+
+    Size = (int)Math.Ceiling(Resolution * Math.Log2(Bandwidth.Item2 / Bandwidth.Item1));
+
+    Frequencies = new double[Size];
+    Qualities = new double[Size];
+    Latencies = new double[Size];
+    Periods = new int[Size];
+    Offsets = new int[Size];
+    Weights = new double[Size];
+
+    Fiddles = new Complex[Size * 3];
+    Twiddles = new Complex[Size * 3];
+
+    Bootstrap();
+
+    Inputs = new Deque<double>(Periods.First() + 1);
+    Outputs = new Complex[Size * 3];
+  }
+
+  private void Bootstrap()
+  {
+    var alpha = Math.Pow(2.0, 1.0 / Resolution) - 1.0;
+    var beta = (Quality < 0) ? (alpha * 24.7 / 0.108) : Quality;
+
+    for (int i = 0; i < Size; i++)
     {
-        Samplerate = samplerate;
-        Bandwidth = bandwidth;
-        Resolution = resolution;
-        Quality = quality;
-        Latency = latency;
-        Window = (+0.5, -0.5);
+      var frequency = Bandwidth.Item1 * Math.Pow(2.0, i / Resolution);
 
-        Size = (int)Math.Ceiling(Resolution * Math.Log2(Bandwidth.Item2 / Bandwidth.Item1));
+      Frequencies[i] = frequency;
 
-        Frequencies = new double[Size];
-        Qualities = new double[Size];
-        Latencies = new double[Size];
-        Periods = new int[Size];
-        Offsets = new int[Size];
-        Weights = new double[Size];
+      var quality = frequency / (alpha * frequency + beta);
 
-        Fiddles = new Complex[Size * 3];
-        Twiddles = new Complex[Size * 3];
+      Qualities[i] = quality;
 
-        Bootstrap();
+      var period = Math.Ceiling(quality * Samplerate / frequency);
 
-        Inputs = new Deque<double>(new double[Periods.First() + 1]);
-        Outputs = new Complex[Size * 3];
+      Periods[i] = (int)period;
+
+      var offset = Math.Ceiling((Periods.First() - period)
+                 * Math.Clamp(Latency * 0.5 + 0.5, 0.0, 1.0));
+
+      Offsets[i] = (int)offset;
+
+      var latency = (Periods.First() - offset) / Samplerate;
+
+      Latencies[i] = latency;
+
+      var weight = 1.0 / period;
+
+      Weights[i] = weight;
     }
 
-    private void Bootstrap()
+    foreach (int k in new[] { -1, 0, +1 })
     {
-        var alpha = Math.Pow(2.0, 1.0 / Resolution) - 1.0;
-        var beta = (Quality < 0) ? (alpha * 24.7 / 0.108) : Quality;
+      for (int i = 0, j = 1; i < Size; ++i, j += 3)
+      {
+        var fiddle = Complex.FromPolarCoordinates(
+          1.0, -2.0 * Math.PI * (Qualities[i] + k));
 
-        for (int i = 0; i < Size; i++)
-        {
-            var frequency = Bandwidth.Item1 * Math.Pow(2.0, i / Resolution);
+        Fiddles[j + k] = fiddle;
 
-            Frequencies[i] = frequency;
+        var twiddle = Complex.FromPolarCoordinates(
+          1.0, +2.0 * Math.PI * (Qualities[i] + k) / Periods[i]);
 
-            var quality = frequency / (alpha * frequency + beta);
+        Twiddles[j + k] = twiddle;
+      }
+    }
+  }
 
-            Qualities[i] = quality;
+  public void Reset()
+  {
+    Array.Fill(Inputs.Data, 0);
+    Array.Fill(Outputs, 0);
+  }
 
-            var period = Math.Ceiling(quality * Samplerate / frequency);
-
-            Periods[i] = (int)period;
-
-            var offset = Math.Ceiling((Periods.First() - period)
-                       * Math.Clamp(Latency * 0.5 + 0.5, 0.0, 1.0));
-
-            Offsets[i] = (int)offset;
-
-            var latency = (Periods.First() - offset) / Samplerate;
-
-            Latencies[i] = latency;
-
-            var weight = 1.0 / period;
-
-            Weights[i] = weight;
-        }
-
-        foreach (int k in new[] { -1, 0, +1 })
-        {
-            for (int i = 0, j = 1; i < Size; ++i, j+=3)
-            {
-                var fiddle = Complex.FromPolarCoordinates(
-                    1.0, -2.0 * Math.PI * (Qualities[i] + k));
-
-                Fiddles[j + k] = fiddle;
-
-                var twiddle = Complex.FromPolarCoordinates(
-                    1.0, +2.0 * Math.PI * (Qualities[i] + k) / Periods[i]);
-
-                Twiddles[j + k] = twiddle;
-            }
-        }
+  public void Analyze(double sample, Span<Complex> dft)
+  {
+    if (dft.Length != Size)
+    {
+      throw new ArgumentException();
     }
 
-    public void Reset()
+    var periods = Periods;
+    var offsets = Offsets;
+    var weights = Weights;
+
+    var fiddles = Fiddles;
+    var twiddles = Twiddles;
+
+    var inputs = Inputs;
+    var outputs = Outputs;
+
+    var a = Window.Item1;
+    var b = Window.Item2 / 2;
+
+    inputs.PopFrontPushBack(sample);
+
+    for (int i = 0, j = 1; i < Size; ++i, j += 3)
     {
-        for (int i = 0; i < Inputs.Count; i++)
-        {
-            Inputs[i] = 0;
-        }
+      var period = periods[i];
+      var offset = offsets[i];
+      var weight = weights[i];
 
-        for (int i = 0; i < Outputs.Length; i++)
-        {
-            Outputs[i] = 0;
-        }
+      var left = inputs[offset + period];
+      var right = inputs[offset];
+
+      var k1 = j - 1;
+      var k2 = j;
+      var k3 = j + 1;
+
+      var delta1 = (fiddles[k1] * left - right) * weight;
+      var delta2 = (fiddles[k2] * left - right) * weight;
+      var delta3 = (fiddles[k3] * left - right) * weight;
+
+      outputs[k1] = twiddles[k1] * (outputs[k1] + delta1);
+      outputs[k2] = twiddles[k2] * (outputs[k2] + delta2);
+      outputs[k3] = twiddles[k3] * (outputs[k3] + delta3);
+
+      dft[i] = outputs[k2] * a + (outputs[k1] + outputs[k3]) * b;
     }
-
-    public void Analyze(double sample, Span<Complex> dft)
-    {
-        if (dft.Length != Size)
-        {
-            throw new ArgumentException();
-        }
-
-        var periods = Periods;
-        var offsets = Offsets;
-        var weights = Weights;
-
-        var fiddles = Fiddles;
-        var twiddles = Twiddles;
-
-        var inputs = Inputs;
-        var outputs = Outputs;
-
-        var a = Window.Item1;
-        var b = Window.Item2 / 2;
-
-        inputs.RemoveFromFront();
-        inputs.AddToBack(sample);
-
-        for (int i = 0, j = 1; i < Size; ++i, j+=3)
-        {
-          var period = periods[i];
-          var offset = offsets[i];
-          var weight = weights[i];
-
-          var left = inputs[offset + period];
-          var right = inputs[offset];
-
-          var k1 = j - 1;
-          var k2 = j;
-          var k3 = j + 1;
-
-          var delta1 = (fiddles[k1] * left - right) * weight;
-          var delta2 = (fiddles[k2] * left - right) * weight;
-          var delta3 = (fiddles[k3] * left - right) * weight;
-
-          outputs[k1] = twiddles[k1] * (outputs[k1] + delta1);
-          outputs[k2] = twiddles[k2] * (outputs[k2] + delta2);
-          outputs[k3] = twiddles[k3] * (outputs[k3] + delta3);
-
-          dft[i] = outputs[k2] * a + (outputs[k1] + outputs[k3]) * b;
-        }
-    }
+  }
 }
