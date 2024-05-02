@@ -1,10 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using Spectrality.Extensions;
 using Spectrality.Misc;
 using Spectrality.Models;
 
@@ -184,8 +182,8 @@ public class SpectrumAnalyzer
     Logger.Info($"Analyzing {samples.Length} samples of {duration.TotalSeconds:F3}s duration.");
 
     var magnitudes = spectrogram.Data.Z;
+    var decibels = new float[qdft.Size];
     var tags = spectrogram.Tags;
-    var dft = new Complex[qdft.Size];
 
     try
     {
@@ -199,21 +197,16 @@ public class SpectrumAnalyzer
           break;
         }
 
-        qdft.Analyze(samples[chunk[0]], dft);
+        qdft.AnalyzeDecibel(samples, decibels, chunk.First(), chunk.Length);
 
-        for (var i = 0; i < dft.Length; i++)
+        for (var i = 0; i < decibels.Length; i++)
         {
-          magnitudes[j, i] = (float)dft[i].Decibel();
+          magnitudes[j, i] = decibels[i];
         }
 
         tags[j] = Spectrogram.Tag.Analyzed;
 
         progress?.Report(100.0 * j / chunks.Length);
-
-        for (var i = 1; i < chunk.Length; i++)
-        {
-          qdft.Analyze(samples[chunk[i]], dft);
-        }
 
         j++;
       }
