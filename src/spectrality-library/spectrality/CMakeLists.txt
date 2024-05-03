@@ -28,7 +28,7 @@ else()
 endif()
 
 target_link_libraries(${PROJECT_NAME}
-  PRIVATE qdft)
+  PRIVATE dr qdft)
 
 set_target_properties(${PROJECT_NAME}
   PROPERTIES OUTPUT_NAME "Spectrality.Library")

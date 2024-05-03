@@ -1,5 +1,6 @@
 using System;
-using System.Diagnostics;
+using System.Linq;
+using System.Text;
 
 namespace Spectrality.IO;
 
@@ -14,58 +15,53 @@ public class AudioFileReader
     Path = path;
   }
 
-  public (float[], double) Read(int channel = 0, double offset = 0, double limit = 0)
+  public (float[] samples, double samplerate) Read(int channel = 0, double skip = 0, double take = 0)
   {
     Logger.Info($"Reading audio file \"{Path}\".");
 
-    var reader = new NAudio.Wave.AudioFileReader(Path);
+    var path = Encoding.UTF8.GetBytes(Path);
 
-    var format = reader.WaveFormat;
-    var samplerate = (double)format.SampleRate;
-    var channels = format.Channels;
-    var bytes = format.BitsPerSample / 8;
-    var samples = (int)(reader.Length / bytes / channels);
+    Library.Audio.Touch(
+      path,
+      path.Length,
+      out var samplerate,
+      out var channels,
+      out var frames);
 
-    if (offset > 0)
-    {
-      var newoffset = (int)(offset * samplerate);
+    var samples = new float[frames * channels];
 
-      newoffset = Math.Min(newoffset, samples);
-
-      samples -= newoffset;
-      reader.Position = newoffset * channels * bytes;
-    }
-
-    if (limit > 0)
-    {
-      var newsamples = (int)(limit * samplerate);
-
-      samples = Math.Min(newsamples, samples);
-    }
-
-    var buffer = new float[samples * channels];
-    var result = reader.Read(buffer, 0, buffer.Length);
-
-    Debug.Assert(result == buffer.Length);
+    Library.Audio.Read(
+      path,
+      path.Length,
+      samples);
 
     if (channels > 1)
     {
       channel = (channel < 0) ? channels + channel : channel;
       channel = Math.Clamp(channel, 0, channels - 1);
 
-      for (int i = 0, j = channel; i < samples; i++, j+=channels)
+      for (int i = 0, j = channel; i < frames; i++, j+=channels)
       {
-        buffer[i] = buffer[j];
+        samples[i] = samples[j];
       }
 
-      Array.Resize(ref buffer, samples);
+      Array.Resize(ref samples, frames);
     }
 
-    Debug.Assert(buffer.Length == samples);
+    if (skip > 0 || take > 0)
+    {
+      skip = Math.Truncate(skip * samplerate);
+      skip = Math.Clamp(skip, 0, frames);
 
-    var duration = TimeSpan.FromSeconds(samples / samplerate);
-    Logger.Info($"Read {samples} samples of {duration.TotalSeconds:F3}s duration at {samplerate}Hz.");
+      take = Math.Truncate(take * samplerate);
+      take = Math.Clamp(take > 0 ? take : frames, 0, frames - skip);
 
-    return (buffer, samplerate);
+      samples = samples.Skip((int)skip).Take((int)take).ToArray();
+    }
+
+    var duration = TimeSpan.FromSeconds(samples.Length / samplerate);
+    Logger.Info($"Read {samples.Length} samples of {duration.TotalSeconds:F3}s duration at {samplerate}Hz.");
+
+    return (samples, samplerate);
   }
 }

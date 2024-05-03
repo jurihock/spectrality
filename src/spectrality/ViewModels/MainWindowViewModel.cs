@@ -27,8 +27,8 @@ public class MainWindowViewModel : ViewModelBase
     var channel1 = 0;
     var channel2 = 1;
 
-    var offset  = 0;
-    var limit   = 0;
+    var skip = 0;
+    var take = 0;
 
     var models   = new[] { PlotModel1, PlotModel2 };
     var files    = new[] { file1, file2 };
@@ -58,7 +58,7 @@ public class MainWindowViewModel : ViewModelBase
 
         try
         {
-          Test(models[j], files[j], channels[j], offset, limit);
+          Test(models[j], files[j], channels[j], skip, take);
         }
         catch (Exception exception)
         {
@@ -79,14 +79,14 @@ public class MainWindowViewModel : ViewModelBase
     }
   }
 
-  private static void Test(SpectrogramPlotModel model, string file, int channel, double offset, double limit)
+  private static void Test(SpectrogramPlotModel model, string file, int channel, double skip, double take)
   {
     var reader = new AudioFileReader(file);
 
     var (samples, samplerate) = reader.Read(
       channel: channel,
-      offset: offset,
-      limit: limit);
+      skip: skip,
+      take: take);
 
     var bottleneck = new Bottleneck();
     var cancellation = new CancellationTokenSource();
