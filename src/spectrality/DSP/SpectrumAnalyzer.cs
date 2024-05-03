@@ -181,9 +181,10 @@ public class SpectrumAnalyzer
     var duration = TimeSpan.FromSeconds(samples.Length / qdft.Samplerate);
     Logger.Info($"Analyzing {samples.Length} samples of {duration.TotalSeconds:F3}s duration.");
 
-    var buffer = new float[qdft.Size];
     var datagram = spectrogram.Data;
     var tags = spectrogram.Tags;
+
+    Span<float> buffer = stackalloc float[qdft.Size];
 
     try
     {

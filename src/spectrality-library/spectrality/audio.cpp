@@ -5,9 +5,9 @@
 
 bool spectrality_audio_touch_mp3(
   const std::filesystem::path& path,
-  samplerate_t* samplerate,
-  channels_t* channels,
-  frames_t* frames)
+  samplerate_t* const samplerate,
+  channels_t* const channels,
+  frames_t* const frames)
 {
   drmp3 mp3;
 
@@ -27,9 +27,9 @@ bool spectrality_audio_touch_mp3(
 
 bool spectrality_audio_touch_wav(
   const std::filesystem::path& path,
-  samplerate_t* samplerate,
-  channels_t* channels,
-  frames_t* frames)
+  samplerate_t* const samplerate,
+  channels_t* const channels,
+  frames_t* const frames)
 {
   drwav wav;
 
@@ -49,10 +49,10 @@ bool spectrality_audio_touch_wav(
 
 bool spectrality_audio_touch(
   const char* pathchars,
-  int pathsize,
-  samplerate_t* samplerate,
-  channels_t* channels,
-  frames_t* frames)
+  const int pathsize,
+  samplerate_t* const samplerate,
+  channels_t* const channels,
+  frames_t* const frames)
 {
   const std::filesystem::path path(pathchars, pathchars + pathsize);
 
@@ -75,8 +75,8 @@ bool spectrality_audio_touch(
 
 bool spectrality_audio_read_mp3(
   const std::filesystem::path& path,
-  float* samples,
-  frames_t* frames)
+  float* const samples,
+  frames_t* const frames)
 {
   drmp3 mp3;
 
@@ -97,8 +97,8 @@ bool spectrality_audio_read_mp3(
 
 bool spectrality_audio_read_wav(
   const std::filesystem::path& path,
-  float* samples,
-  frames_t* frames)
+  float* const samples,
+  frames_t* const frames)
 {
   drwav wav;
 
@@ -119,9 +119,9 @@ bool spectrality_audio_read_wav(
 
 bool spectrality_audio_read(
   const char* pathchars,
-  int pathsize,
-  float* samples,
-  frames_t* frames)
+  const int pathsize,
+  float* const samples,
+  frames_t* const frames)
 {
   const std::filesystem::path path(pathchars, pathchars + pathsize);
 

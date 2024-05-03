@@ -1,11 +1,11 @@
 #include <spectrality/qdft.h>
 
 qdft_t* spectrality_qdft_alloc(
-  double samplerate,
-  double bandwidth_min,
-  double bandwidth_max,
-  double resolution,
-  double quality)
+  const double samplerate,
+  const double bandwidth_min,
+  const double bandwidth_max,
+  const double resolution,
+  const double quality)
 {
   qdft_t* qdft = new qdft_t{};
 
@@ -46,7 +46,7 @@ void spectrality_qdft_free(
 }
 
 int spectrality_qdft_size(
-  qdft_t* qdft)
+  const qdft_t* qdft)
 {
   if (qdft == nullptr)
   {
@@ -57,8 +57,8 @@ int spectrality_qdft_size(
 }
 
 void spectrality_qdft_frequencies(
-  qdft_t* qdft,
-  double* frequencies)
+  const qdft_t* qdft,
+  double* const frequencies)
 {
   if (qdft == nullptr)
   {
@@ -72,11 +72,10 @@ void spectrality_qdft_frequencies(
 }
 
 void spectrality_qdft_analyze_decibel(
-  qdft_t* qdft,
-  float* samples,
-  float* decibels,
-  int offset,
-  int count)
+  const qdft_t* qdft,
+  const float* samples,
+  float* const decibels,
+  const int count)
 {
   const auto decibel = [](const std::complex<double>& x) -> float
   {
@@ -96,14 +95,14 @@ void spectrality_qdft_analyze_decibel(
     return;
   }
 
-  qdft->qdft->qdft(samples[offset], qdft->dft);
+  qdft->qdft->qdft(samples[0], qdft->dft);
 
   for (auto i = size_t(0); i < qdft->qdft->size(); ++i)
   {
     decibels[i] = decibel(qdft->dft[i]);
   }
 
-  for (auto i = offset + 1; i < offset + count - 1; ++i)
+  for (auto i = 1; i < count; ++i)
   {
     qdft->qdft->qdft(samples[i], qdft->dft);
   }

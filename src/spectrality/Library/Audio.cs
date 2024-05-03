@@ -24,6 +24,6 @@ public static class Audio
   public static extern bool Read(
     byte[] pathchars,
     int pathsize,
-    float[] samples,
+    out float samples,
     ref int frames);
 }

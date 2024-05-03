@@ -39,7 +39,7 @@ public static class QDFT
     EntryPoint = "spectrality_qdft_frequencies")]
   public static extern void Frequencies(
     nint qdft,
-    double[] frequencies);
+    out double frequencies);
 
   [DllImport(
     Import.FileName,
@@ -48,8 +48,7 @@ public static class QDFT
     EntryPoint = "spectrality_qdft_analyze_decibel")]
   public static extern void AnalyzeDecibel(
     nint qdft,
-    float[] samples,
-    float[] decibels,
-    int offset,
-    int size);
+    in float samples,
+    out float decibels,
+    int count);
 }

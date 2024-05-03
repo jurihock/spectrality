@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Spectrality.Extensions;
 
 namespace Spectrality.IO;
 
@@ -52,7 +53,7 @@ public class AudioFileReader
     var read = Library.Audio.Read(
       path,
       path.Length,
-      samples,
+      out samples.AsRef(),
       ref framesread);
 
     if (!read)

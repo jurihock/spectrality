@@ -1,4 +1,5 @@
 using System;
+using Spectrality.Extensions;
 
 namespace Spectrality.DSP;
 
@@ -34,7 +35,7 @@ public sealed class QDFT : IDisposable
     Size = Library.QDFT.Size(Qdft.Value);
     Frequencies = new double[Size];
 
-    Library.QDFT.Frequencies(Qdft.Value, Frequencies);
+    Library.QDFT.Frequencies(Qdft.Value, out Frequencies.AsRef());
   }
 
   public void Dispose()
@@ -46,7 +47,7 @@ public sealed class QDFT : IDisposable
     }
   }
 
-  public void AnalyzeDecibel(float[] samples, float[] decibels, int offset, int count)
+  public void AnalyzeDecibel(ReadOnlySpan<float> samples, Span<float> decibels, int offset, int count)
   {
     if (decibels.Length != Size)
     {
@@ -57,6 +58,6 @@ public sealed class QDFT : IDisposable
     var qdft = Qdft ?? throw new InvalidOperationException(
       "Invalid QDFT instance pointer!");
 
-    Library.QDFT.AnalyzeDecibel(qdft, samples, decibels, offset, count);
+    Library.QDFT.AnalyzeDecibel(qdft, in samples.AsRef(offset), out decibels.AsRef(), count);
   }
 }

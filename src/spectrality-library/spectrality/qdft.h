@@ -12,11 +12,11 @@ struct qdft_t
 
 SPECTRALITY_LIBRARY_FUNCTION
 qdft_t* spectrality_qdft_alloc(
-  double samplerate,
-  double bandwidth_min,
-  double bandwidth_max,
-  double resolution,
-  double quality);
+  const double samplerate,
+  const double bandwidth_min,
+  const double bandwidth_max,
+  const double resolution,
+  const double quality);
 
 SPECTRALITY_LIBRARY_FUNCTION
 void spectrality_qdft_free(
@@ -24,17 +24,16 @@ void spectrality_qdft_free(
 
 SPECTRALITY_LIBRARY_FUNCTION
 int spectrality_qdft_size(
-  qdft_t* qdft);
+  const qdft_t* qdft);
 
 SPECTRALITY_LIBRARY_FUNCTION
 void spectrality_qdft_frequencies(
-  qdft_t* qdft,
-  double* frequencies);
+  const qdft_t* qdft,
+  double* const frequencies);
 
 SPECTRALITY_LIBRARY_FUNCTION
 void spectrality_qdft_analyze_decibel(
-  qdft_t* qdft,
-  float* samples,
-  float* decibels,
-  int offset,
-  int count);
+  const qdft_t* qdft,
+  const float* samples,
+  float* const decibels,
+  const int count);
