@@ -86,7 +86,10 @@ bool spectrality_audio_read_mp3(
     return false;
   }
 
-  *frames = drmp3_read_pcm_frames_f32(&mp3, *frames, samples);
+  auto frames0 = static_cast<drmp3_uint64>(*frames);
+  auto frames1 = drmp3_read_pcm_frames_f32(&mp3, frames0, samples);
+
+  *frames = static_cast<frames_t>(frames1);
 
   drmp3_uninit(&mp3);
   return true;
@@ -105,7 +108,10 @@ bool spectrality_audio_read_wav(
     return false;
   }
 
-  *frames = drwav_read_pcm_frames_f32(&wav, *frames, samples);
+  auto frames0 = static_cast<drmp3_uint64>(*frames);
+  auto frames1 = drwav_read_pcm_frames_f32(&wav, frames0, samples);
+
+  *frames = static_cast<frames_t>(frames1);
 
   drwav_uninit(&wav);
   return true;

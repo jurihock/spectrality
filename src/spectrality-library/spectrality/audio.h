@@ -3,8 +3,8 @@
 #include <spectrality/spectrality.h>
 
 using samplerate_t = double;
-using channels_t   = uint32_t;
-using frames_t     = uint64_t;
+using channels_t   = int;
+using frames_t     = int;
 
 SPECTRALITY_LIBRARY_FUNCTION
 bool spectrality_audio_touch(

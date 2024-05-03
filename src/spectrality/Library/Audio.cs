@@ -13,8 +13,8 @@ public static class Audio
     byte[] pathchars,
     int pathsize,
     out double samplerate,
-    out uint channels,
-    out ulong frames);
+    out int channels,
+    out int frames);
 
   [DllImport(
     Import.FileName,
@@ -25,5 +25,5 @@ public static class Audio
     byte[] pathchars,
     int pathsize,
     float[] samples,
-    ref ulong frames);
+    ref int frames);
 }
