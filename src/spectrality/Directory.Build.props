@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)\..\..\build\$(MSBuildProjectName.ToLower())\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)\..\..\build\$(MSBuildProjectName.ToLower())\obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>
