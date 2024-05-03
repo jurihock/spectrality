@@ -118,15 +118,15 @@ public class SpectrumAnalyzer
 
     var timepoints = chunks.Select(chunk => (float)(chunk.First() / samplerate)).ToArray();
     var frequencies = qdft.Frequencies.Select(freq => (float)freq).ToArray();
-    var magnitudes = new float[chunks.Length, dftsize];
+    var values = new float[chunks.Length, dftsize];
 
     var spectrogram = new Spectrogram
     {
-      Data = new Datagram
+      Data = new MemoryDatagram
       {
         X = timepoints,
         Y = frequencies,
-        Z = magnitudes
+        Z = values
       },
       Meta = new Metagram
       {
@@ -149,8 +149,8 @@ public class SpectrumAnalyzer
           Type = Metagram.AxisType.Logarithmic
         }
       },
-      Bitmap = new Bitmap(magnitudes.GetLength(0), magnitudes.GetLength(1)),
-      Tags = new Spectrogram.Tag[magnitudes.GetLength(0)]
+      Bitmap = new Bitmap(values.GetLength(0), values.GetLength(1)),
+      Tags = new Spectrogram.Tag[values.GetLength(0)]
     };
 
     footprint = GC.GetTotalMemory(false) - footprint;
@@ -181,8 +181,8 @@ public class SpectrumAnalyzer
     var duration = TimeSpan.FromSeconds(samples.Length / qdft.Samplerate);
     Logger.Info($"Analyzing {samples.Length} samples of {duration.TotalSeconds:F3}s duration.");
 
-    var magnitudes = spectrogram.Data.Z;
-    var decibels = new float[qdft.Size];
+    var buffer = new float[qdft.Size];
+    var datagram = spectrogram.Data;
     var tags = spectrogram.Tags;
 
     try
@@ -197,11 +197,11 @@ public class SpectrumAnalyzer
           break;
         }
 
-        qdft.AnalyzeDecibel(samples, decibels, chunk.First(), chunk.Length);
+        qdft.AnalyzeDecibel(samples, buffer, chunk.First(), chunk.Length);
 
-        for (var i = 0; i < decibels.Length; i++)
+        for (var i = 0; i < buffer.Length; i++)
         {
-          magnitudes[j, i] = decibels[i];
+          datagram[j, i] = buffer[i];
         }
 
         tags[j] = Spectrogram.Tag.Analyzed;

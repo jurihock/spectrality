@@ -6,7 +6,7 @@ public readonly struct Spectrogram
 {
   public enum Tag { None, Analyzed, Rendered }
 
-  public Datagram Data { get; init; }
+  public IDatagram Data { get; init; }
   public Metagram Meta { get; init; }
   public Bitmap Bitmap { get; init; }
   public Tag[] Tags { get; init; }
