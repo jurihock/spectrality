@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -21,31 +22,48 @@ public class AudioFileReader
 
     var path = Encoding.UTF8.GetBytes(Path);
 
-    Library.Audio.Touch(
+    var touch = Library.Audio.Touch(
       path,
       path.Length,
       out var samplerate,
       out var channels,
       out var frames);
 
+    if (!touch)
+    {
+      throw new FileLoadException($"Unable to read audio file \"{Path}\".", Path);
+    }
+
     var samples = new float[frames * channels];
 
-    Library.Audio.Read(
+    var framesread = frames;
+    var read = Library.Audio.Read(
       path,
       path.Length,
-      samples);
+      samples,
+      ref framesread);
+
+    if (!read)
+    {
+      throw new FileLoadException($"Unable to read audio file \"{Path}\".", Path);
+    }
+
+    if (framesread != frames)
+    {
+      Logger.Warn($"Requested {frames} PCM frames to read, got {framesread} frames instead!");
+    }
 
     if (channels > 1)
     {
-      channel = (channel < 0) ? channels + channel : channel;
-      channel = Math.Clamp(channel, 0, channels - 1);
+      channel = (channel < 0) ? (int)channels + channel : channel;
+      channel = Math.Clamp(channel, 0, (int)channels - 1);
 
-      for (int i = 0, j = channel; i < frames; i++, j+=channels)
+      for (ulong i = 0, j = (ulong)channel; i < frames; i++, j+=channels)
       {
         samples[i] = samples[j];
       }
 
-      Array.Resize(ref samples, frames);
+      Array.Resize(ref samples, (int)frames);
     }
 
     if (skip > 0 || take > 0)

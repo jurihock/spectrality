@@ -9,20 +9,21 @@ public static class Audio
     CharSet = Import.DefaultCharSet,
     CallingConvention = Import.DefaultCallingConvention,
     EntryPoint = "spectrality_audio_touch")]
-  public static extern void Touch(
+  public static extern bool Touch(
     byte[] pathchars,
     int pathsize,
     out double samplerate,
-    out int channels,
-    out int frames);
+    out uint channels,
+    out ulong frames);
 
   [DllImport(
     Import.FileName,
     CharSet = Import.DefaultCharSet,
     CallingConvention = Import.DefaultCallingConvention,
     EntryPoint = "spectrality_audio_read")]
-  public static extern void Read(
+  public static extern bool Read(
     byte[] pathchars,
     int pathsize,
-    float[] samples);
+    float[] samples,
+    ref ulong frames);
 }

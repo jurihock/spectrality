@@ -15,6 +15,9 @@ if(dr_ADDED)
     INTERFACE "${dr_SOURCE_DIR}")
 
   target_compile_definitions(dr
+    INTERFACE -DDR_MP3_IMPLEMENTATION)
+
+  target_compile_definitions(dr
     INTERFACE -DDR_WAV_IMPLEMENTATION)
 
 endif()
