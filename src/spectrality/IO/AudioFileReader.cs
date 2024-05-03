@@ -30,7 +30,9 @@ public class AudioFileReader
 
     if (!touch)
     {
-      throw new FileLoadException($"Unable to read audio file \"{Path}\".", Path);
+      throw new FileLoadException(
+        $"Unable to read audio file \"{Path}\".",
+        Path);
     }
 
     skip = Math.Truncate(skip * samplerate);
@@ -52,7 +54,9 @@ public class AudioFileReader
 
     if (!read)
     {
-      throw new FileLoadException($"Unable to read audio file \"{Path}\".", Path);
+      throw new FileLoadException(
+        $"Unable to read audio file \"{Path}\".",
+        Path);
     }
 
     if (framesread != frames)
@@ -81,7 +85,7 @@ public class AudioFileReader
         samples[i] = samples[j];
       }
 
-      Array.Resize(ref samples, frames);
+      Array.Resize(ref samples, (int)take);
     }
 
     var duration = TimeSpan.FromSeconds(samples.Length / samplerate);
