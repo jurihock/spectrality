@@ -7,7 +7,7 @@ public sealed class QDFT : IDisposable
   private nint? Qdft { get; set; }
 
   public double Samplerate { get; private init; }
-  public (double, double) Bandwidth { get; private init; }
+  public (double min, double max) Bandwidth { get; private init; }
   public double Resolution { get; private init; }
   public double Quality { get; private init; }
 
@@ -15,14 +15,14 @@ public sealed class QDFT : IDisposable
   public double[] Frequencies { get; private init; }
 
   public QDFT(double samplerate,
-              (double, double) bandwidth,
+              (double min, double max) bandwidth,
               double resolution = 24,
               double quality = 0)
   {
     Qdft = Library.QDFT.Alloc(
       samplerate,
-      bandwidth.Item1,
-      bandwidth.Item2,
+      bandwidth.min,
+      bandwidth.max,
       resolution,
       quality);
 
