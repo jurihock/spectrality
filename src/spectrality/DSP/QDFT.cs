@@ -50,10 +50,12 @@ public sealed class QDFT : IDisposable
   {
     if (decibels.Length != Size)
     {
-      throw new ArgumentException();
+      throw new ArgumentException(
+        $"Invalid output vector length {decibels.Length} != {Size}!");
     }
 
-    var qdft = Qdft ?? throw new InvalidOperationException();
+    var qdft = Qdft ?? throw new InvalidOperationException(
+      "Invalid QDFT instance pointer!");
 
     Library.QDFT.AnalyzeDecibel(qdft, samples, decibels, offset, count);
   }

@@ -7,7 +7,7 @@ qdft_t* spectrality_qdft_alloc(
   double resolution,
   double quality)
 {
-  qdft_t* qdft = new qdft_t();
+  qdft_t* qdft = new qdft_t{};
 
   qdft->qdft = new qdft::QDFT<float, double>(
     samplerate,
@@ -24,14 +24,35 @@ qdft_t* spectrality_qdft_alloc(
 void spectrality_qdft_free(
   qdft_t* qdft)
 {
-  delete   qdft->qdft;
-  delete[] qdft->dft;
-  delete   qdft;
+  if (qdft == nullptr)
+  {
+    return;
+  }
+
+  if (qdft->qdft != nullptr)
+  {
+    delete qdft->qdft;
+    qdft->qdft = nullptr;
+  }
+
+  if (qdft->dft != nullptr)
+  {
+    delete[] qdft->dft;
+    qdft->dft = nullptr;
+  }
+
+  delete qdft;
+  qdft = nullptr;
 }
 
 int spectrality_qdft_size(
   qdft_t* qdft)
 {
+  if (qdft == nullptr)
+  {
+    throw std::runtime_error("Invalid QDFT instance pointer!");
+  }
+
   return static_cast<int>(qdft->qdft->size());
 }
 
@@ -39,6 +60,11 @@ void spectrality_qdft_frequencies(
   qdft_t* qdft,
   double* frequencies)
 {
+  if (qdft == nullptr)
+  {
+    throw std::runtime_error("Invalid QDFT instance pointer!");
+  }
+
   std::copy(
     qdft->qdft->frequencies().begin(),
     qdft->qdft->frequencies().end(),
@@ -52,7 +78,18 @@ void spectrality_qdft_analyze_decibel(
   int offset,
   int count)
 {
-  const double epsilon = std::numeric_limits<double>::epsilon();
+  const auto decibel = [](const std::complex<double>& x) -> float
+  {
+    const double epsilon = std::numeric_limits<double>::epsilon();
+    const double modulus = std::abs(x);
+    const double y = 20 * std::log10(modulus + epsilon);
+    return static_cast<float>(y);
+  };
+
+  if (qdft == nullptr)
+  {
+    throw std::runtime_error("Invalid QDFT instance pointer!");
+  }
 
   if (count < 1)
   {
@@ -63,10 +100,7 @@ void spectrality_qdft_analyze_decibel(
 
   for (auto i = size_t(0); i < qdft->qdft->size(); ++i)
   {
-    double value = std::abs(qdft->dft[i]);
-    value = 20 * std::log10(value + epsilon);
-
-    decibels[i] = static_cast<float>(value);
+    decibels[i] = decibel(qdft->dft[i]);
   }
 
   for (auto i = offset + 1; i < offset + count - 1; ++i)
