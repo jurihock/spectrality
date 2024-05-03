@@ -35,6 +35,9 @@ public class AudioFileReader
         Path);
     }
 
+    channel = (channel < 0) ? channels + channel : channel;
+    channel = Math.Clamp(channel, 0, channels - 1);
+
     skip = Math.Truncate(skip * samplerate);
     skip = Math.Clamp(skip, 0, frames);
 
@@ -67,9 +70,6 @@ public class AudioFileReader
 
     if (channels > 1)
     {
-      channel = (channel < 0) ? channels + channel : channel;
-      channel = Math.Clamp(channel, 0, channels - 1);
-
       for (int i = 0, j = channel; i < frames; i++, j+=channels)
       {
         samples[i] = samples[j];
