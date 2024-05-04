@@ -18,7 +18,7 @@ public sealed class SyncTrackerManipulator : MouseManipulator
 
   public SyncTrackerManipulator(IPlotView view) : base(view)
   {
-    TrackableSeries = PlotView.ActualModel.Series.FirstOrDefault(series => series is ITrackableSeries);
+    TrackableSeries = PlotView.ActualModel.Series.FirstOrDefault(series => series is ISyncSeries);
   }
 
   public override void Started(OxyMouseEventArgs args)

@@ -26,58 +26,17 @@ public sealed class SyncPlotController : PlotController
       syncPlotModel.ResetAllAxes();
     }
 
-    var zoomablePlotModels = SyncPlotModels
-      .Select(model => (model, series: model.Series.FirstOrDefault(series => series is IZoomableSeries)))
-      .Where(slave => slave.series is XYAxisSeries)
-      .Select(slave => (slave.model, series: (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())))
-      .ToList();
-
-    var minX = zoomablePlotModels.Min(_ => _.series.XAxis.ActualMinimum);
-    var maxX = zoomablePlotModels.Max(_ => _.series.XAxis.ActualMaximum);
-
-    var minY = zoomablePlotModels.Min(_ => _.series.YAxis.ActualMinimum);
-    var maxY = zoomablePlotModels.Max(_ => _.series.YAxis.ActualMaximum);
-
-    foreach (var (zoomablePlotModel, zoomablePlotSeries) in zoomablePlotModels)
-    {
-      var invalidate = false;
-
-      if (zoomablePlotSeries.XAxis.IsZoomEnabled)
-      {
-        zoomablePlotSeries.XAxis.Zoom(
-          minX,
-          maxX);
-
-        invalidate = true;
-      }
-
-      if (zoomablePlotSeries.YAxis.IsZoomEnabled)
-      {
-        zoomablePlotSeries.YAxis.Zoom(
-          minY,
-          maxY);
-
-        invalidate = true;
-      }
-
-      if (invalidate)
-      {
-        Task.Factory.StartNew(
-          model => (model as PlotModel)?.InvalidatePlot(false),
-          zoomablePlotModel);
-      }
-    }
+    OnResetAllAxes();
   }
 
   private void BindSync()
   {
-    // TODO: https://github.com/oxyplot/oxyplot/blob/master/Source/OxyPlot/PlotController/PlotController.cs
-
     this.BindMouseDown(OxyMouseButton.Right, OxyModifierKeys.None, 2,
       new DelegatePlotCommand<OxyMouseEventArgs>(
         (IPlotView view, IController controller, OxyMouseEventArgs args) =>
         {
           args.Handled = true;
+
           ResetAllAxes();
         }));
 
@@ -85,9 +44,9 @@ public sealed class SyncPlotController : PlotController
       new DelegatePlotCommand<OxyMouseDownEventArgs>(
         (IPlotView view, IController controller, OxyMouseDownEventArgs args) =>
         {
-          var manipulator = new SyncPanManipulator(view);
+          var manipulator = new SyncPanZoomManipulator(view);
 
-          manipulator.PanChanged += OnMasterPanChanged;
+          manipulator.PanZoomChanged += OnMasterPanZoomChanged;
 
           controller.AddMouseManipulator(view, manipulator, args);
         }));
@@ -102,53 +61,47 @@ public sealed class SyncPlotController : PlotController
 
           controller.AddMouseManipulator(view, manipulator, args);
         }));
-
-    this.BindMouseWheel(
-      new DelegatePlotCommand<OxyMouseWheelEventArgs>(
-        (IPlotView view, IController controller, OxyMouseWheelEventArgs args) =>
-        {
-          var manipulator = new SyncZoomManipulator(view, args.Delta);
-
-          manipulator.ZoomChanged += OnMasterZoomChanged;
-
-          manipulator.Started(args);
-        }));
   }
 
-  private void OnMasterPanChanged(object? sender, SyncPanEventArgs args)
+  private void OnResetAllAxes()
   {
-    var masterPlotManipulator = sender as PlotManipulator<OxyMouseEventArgs>;
-    var masterPlotModel = masterPlotManipulator?.PlotView?.ActualModel;
+    var filter = (Series series) =>
+      (series is ISyncSeries) &&
+      (series is XYAxisSeries);
 
-    if (masterPlotModel == null)
-    {
-      return;
-    }
+    var cast = (Series? series) =>
+      (XYAxisSeries)(series ?? throw new InvalidOperationException());
 
-    var panableSlaves = SyncPlotModels
-      .Where(model => model != masterPlotModel)
-      .Select(model => (model, series: model.Series.FirstOrDefault(series => series is IPanableSeries)))
+    var slaves = SyncPlotModels
+      .Select(model => (model, series: model.Series.FirstOrDefault(filter)))
       .Where(slave => slave.series is XYAxisSeries)
-      .Select(slave => (slave.model, series: (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
+      .Select(slave => (slave.model, series: cast(slave.series)))
+      .ToList();
 
-    foreach (var (slavePlotModel, slavePlotSeries) in panableSlaves)
+    var minX = slaves.Min(_ => _.series.XAxis.ActualMinimum);
+    var maxX = slaves.Max(_ => _.series.XAxis.ActualMaximum);
+
+    var minY = slaves.Min(_ => _.series.YAxis.ActualMinimum);
+    var maxY = slaves.Max(_ => _.series.YAxis.ActualMaximum);
+
+    foreach (var (slavePlotModel, slavePlotSeries) in slaves)
     {
       var invalidate = false;
 
-      if (slavePlotSeries.XAxis.IsPanEnabled)
+      if (slavePlotSeries.XAxis.IsZoomEnabled)
       {
         slavePlotSeries.XAxis.Zoom(
-          args.ActualMinimumX,
-          args.ActualMaximumX);
+          minX,
+          maxX);
 
         invalidate = true;
       }
 
-      if (slavePlotSeries.YAxis.IsPanEnabled)
+      if (slavePlotSeries.YAxis.IsZoomEnabled)
       {
         slavePlotSeries.YAxis.Zoom(
-          args.ActualMinimumY,
-          args.ActualMaximumY);
+          minY,
+          maxY);
 
         invalidate = true;
       }
@@ -156,13 +109,13 @@ public sealed class SyncPlotController : PlotController
       if (invalidate)
       {
         Task.Factory.StartNew(
-          model => (model as PlotModel)?.InvalidatePlot(false),
+          _ => (_ as PlotModel)?.InvalidatePlot(false),
           slavePlotModel);
       }
     }
   }
 
-  private void OnMasterTrackerChanged(object? sender, SyncTrackerEventArgs args)
+  private void OnMasterPanZoomChanged(object? sender, SyncPanZoomEventArgs args)
   {
     var masterPlotManipulator = sender as PlotManipulator<OxyMouseEventArgs>;
     var masterPlotModel = masterPlotManipulator?.PlotView?.ActualModel;
@@ -172,54 +125,20 @@ public sealed class SyncPlotController : PlotController
       return;
     }
 
-    var trackableSlaves = SyncPlotModels
+    var filter = (Series series) =>
+      (series is ISyncSeries) &&
+      (series is XYAxisSeries);
+
+    var cast = (Series? series) =>
+      (XYAxisSeries)(series ?? throw new InvalidOperationException());
+
+    var slaves = SyncPlotModels
       .Where(model => model != masterPlotModel)
-      .Select(model => (model, series: model.Series.FirstOrDefault(series => series is ITrackableSeries)))
-      .Where(slave => slave.series is XYAxisSeries)
-      .Select(slave => (slave.model, series: (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
+      .Select(model => (model, series: model.Series.FirstOrDefault(filter)))
+      .Where(slave => slave.series != null)
+      .Select(slave => (slave.model, series: cast(slave.series)));
 
-    foreach (var (slavePlotModel, slavePlotSeries) in trackableSlaves)
-    {
-      var worldPoint = args.WorldPoint;
-
-      if (worldPoint == null)
-      {
-        slavePlotModel.PlotView?.HideTracker();
-        continue;
-      }
-
-      var screenPoint = slavePlotSeries.Transform(worldPoint.Value);
-
-      var hit = slavePlotSeries.GetNearestPoint(screenPoint, interpolate: false);
-
-      if (hit == null)
-      {
-        continue;
-      }
-
-      hit.PlotModel = slavePlotModel;
-
-      slavePlotModel.PlotView?.ShowTracker(hit);
-    }
-  }
-
-  private void OnMasterZoomChanged(object? sender, SyncZoomEventArgs args)
-  {
-    var masterPlotManipulator = sender as PlotManipulator<OxyMouseEventArgs>;
-    var masterPlotModel = masterPlotManipulator?.PlotView?.ActualModel;
-
-    if (masterPlotModel == null)
-    {
-      return;
-    }
-
-    var zoomableSlaves = SyncPlotModels
-      .Where(model => model != masterPlotModel)
-      .Select(model => (model, series: model.Series.FirstOrDefault(series => series is IZoomableSeries)))
-      .Where(slave => slave.series is XYAxisSeries)
-      .Select(slave => (slave.model, series: (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
-
-    foreach (var (slavePlotModel, slavePlotSeries) in zoomableSlaves)
+    foreach (var (slavePlotModel, slavePlotSeries) in slaves)
     {
       var invalidate = false;
 
@@ -244,9 +163,57 @@ public sealed class SyncPlotController : PlotController
       if (invalidate)
       {
         Task.Factory.StartNew(
-          model => (model as PlotModel)?.InvalidatePlot(false),
+          _ => (_ as PlotModel)?.InvalidatePlot(false),
           slavePlotModel);
       }
+    }
+  }
+
+  private void OnMasterTrackerChanged(object? sender, SyncTrackerEventArgs args)
+  {
+    var masterPlotManipulator = sender as PlotManipulator<OxyMouseEventArgs>;
+    var masterPlotModel = masterPlotManipulator?.PlotView?.ActualModel;
+
+    if (masterPlotModel == null)
+    {
+      return;
+    }
+
+    var filter = (Series series) =>
+      (series is ISyncSeries) &&
+      (series is XYAxisSeries);
+
+    var cast = (Series? series) =>
+      (XYAxisSeries)(series ?? throw new InvalidOperationException());
+
+    var slaves = SyncPlotModels
+      .Where(model => model != masterPlotModel)
+      .Select(model => (model, series: model.Series.FirstOrDefault(filter)))
+      .Where(slave => slave.series is XYAxisSeries)
+      .Select(slave => (slave.model, series: cast(slave.series)));
+
+    foreach (var (slavePlotModel, slavePlotSeries) in slaves)
+    {
+      var worldPoint = args.WorldPoint;
+
+      if (worldPoint == null)
+      {
+        slavePlotModel.PlotView?.HideTracker();
+        continue;
+      }
+
+      var screenPoint = slavePlotSeries.Transform(worldPoint.Value);
+
+      var hit = slavePlotSeries.GetNearestPoint(screenPoint, interpolate: false);
+
+      if (hit == null)
+      {
+        continue;
+      }
+
+      hit.PlotModel = slavePlotModel;
+
+      slavePlotModel.PlotView?.ShowTracker(hit);
     }
   }
 }

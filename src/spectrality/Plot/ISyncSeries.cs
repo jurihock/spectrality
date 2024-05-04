@@ -1,5 +1,5 @@
 namespace Spectrality.Plot;
 
-public interface IZoomableSeries
+public interface ISyncSeries
 {
 }
