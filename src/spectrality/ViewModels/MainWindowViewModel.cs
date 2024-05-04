@@ -24,14 +24,14 @@ public class MainWindowViewModel : ViewModelBase
 
     PlotController = new SyncPlotController(PlotModel1, PlotModel2);
 
-    var file1 = @"/Users/juho/Documents/Projects/spectrality/test.wav";
-    var file2 = @"/Users/juho/Documents/Projects/spectrality/test.wav";
+    var file1 = @"/Users/juho/Documents/Projects/spectrality/test.mp3";
+    var file2 = @"/Users/juho/Documents/Projects/spectrality/test.mp3";
 
     var channel1 = 0;
     var channel2 = 1;
 
-    var skip = 0;
-    var take = 0;
+    var skip = 325;
+    var take = 18;
 
     var models   = new[] { PlotModel1, PlotModel2 };
     var files    = new[] { file1, file2 };
