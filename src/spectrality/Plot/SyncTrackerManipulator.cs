@@ -13,36 +13,51 @@ public sealed class SyncTrackerEventArgs(DataPoint? point) : EventArgs
 public sealed class SyncTrackerManipulator : MouseManipulator
 {
   private readonly Series? TrackableSeries;
+  private readonly bool IsTrackerEnabled;
 
   public event EventHandler<SyncTrackerEventArgs>? TrackerChanged;
 
   public SyncTrackerManipulator(IPlotView view) : base(view)
   {
     TrackableSeries = PlotView.ActualModel.Series.FirstOrDefault(series => series is ISyncSeries);
+    IsTrackerEnabled = TrackableSeries != null;
   }
 
   public override void Started(OxyMouseEventArgs args)
   {
     base.Started(args);
-    args.Handled = true;
+
+    if (!IsTrackerEnabled)
+    {
+      return;
+    }
 
     Delta(args);
+
+    View.SetCursorType(CursorType.ZoomRectangle);
+    args.Handled = true;
   }
 
   public override void Completed(OxyMouseEventArgs args)
   {
     base.Completed(args);
-    args.Handled = true;
+
+    if (!IsTrackerEnabled)
+    {
+      return;
+    }
 
     HideTracker();
+
+    View.SetCursorType(CursorType.Default);
+    args.Handled = true;
   }
 
   public override void Delta(OxyMouseEventArgs args)
   {
     base.Delta(args);
-    args.Handled = true;
 
-    if (TrackableSeries == null)
+    if (!IsTrackerEnabled)
     {
       return;
     }
@@ -52,7 +67,7 @@ public sealed class SyncTrackerManipulator : MouseManipulator
       return;
     }
 
-    var hit = TrackableSeries.GetNearestPoint(args.Position, interpolate: false);
+    var hit = GetNearestPoint(args.Position);
 
     if (hit == null)
     {
@@ -60,6 +75,13 @@ public sealed class SyncTrackerManipulator : MouseManipulator
     }
 
     ShowTracker(hit);
+
+    args.Handled = true;
+  }
+
+  private TrackerHitResult? GetNearestPoint(ScreenPoint point)
+  {
+    return TrackableSeries?.GetNearestPoint(point, interpolate: false);
   }
 
   private void ShowTracker(TrackerHitResult hit)
