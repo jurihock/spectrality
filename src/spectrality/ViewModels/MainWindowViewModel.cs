@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using OxyPlot.Axes;
 using Spectrality.DSP;
 using Spectrality.IO;
 using Spectrality.Misc;
@@ -16,10 +15,14 @@ public class MainWindowViewModel : ViewModelBase
   public SpectrogramPlotModel PlotModel1 { get; set; }
   public SpectrogramPlotModel PlotModel2 { get; set; }
 
+  public SyncPlotController PlotController { get; set; }
+
   public MainWindowViewModel()
   {
     PlotModel1 = new SpectrogramPlotModel();
     PlotModel2 = new SpectrogramPlotModel();
+
+    PlotController = new SyncPlotController(PlotModel1, PlotModel2);
 
     var file1 = @"/Users/juho/Documents/Projects/spectrality/test.wav";
     var file2 = @"/Users/juho/Documents/Projects/spectrality/test.wav";
@@ -33,20 +36,6 @@ public class MainWindowViewModel : ViewModelBase
     var models   = new[] { PlotModel1, PlotModel2 };
     var files    = new[] { file1, file2 };
     var channels = new[] { channel1, channel2 };
-
-    var master = 0;
-    var slave  = 1;
-
-    #pragma warning disable CS0618 // AxisChanged event is deprecated
-    models[master].AxisX.AxisChanged += (object? sender, AxisChangedEventArgs e) =>
-    {
-      var min = models[master].AxisX.ActualMinimum;
-      var max = models[master].AxisX.ActualMaximum;
-
-      models[slave].AxisX.Zoom(min, max);
-      models[slave].InvalidatePlot(false);
-    };
-    #pragma warning restore CS0618 // AxisChanged event is deprecated
 
     for (var i = 0; i < 2; i++)
     {

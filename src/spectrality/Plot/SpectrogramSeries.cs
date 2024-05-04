@@ -7,7 +7,7 @@ using Spectrality.Models;
 
 namespace Spectrality.Plot;
 
-public class SpectrogramSeries : XYAxisSeries
+public class SpectrogramSeries : XYAxisSeries, ITrackableSeries
 {
   private readonly object ImageSyncRoot = new();
 

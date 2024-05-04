@@ -18,7 +18,7 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="*,*">
-        <oxy:PlotView Model="{Binding PlotModel1}" Grid.Row="0">
+        <oxy:PlotView Model="{Binding PlotModel1}" Controller="{Binding PlotController}" Grid.Row="0">
             <oxy:PlotView.Styles>
                 <Style Selector="oxy|TrackerControl">
                     <Setter Property="BorderBrush" Value="Black" />
@@ -29,7 +29,7 @@
                 </Style>
             </oxy:PlotView.Styles>
         </oxy:PlotView>
-        <oxy:PlotView Model="{Binding PlotModel2}" Grid.Row="1">
+        <oxy:PlotView Model="{Binding PlotModel2}" Controller="{Binding PlotController}" Grid.Row="1">
             <oxy:PlotView.Styles>
                 <Style Selector="oxy|TrackerControl">
                     <Setter Property="BorderBrush" Value="Black" />
