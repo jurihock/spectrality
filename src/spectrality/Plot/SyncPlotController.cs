@@ -9,7 +9,7 @@ namespace Spectrality.Plot;
 
 public sealed class SyncPlotController : PlotController
 {
-  public List<PlotModel> SyncPlotModels { get; private init; }
+  public IReadOnlyList<PlotModel> SyncPlotModels { get; private init; }
 
   public SyncPlotController(params PlotModel[] syncPlotModels)
   {
@@ -35,9 +35,8 @@ public sealed class SyncPlotController : PlotController
       new DelegatePlotCommand<OxyMouseEventArgs>(
         (IPlotView view, IController controller, OxyMouseEventArgs args) =>
         {
-          args.Handled = true;
-
           ResetAllAxes();
+          args.Handled = true;
         }));
 
     this.BindMouseDown(OxyMouseButton.Right,
@@ -45,9 +44,7 @@ public sealed class SyncPlotController : PlotController
         (IPlotView view, IController controller, OxyMouseDownEventArgs args) =>
         {
           var manipulator = new SyncPanZoomManipulator(view);
-
           manipulator.PanZoomChanged += OnMasterPanZoomChanged;
-
           controller.AddMouseManipulator(view, manipulator, args);
         }));
 
@@ -56,9 +53,7 @@ public sealed class SyncPlotController : PlotController
         (IPlotView view, IController controller, OxyMouseDownEventArgs args) =>
         {
           var manipulator = new SyncTrackerManipulator(view);
-
           manipulator.TrackerChanged += OnMasterTrackerChanged;
-
           controller.AddMouseManipulator(view, manipulator, args);
         }));
   }
@@ -74,7 +69,7 @@ public sealed class SyncPlotController : PlotController
 
     var slaves = SyncPlotModels
       .Select(model => (model, series: model.Series.FirstOrDefault(filter)))
-      .Where(slave => slave.series is XYAxisSeries)
+      .Where(slave => slave.series != null)
       .Select(slave => (slave.model, series: cast(slave.series)))
       .ToList();
 
@@ -189,7 +184,7 @@ public sealed class SyncPlotController : PlotController
     var slaves = SyncPlotModels
       .Where(model => model != masterPlotModel)
       .Select(model => (model, series: model.Series.FirstOrDefault(filter)))
-      .Where(slave => slave.series is XYAxisSeries)
+      .Where(slave => slave.series != null)
       .Select(slave => (slave.model, series: cast(slave.series)));
 
     foreach (var (slavePlotModel, slavePlotSeries) in slaves)
