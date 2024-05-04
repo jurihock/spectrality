@@ -16,38 +16,103 @@ public sealed class SyncPlotController : PlotController
     SyncPlotModels = syncPlotModels.ToList();
 
     UnbindAll();
+    BindSync();
+  }
 
+  public void ResetAllAxes()
+  {
+    foreach (var syncPlotModel in SyncPlotModels)
+    {
+      syncPlotModel.ResetAllAxes();
+    }
+
+    var zoomablePlotModels = SyncPlotModels
+      .Select(model => (model, series: model.Series.FirstOrDefault(series => series is IZoomableSeries)))
+      .Where(slave => slave.series is XYAxisSeries)
+      .Select(slave => (slave.model, series: (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())))
+      .ToList();
+
+    var minX = zoomablePlotModels.Min(_ => _.series.XAxis.ActualMinimum);
+    var maxX = zoomablePlotModels.Max(_ => _.series.XAxis.ActualMaximum);
+
+    var minY = zoomablePlotModels.Min(_ => _.series.YAxis.ActualMinimum);
+    var maxY = zoomablePlotModels.Max(_ => _.series.YAxis.ActualMaximum);
+
+    foreach (var (zoomablePlotModel, zoomablePlotSeries) in zoomablePlotModels)
+    {
+      var invalidate = false;
+
+      if (zoomablePlotSeries.XAxis.IsZoomEnabled)
+      {
+        zoomablePlotSeries.XAxis.Zoom(
+          minX,
+          maxX);
+
+        invalidate = true;
+      }
+
+      if (zoomablePlotSeries.YAxis.IsZoomEnabled)
+      {
+        zoomablePlotSeries.YAxis.Zoom(
+          minY,
+          maxY);
+
+        invalidate = true;
+      }
+
+      if (invalidate)
+      {
+        Task.Factory.StartNew(
+          model => (model as PlotModel)?.InvalidatePlot(false),
+          zoomablePlotModel);
+      }
+    }
+  }
+
+  private void BindSync()
+  {
     // TODO: https://github.com/oxyplot/oxyplot/blob/master/Source/OxyPlot/PlotController/PlotController.cs
 
-    this.BindMouseDown(OxyMouseButton.Right, new DelegatePlotCommand<OxyMouseDownEventArgs>(
-      (IPlotView view, IController controller, OxyMouseDownEventArgs args) =>
-      {
-        var manipulator = new SyncPanManipulator(view);
+    this.BindMouseDown(OxyMouseButton.Right, OxyModifierKeys.None, 2,
+      new DelegatePlotCommand<OxyMouseEventArgs>(
+        (IPlotView view, IController controller, OxyMouseEventArgs args) =>
+        {
+          args.Handled = true;
+          ResetAllAxes();
+        }));
 
-        manipulator.PanChanged += OnMasterPanChanged;
+    this.BindMouseDown(OxyMouseButton.Right,
+      new DelegatePlotCommand<OxyMouseDownEventArgs>(
+        (IPlotView view, IController controller, OxyMouseDownEventArgs args) =>
+        {
+          var manipulator = new SyncPanManipulator(view);
 
-        controller.AddMouseManipulator(view, manipulator, args);
-      }));
+          manipulator.PanChanged += OnMasterPanChanged;
 
-    this.BindMouseDown(OxyMouseButton.Left, new DelegatePlotCommand<OxyMouseDownEventArgs>(
-      (IPlotView view, IController controller, OxyMouseDownEventArgs args) =>
-      {
-        var manipulator = new SyncTrackerManipulator(view);
+          controller.AddMouseManipulator(view, manipulator, args);
+        }));
 
-        manipulator.TrackerChanged += OnMasterTrackerChanged;
+    this.BindMouseDown(OxyMouseButton.Left,
+      new DelegatePlotCommand<OxyMouseDownEventArgs>(
+        (IPlotView view, IController controller, OxyMouseDownEventArgs args) =>
+        {
+          var manipulator = new SyncTrackerManipulator(view);
 
-        controller.AddMouseManipulator(view, manipulator, args);
-      }));
+          manipulator.TrackerChanged += OnMasterTrackerChanged;
 
-    this.BindMouseWheel(new DelegatePlotCommand<OxyMouseWheelEventArgs>(
-      (IPlotView view, IController controller, OxyMouseWheelEventArgs args) =>
-      {
-        var manipulator = new SyncZoomManipulator(view, args.Delta);
+          controller.AddMouseManipulator(view, manipulator, args);
+        }));
 
-        manipulator.ZoomChanged += OnMasterZoomChanged;
+    this.BindMouseWheel(
+      new DelegatePlotCommand<OxyMouseWheelEventArgs>(
+        (IPlotView view, IController controller, OxyMouseWheelEventArgs args) =>
+        {
+          var manipulator = new SyncZoomManipulator(view, args.Delta);
 
-        manipulator.Started(args);
-      }));
+          manipulator.ZoomChanged += OnMasterZoomChanged;
+
+          manipulator.Started(args);
+        }));
   }
 
   private void OnMasterPanChanged(object? sender, SyncPanEventArgs args)
@@ -64,7 +129,7 @@ public sealed class SyncPlotController : PlotController
       .Where(model => model != masterPlotModel)
       .Select(model => (model, series: model.Series.FirstOrDefault(series => series is IPanableSeries)))
       .Where(slave => slave.series is XYAxisSeries)
-      .Select(slave => (slave.model, (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
+      .Select(slave => (slave.model, series: (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
 
     foreach (var (slavePlotModel, slavePlotSeries) in panableSlaves)
     {
@@ -111,7 +176,7 @@ public sealed class SyncPlotController : PlotController
       .Where(model => model != masterPlotModel)
       .Select(model => (model, series: model.Series.FirstOrDefault(series => series is ITrackableSeries)))
       .Where(slave => slave.series is XYAxisSeries)
-      .Select(slave => (slave.model, (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
+      .Select(slave => (slave.model, series: (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
 
     foreach (var (slavePlotModel, slavePlotSeries) in trackableSlaves)
     {
@@ -152,7 +217,7 @@ public sealed class SyncPlotController : PlotController
       .Where(model => model != masterPlotModel)
       .Select(model => (model, series: model.Series.FirstOrDefault(series => series is IZoomableSeries)))
       .Where(slave => slave.series is XYAxisSeries)
-      .Select(slave => (slave.model, (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
+      .Select(slave => (slave.model, series: (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
 
     foreach (var (slavePlotModel, slavePlotSeries) in zoomableSlaves)
     {
