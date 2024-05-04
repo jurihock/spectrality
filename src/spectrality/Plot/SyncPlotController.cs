@@ -17,6 +17,8 @@ public sealed class SyncPlotController : PlotController
 
     UnbindAll();
 
+    // TODO: https://github.com/oxyplot/oxyplot/blob/master/Source/OxyPlot/PlotController/PlotController.cs
+
     this.BindMouseDown(OxyMouseButton.Right, new DelegatePlotCommand<OxyMouseDownEventArgs>(
       (IPlotView view, IController controller, OxyMouseDownEventArgs args) =>
       {
@@ -35,6 +37,21 @@ public sealed class SyncPlotController : PlotController
         manipulator.TrackerChanged += OnMasterTrackerChanged;
 
         controller.AddMouseManipulator(view, manipulator, args);
+      }));
+
+    this.BindMouseWheel(new DelegatePlotCommand<OxyMouseWheelEventArgs>(
+      (IPlotView view, IController controller, OxyMouseWheelEventArgs args) =>
+      {
+        var fine = true;
+        var factor = fine ? 0.1 : 1.0;
+
+        var manipulator = new SyncZoomManipulator(view)
+        {
+          Fine = fine,
+          Step = args.Delta * 1e-3 * factor
+        };
+
+        manipulator.Started(args);
       }));
   }
 
