@@ -18,7 +18,7 @@ public class SpectrumAnalyzer
     public IProgress<double>? Progress { get; init; }
     public CancellationToken? Cancellation { get; init; }
 
-    public (string, string) Bandwidth { get; init; } = ("A1", "A8");
+    public (string, string) Bandwidth { get; init; } = ("A1", "A9");
     public double Resolution { get; init; } = 12 * 4;
     public double Quality { get; init; } = -1;
 

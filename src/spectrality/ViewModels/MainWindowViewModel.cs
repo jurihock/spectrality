@@ -30,8 +30,8 @@ public class MainWindowViewModel : ViewModelBase
     var channel1 = 0;
     var channel2 = 1;
 
-    var skip = 325;
-    var take = 18;
+    var skip = 300;
+    var take = 42;
 
     var models   = new[] { PlotModel1, PlotModel2 };
     var files    = new[] { file1, file2 };
