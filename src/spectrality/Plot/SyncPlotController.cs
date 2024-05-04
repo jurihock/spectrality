@@ -42,14 +42,9 @@ public sealed class SyncPlotController : PlotController
     this.BindMouseWheel(new DelegatePlotCommand<OxyMouseWheelEventArgs>(
       (IPlotView view, IController controller, OxyMouseWheelEventArgs args) =>
       {
-        var fine = true;
-        var factor = fine ? 0.1 : 1.0;
+        var manipulator = new SyncZoomManipulator(view, args.Delta);
 
-        var manipulator = new SyncZoomManipulator(view)
-        {
-          Fine = fine,
-          Step = args.Delta * 1e-3 * factor
-        };
+        manipulator.ZoomChanged += OnMasterZoomChanged;
 
         manipulator.Started(args);
       }));
@@ -140,6 +135,53 @@ public sealed class SyncPlotController : PlotController
       hit.PlotModel = slavePlotModel;
 
       slavePlotModel.PlotView?.ShowTracker(hit);
+    }
+  }
+
+  private void OnMasterZoomChanged(object? sender, SyncZoomEventArgs args)
+  {
+    var masterPlotManipulator = sender as PlotManipulator<OxyMouseEventArgs>;
+    var masterPlotModel = masterPlotManipulator?.PlotView?.ActualModel;
+
+    if (masterPlotModel == null)
+    {
+      return;
+    }
+
+    var zoomableSlaves = SyncPlotModels
+      .Where(model => model != masterPlotModel)
+      .Select(model => (model, series: model.Series.FirstOrDefault(series => series is IZoomableSeries)))
+      .Where(slave => slave.series is XYAxisSeries)
+      .Select(slave => (slave.model, (XYAxisSeries)(slave.series ?? throw new InvalidOperationException())));
+
+    foreach (var (slavePlotModel, slavePlotSeries) in zoomableSlaves)
+    {
+      var invalidate = false;
+
+      if (slavePlotSeries.XAxis.IsZoomEnabled)
+      {
+        slavePlotSeries.XAxis.Zoom(
+          args.ActualMinimumX,
+          args.ActualMaximumX);
+
+        invalidate = true;
+      }
+
+      if (slavePlotSeries.YAxis.IsZoomEnabled)
+      {
+        slavePlotSeries.YAxis.Zoom(
+          args.ActualMinimumY,
+          args.ActualMaximumY);
+
+        invalidate = true;
+      }
+
+      if (invalidate)
+      {
+        Task.Factory.StartNew(
+          model => (model as PlotModel)?.InvalidatePlot(false),
+          slavePlotModel);
+      }
     }
   }
 }
