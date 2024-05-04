@@ -24,7 +24,7 @@ public sealed class MemoryMappedDatagram : IDatagram
     set => View.Write(x * dx + y * dy, value);
   }
 
-  public MemoryMappedDatagram(int width, int height, string path)
+  public MemoryMappedDatagram(int width, int height, string path, bool transpose = false)
   {
     Path = path;
 
@@ -40,15 +40,12 @@ public sealed class MemoryMappedDatagram : IDatagram
     X = new float[width];
     Y = new float[height];
 
-    dx = Height * sizeof(float);
-    dy = sizeof(float);
-
-    // dx = sizeof(float);
-    // dy = Width * sizeof(float);
+    dx = (transpose ? 1 : Height) * sizeof(float);
+    dy = (transpose ? Width : 1) * sizeof(float);
   }
 
-  public MemoryMappedDatagram(float[] x, float[] y, string path) :
-    this(x.Length, y.Length, path)
+  public MemoryMappedDatagram(float[] x, float[] y, string path, bool transpose = false) :
+    this(x.Length, y.Length, path, transpose)
   {
     Array.Copy(x, X, Width);
     Array.Copy(y, Y, Height);
