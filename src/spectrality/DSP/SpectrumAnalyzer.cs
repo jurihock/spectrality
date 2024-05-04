@@ -118,16 +118,10 @@ public class SpectrumAnalyzer
 
     var timepoints = chunks.Select(chunk => (float)(chunk.First() / samplerate)).ToArray();
     var frequencies = qdft.Frequencies.Select(freq => (float)freq).ToArray();
-    var values = new float[chunks.Length, dftsize];
 
     var spectrogram = new Spectrogram
     {
-      Data = new MemoryDatagram
-      {
-        X = timepoints,
-        Y = frequencies,
-        Z = values
-      },
+      Data = new MemoryDatagram(timepoints, frequencies),
       Meta = new Metagram
       {
         X = new Metagram.AxisMeta
@@ -149,8 +143,8 @@ public class SpectrumAnalyzer
           Type = Metagram.AxisType.Logarithmic
         }
       },
-      Bitmap = new Bitmap(values.GetLength(0), values.GetLength(1)),
-      Tags = new Spectrogram.Tag[values.GetLength(0)]
+      Bitmap = new Bitmap(timepoints.Length, frequencies.Length),
+      Tags = new Spectrogram.Tag[timepoints.Length]
     };
 
     footprint = GC.GetTotalMemory(false) - footprint;
