@@ -11,15 +11,12 @@
         Title="Spectrality">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE.
-             To set the actual DataContext for runtime,
-             set the DataContext property in code (look at App.axaml.cs). -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
     <Grid RowDefinitions="*,*">
-        <oxy:PlotView Model="{Binding PlotModel1}" Controller="{Binding PlotController}" Grid.Row="0"/>
-        <oxy:PlotView Model="{Binding PlotModel2}" Controller="{Binding PlotController}" Grid.Row="1"/>
+        <oxy:PlotView Grid.Row="0" Model="{Binding PlotModel1}" Controller="{Binding PlotController}"/>
+        <oxy:PlotView Grid.Row="1" Model="{Binding PlotModel2}" Controller="{Binding PlotController}"/>
     </Grid>
 
 </Window>
