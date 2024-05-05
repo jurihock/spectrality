@@ -38,17 +38,11 @@ public sealed class Scale
     {
         var chars = string.Concat(note.ToUpper().Where(ValidNoteChars.Contains));
 
-        if (chars.Length == 0)
-        {
-            throw new ArgumentException();
-        }
+        ArgumentOutOfRangeException.ThrowIfNullOrEmpty(chars, nameof(note));
 
         var semitone = Array.IndexOf(Notes, chars);
 
-        if (semitone < 0)
-        {
-            throw new ArgumentException();
-        }
+        ArgumentOutOfRangeException.ThrowIfNegative(semitone, nameof(note));
 
         return semitone;
     }

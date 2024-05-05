@@ -49,11 +49,7 @@ public sealed class QDFT : IDisposable
 
   public void AnalyzeDecibel(ReadOnlySpan<float> samples, Span<float> decibels, int offset, int count)
   {
-    if (decibels.Length != Size)
-    {
-      throw new ArgumentException(
-        $"Invalid output vector length {decibels.Length} != {Size}!");
-    }
+    ArgumentOutOfRangeException.ThrowIfNotEqual(decibels.Length, Size, nameof(decibels));
 
     var qdft = Qdft ?? throw new InvalidOperationException(
       "Invalid QDFT instance pointer!");
