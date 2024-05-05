@@ -1,15 +1,31 @@
 using System.Collections.Generic;
-using Avalonia;
 
 namespace Spectrality.Extensions;
 
 public static class LoggingExtensions
 {
-  public static AppBuilder LogToConsole(this AppBuilder builder)
+  public static Avalonia.AppBuilder LogToConsole(this Avalonia.AppBuilder builder)
   {
     var config = new NLog.Config.LoggingConfiguration();
-    var target = new NLog.Targets.ConsoleTarget();
+    var target = new NLog.Targets.ColoredConsoleTarget();
     var sink = new AvaloniaNLogSink();
+
+    target.Layout = string.Join(
+      " | ",
+      "${level:uppercase=true:padding=-5}",
+      "${time}",
+      "${logger}",
+      "${message}" +
+      "${onexception:${newline}\t${exception:format=tostring}}");
+
+    target.WordHighlightingRules.Add(
+      new NLog.Targets.ConsoleWordHighlightingRule()
+      {
+        Text = "INFO",
+        IgnoreCase = false,
+        WholeWords = true,
+        ForegroundColor = NLog.Targets.ConsoleOutputColor.Green
+      });
 
     config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, target);
 
