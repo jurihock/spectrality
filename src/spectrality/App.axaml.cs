@@ -15,8 +15,6 @@ public partial class App : Application
 
   public override void OnFrameworkInitializationCompleted()
   {
-    EnableConsoleLogging();
-
     if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
     {
       desktop.MainWindow = new MainWindow
@@ -26,15 +24,5 @@ public partial class App : Application
     }
 
     base.OnFrameworkInitializationCompleted();
-  }
-
-  private static void EnableConsoleLogging()
-  {
-    var config = new NLog.Config.LoggingConfiguration();
-    var target = new NLog.Targets.ConsoleTarget();
-
-    config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, target);
-
-    NLog.LogManager.Configuration = config;
   }
 }
