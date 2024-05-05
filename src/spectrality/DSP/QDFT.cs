@@ -35,7 +35,7 @@ public sealed class QDFT : IDisposable
     Size = Library.QDFT.Size(Qdft.Value);
     Frequencies = new double[Size];
 
-    Library.QDFT.Frequencies(Qdft.Value, out Frequencies.AsRef());
+    Library.QDFT.Frequencies(Qdft.Value, out Frequencies.Ref());
   }
 
   public void Dispose()
@@ -54,6 +54,6 @@ public sealed class QDFT : IDisposable
     var qdft = Qdft ?? throw new InvalidOperationException(
       "Invalid QDFT instance pointer!");
 
-    Library.QDFT.AnalyzeDecibel(qdft, in samples.AsRef(), out decibels.AsRef(), samples.Length);
+    Library.QDFT.AnalyzeDecibel(qdft, in samples.Ref(), out decibels.Ref(), samples.Length);
   }
 }

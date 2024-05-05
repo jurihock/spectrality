@@ -53,7 +53,7 @@ public class AudioFileReader
     var read = Library.Audio.Read(
       path,
       path.Length,
-      out samples.AsRef(),
+      out samples.Ref(),
       ref framesread);
 
     if (!read)
