@@ -80,13 +80,13 @@ public sealed class SyncPanZoomManipulator : MouseManipulator
     var vector = y - x;
     var length = double.Hypot(vector.X, vector.Y);
 
-    var zoom = (length > ZoomThreshold) && (double.Abs(vector.Y) > double.Abs(vector.X));
+    var zoom = (length > ZoomThreshold) && (Math.Abs(vector.Y) > Math.Abs(vector.X));
     var invalidate = false;
 
     if (zoom && IsZoomEnabled)
     {
-      var factor = double.Sign(vector.Y) * ZoomDirection *
-                   double.Pow(length, ZoomGamma) * ZoomSensitivity;
+      var factor = Math.Sign(vector.Y) * ZoomDirection *
+                   Math.Pow(length, ZoomGamma) * ZoomSensitivity;
 
       if (factor > 0)
       {
