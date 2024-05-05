@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:oxy="clr-namespace:OxyPlot.Avalonia;assembly=OxyPlot.Avalonia"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="Spectrality.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
@@ -18,28 +18,8 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="*,*">
-        <oxy:PlotView Model="{Binding PlotModel1}" Controller="{Binding PlotController}" Grid.Row="0">
-            <oxy:PlotView.Styles>
-                <Style Selector="oxy|TrackerControl">
-                    <Setter Property="BorderBrush" Value="Black" />
-                    <Setter Property="Background" Value="White" />
-                    <Setter Property="Foreground" Value="Black" />
-                    <Setter Property="LineStroke" Value="White" />
-                    <Setter Property="FontFamily" Value="Courier New, Courier, Monospace" />
-                </Style>
-            </oxy:PlotView.Styles>
-        </oxy:PlotView>
-        <oxy:PlotView Model="{Binding PlotModel2}" Controller="{Binding PlotController}" Grid.Row="1">
-            <oxy:PlotView.Styles>
-                <Style Selector="oxy|TrackerControl">
-                    <Setter Property="BorderBrush" Value="Black" />
-                    <Setter Property="Background" Value="White" />
-                    <Setter Property="Foreground" Value="Black" />
-                    <Setter Property="LineStroke" Value="White" />
-                    <Setter Property="FontFamily" Value="Courier New, Courier, Monospace" />
-                </Style>
-            </oxy:PlotView.Styles>
-        </oxy:PlotView>
+        <oxy:PlotView Model="{Binding PlotModel1}" Controller="{Binding PlotController}" Grid.Row="0"/>
+        <oxy:PlotView Model="{Binding PlotModel2}" Controller="{Binding PlotController}" Grid.Row="1"/>
     </Grid>
 
 </Window>
