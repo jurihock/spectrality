@@ -12,7 +12,7 @@ public class SpectrumAnalyzer
 {
   private readonly struct PrepareBag
   {
-    public float[] Samples { get; init; } = [];
+    public ReadOnlyMemory<float> Samples { get; init; }
     public double Samplerate { get; init; }
     public double Timestep { get; init; }
     public IProgress<double>? Progress { get; init; }
@@ -28,7 +28,7 @@ public class SpectrumAnalyzer
   private readonly struct AnalysisBag
   {
     public Spectrogram Spectrogram { get; init; }
-    public float[] Samples { get; init; }
+    public ReadOnlyMemory<float> Samples { get; init; }
     public int[][] Chunks { get; init; }
     public QDFT QDFT { get; init; }
     public IProgress<double>? Progress { get; init; }
@@ -49,7 +49,7 @@ public class SpectrumAnalyzer
     Timestep = timestep;
   }
 
-  public Spectrogram GetSpectrogram(float[] samples)
+  public Spectrogram GetSpectrogram(ReadOnlyMemory<float> samples)
   {
     var prebag = new PrepareBag
     {
@@ -63,7 +63,7 @@ public class SpectrumAnalyzer
     return Analyze(Prepare(prebag));
   }
 
-  public (Spectrogram, Task) GetSpectrogramTask(float[] samples)
+  public (Spectrogram, Task) GetSpectrogramTask(ReadOnlyMemory<float> samples)
   {
     var prebag = new PrepareBag
     {
@@ -192,7 +192,7 @@ public class SpectrumAnalyzer
           break;
         }
 
-        qdft.AnalyzeDecibel(samples, buffer, chunk.First(), chunk.Length);
+        qdft.AnalyzeDecibel(samples.Span.Slice(chunk.First(), chunk.Length), buffer);
 
         for (var i = 0; i < buffer.Length; i++)
         {

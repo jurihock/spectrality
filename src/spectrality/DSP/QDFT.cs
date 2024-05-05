@@ -47,13 +47,13 @@ public sealed class QDFT : IDisposable
     }
   }
 
-  public void AnalyzeDecibel(ReadOnlySpan<float> samples, Span<float> decibels, int offset, int count)
+  public void AnalyzeDecibel(ReadOnlySpan<float> samples, Span<float> decibels)
   {
     ArgumentOutOfRangeException.ThrowIfNotEqual(decibels.Length, Size, nameof(decibels));
 
     var qdft = Qdft ?? throw new InvalidOperationException(
       "Invalid QDFT instance pointer!");
 
-    Library.QDFT.AnalyzeDecibel(qdft, in samples.AsRef(offset), out decibels.AsRef(), count);
+    Library.QDFT.AnalyzeDecibel(qdft, in samples.AsRef(), out decibels.AsRef(), samples.Length);
   }
 }

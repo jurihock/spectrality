@@ -16,7 +16,7 @@ public class AudioFileReader
     Path = path;
   }
 
-  public (float[] samples, double samplerate) Read(int channel = 0, double skip = 0, double take = 0)
+  public (Memory<float> samples, double samplerate) Read(int channel = 0, double skip = 0, double take = 0)
   {
     Logger.Info($"Reading audio file \"{Path}\".");
 
