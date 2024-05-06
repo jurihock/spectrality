@@ -20,8 +20,8 @@ static class Program
   // Don't remove, also used by visual designer.
   public static AppBuilder BuildAvaloniaApp() => AppBuilder
     .Configure<App>()
+    .LogToConsole()
     .UsePlatformDetect()
     .UseReactiveUI()
-    .WithInterFont()
-    .LogToConsole();
+    .WithInterFont();
 }
