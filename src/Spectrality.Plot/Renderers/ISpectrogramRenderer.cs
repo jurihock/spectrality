@@ -1,8 +1,8 @@
 using Spectrality.Models;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Renderers;
 
-public interface ISpectrogramBitmap
+public interface ISpectrogramRenderer
 {
   void RenderBitmap(Spectrogram spectrogram);
 }

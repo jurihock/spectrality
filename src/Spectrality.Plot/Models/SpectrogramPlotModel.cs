@@ -1,10 +1,11 @@
 using OxyPlot;
 using OxyPlot.Axes;
 using Spectrality.Models;
+using Spectrality.Plot.Series;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Models;
 
-public class SpectrogramPlotModel : PlotModel
+public sealed class SpectrogramPlotModel : PlotModel
 {
   public LinearAxis AxisX { get; init; }
   public LogarithmicAxis AxisY { get; init; }

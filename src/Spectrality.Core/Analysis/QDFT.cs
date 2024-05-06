@@ -1,7 +1,7 @@
 using System;
 using Spectrality.Extensions;
 
-namespace Spectrality.DSP;
+namespace Spectrality.Analysis;
 
 public sealed class QDFT : IDisposable
 {

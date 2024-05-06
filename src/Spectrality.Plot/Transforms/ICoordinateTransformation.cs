@@ -1,4 +1,4 @@
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Transforms;
 
 public interface ICoordinateTransformation<T>
 {

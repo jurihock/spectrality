@@ -3,9 +3,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -13,12 +13,13 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.10" />
     <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.0.10" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
-    <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="NLog" Version="5.3.1" />
-    <PackageReference Include="Oxyplot.Avalonia" Version="2.1.0-Avalonia11" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Spectrality.Core\Spectrality.Core.csproj" />
+    <ProjectReference Include="..\Spectrality.Plot\Spectrality.Plot.csproj" />
   </ItemGroup>
 </Project>

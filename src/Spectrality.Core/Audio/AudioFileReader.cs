@@ -3,9 +3,9 @@ using System.IO;
 using System.Text;
 using Spectrality.Extensions;
 
-namespace Spectrality.IO;
+namespace Spectrality.Audio;
 
-public class AudioFileReader
+public sealed class AudioFileReader
 {
   private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 

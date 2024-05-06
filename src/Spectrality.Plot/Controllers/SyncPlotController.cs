@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using OxyPlot;
 using OxyPlot.Series;
+using Spectrality.Plot.Manipulators;
+using Spectrality.Plot.Series;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Controllers;
 
 public sealed class SyncPlotController : PlotController
 {
@@ -60,11 +62,11 @@ public sealed class SyncPlotController : PlotController
 
   private void OnResetAllAxes()
   {
-    var filter = (Series series) =>
+    var filter = (OxyPlot.Series.Series series) =>
       (series is ISyncSeries) &&
       (series is XYAxisSeries);
 
-    var cast = (Series? series) =>
+    var cast = (OxyPlot.Series.Series? series) =>
       (XYAxisSeries)(series ?? throw new InvalidOperationException());
 
     var slaves = SyncPlotModels
@@ -120,11 +122,11 @@ public sealed class SyncPlotController : PlotController
       return;
     }
 
-    var filter = (Series series) =>
+    var filter = (OxyPlot.Series.Series series) =>
       (series is ISyncSeries) &&
       (series is XYAxisSeries);
 
-    var cast = (Series? series) =>
+    var cast = (OxyPlot.Series.Series? series) =>
       (XYAxisSeries)(series ?? throw new InvalidOperationException());
 
     var slaves = SyncPlotModels
@@ -174,11 +176,11 @@ public sealed class SyncPlotController : PlotController
       return;
     }
 
-    var filter = (Series series) =>
+    var filter = (OxyPlot.Series.Series series) =>
       (series is ISyncSeries) &&
       (series is XYAxisSeries);
 
-    var cast = (Series? series) =>
+    var cast = (OxyPlot.Series.Series? series) =>
       (XYAxisSeries)(series ?? throw new InvalidOperationException());
 
     var slaves = SyncPlotModels

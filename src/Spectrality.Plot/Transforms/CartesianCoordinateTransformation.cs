@@ -1,8 +1,8 @@
 using OxyPlot;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Transforms;
 
-public class CartesianCoordinateTransformation : ICoordinateTransformation<DataPoint>
+public sealed class CartesianCoordinateTransformation : ICoordinateTransformation<DataPoint>
 {
   public ICoordinateTransformation<double> TransformX { get; private set; }
   public ICoordinateTransformation<double> TransformY { get; private set; }

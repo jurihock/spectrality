@@ -1,8 +1,8 @@
 using System.Linq;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Transforms;
 
-public class LinearCoordinateTransformation : ICoordinateTransformation<double>
+public sealed class LinearCoordinateTransformation : ICoordinateTransformation<double>
 {
   public double Slope { get; private set; }
   public double Intercept { get; private set; }

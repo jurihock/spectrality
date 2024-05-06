@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectrality", "Spectrality\Spectrality.csproj", "{B4939BCC-384B-42B5-9635-D1C4DECE20FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectrality.Core", "Spectrality.Core\Spectrality.Core.csproj", "{06483905-932E-4A46-A06E-BEA8D42E0408}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectrality.Plot", "Spectrality.Plot\Spectrality.Plot.csproj", "{7428452C-8AA5-406B-A8BA-D03DEE616D27}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B4939BCC-384B-42B5-9635-D1C4DECE20FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4939BCC-384B-42B5-9635-D1C4DECE20FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4939BCC-384B-42B5-9635-D1C4DECE20FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4939BCC-384B-42B5-9635-D1C4DECE20FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06483905-932E-4A46-A06E-BEA8D42E0408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06483905-932E-4A46-A06E-BEA8D42E0408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06483905-932E-4A46-A06E-BEA8D42E0408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06483905-932E-4A46-A06E-BEA8D42E0408}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7428452C-8AA5-406B-A8BA-D03DEE616D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7428452C-8AA5-406B-A8BA-D03DEE616D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7428452C-8AA5-406B-A8BA-D03DEE616D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7428452C-8AA5-406B-A8BA-D03DEE616D27}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

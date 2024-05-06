@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Spectrality.DSP;
-using Spectrality.IO;
+using Spectrality.Analysis;
+using Spectrality.Audio;
 using Spectrality.Misc;
-using Spectrality.Plot;
+using Spectrality.Plot.Controllers;
+using Spectrality.Plot.Models;
 
 namespace Spectrality.ViewModels;
 

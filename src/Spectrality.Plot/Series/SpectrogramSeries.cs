@@ -1,17 +1,19 @@
 using System;
 using OxyPlot;
 using OxyPlot.Series;
-using Spectrality.Extensions;
 using Spectrality.Misc;
 using Spectrality.Models;
+using Spectrality.Plot.Extensions;
+using Spectrality.Plot.Renderers;
+using Spectrality.Plot.Transforms;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Series;
 
-public class SpectrogramSeries : XYAxisSeries, ISyncSeries
+public sealed class SpectrogramSeries : XYAxisSeries, ISyncSeries
 {
   private readonly object ImageSyncRoot = new();
 
-  private ISpectrogramBitmap SpectrogramBitmap { get; set; }
+  private ISpectrogramRenderer SpectrogramRenderer { get; set; }
   private ICoordinateTransformation<DataPoint> CoordinateTransformation { get; set; }
 
   private Spectrogram? spectrogram;
@@ -33,7 +35,7 @@ public class SpectrogramSeries : XYAxisSeries, ISyncSeries
           new LinearCoordinateTransformation(spectrogram.Value.Data.X),
           new LogarithmicCoordinateTransformation(spectrogram.Value.Data.Y));
 
-        SpectrogramBitmap.RenderBitmap(spectrogram.Value);
+        SpectrogramRenderer.RenderBitmap(spectrogram.Value);
 
         image = spectrogram.Value.Bitmap.ToOxyImage();
       }
@@ -54,7 +56,7 @@ public class SpectrogramSeries : XYAxisSeries, ISyncSeries
 
   public SpectrogramSeries()
   {
-    SpectrogramBitmap = new ChromesthesiaSpectrogramBitmap();
+    SpectrogramRenderer = new ChromesthesiaSpectrogramRenderer();
 
     CoordinateTransformation = new CartesianCoordinateTransformation(
       new LinearCoordinateTransformation(),
@@ -70,7 +72,7 @@ public class SpectrogramSeries : XYAxisSeries, ISyncSeries
       return;
     }
 
-    SpectrogramBitmap.RenderBitmap(spectrogram.Value);
+    SpectrogramRenderer.RenderBitmap(spectrogram.Value);
 
     lock (ImageSyncRoot)
     {

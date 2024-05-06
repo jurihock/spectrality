@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using OxyPlot;
-using OxyPlot.Series;
+using Spectrality.Plot.Series;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Manipulators;
 
 public sealed class SyncTrackerEventArgs(DataPoint? point) : EventArgs
 {
@@ -12,7 +12,7 @@ public sealed class SyncTrackerEventArgs(DataPoint? point) : EventArgs
 
 public sealed class SyncTrackerManipulator : MouseManipulator
 {
-  private readonly Series? TrackableSeries;
+  private readonly OxyPlot.Series.Series? TrackableSeries;
   private readonly bool IsTrackerEnabled;
 
   public event EventHandler<SyncTrackerEventArgs>? TrackerChanged;

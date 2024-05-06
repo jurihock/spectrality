@@ -8,9 +8,10 @@ public sealed class MemoryMappedDatagram : IDatagram
 {
   private readonly int dx, dy;
 
+  private MemoryMappedFile File { get; init; }
+  private MemoryMappedViewAccessor View { get; init; }
+
   public string Path { get; private init; }
-  public MemoryMappedFile File { get; private init; }
-  public MemoryMappedViewAccessor View { get; private init; }
 
   public int Width => X.Length;
   public int Height => Y.Length;

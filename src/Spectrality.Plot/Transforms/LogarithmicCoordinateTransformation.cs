@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Transforms;
 
-public class LogarithmicCoordinateTransformation : ICoordinateTransformation<double>
+public sealed class LogarithmicCoordinateTransformation : ICoordinateTransformation<double>
 {
   public double Slope { get; private set; }
   public double Intercept { get; private set; }

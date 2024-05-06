@@ -1,7 +1,7 @@
 using System;
 using OxyPlot;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Manipulators;
 
 public sealed class SyncPanZoomEventArgs(double minX, double maxX, double minY, double maxY) : EventArgs
 {

@@ -4,16 +4,16 @@ using OxyPlot;
 using Spectrality.Misc;
 using Spectrality.Models;
 
-namespace Spectrality.Plot;
+namespace Spectrality.Plot.Renderers;
 
-public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
+public sealed class ChromesthesiaSpectrogramRenderer : ISpectrogramRenderer
 {
   public (double, double) Limit { get; private set; }
   public double Gamma { get; private set; }
   public double Brightness { get; private set; }
   public double Saturation { get; private set; }
 
-  public ChromesthesiaSpectrogramBitmap()
+  public ChromesthesiaSpectrogramRenderer()
   {
     Limit = (-120, 0);
     Gamma = 2;
@@ -21,7 +21,7 @@ public class ChromesthesiaSpectrogramBitmap : ISpectrogramBitmap
     Saturation = -0.5;
   }
 
-  public ChromesthesiaSpectrogramBitmap((double, double) limit,
+  public ChromesthesiaSpectrogramRenderer((double, double) limit,
                                         double gamma = 1,
                                         double brightness = 1,
                                         double saturation = 1)

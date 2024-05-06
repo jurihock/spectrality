@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Spectrality.Misc;
 using Spectrality.Models;
 
-namespace Spectrality.DSP;
+namespace Spectrality.Analysis;
 
-public class SpectrumAnalyzer
+public sealed class SpectrumAnalyzer
 {
   private readonly struct PrepareBag
   {

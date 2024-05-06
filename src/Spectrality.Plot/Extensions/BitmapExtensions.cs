@@ -1,7 +1,7 @@
 using OxyPlot;
 using Spectrality.Misc;
 
-namespace Spectrality.Extensions;
+namespace Spectrality.Plot.Extensions;
 
 public static class BitmapExtensions
 {
