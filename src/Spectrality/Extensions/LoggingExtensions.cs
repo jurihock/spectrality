@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Spectrality.Extensions;
 
@@ -48,16 +50,59 @@ public static class LoggingExtensions
         { Avalonia.Logging.LogEventLevel.Fatal, NLog.LogLevel.Fatal }
       };
 
-    private static NLog.Logger GetLogger(string area, object? source) =>
-      NLog.LogManager.GetLogger(source?.ToString() ?? $"{nameof(Avalonia)}.{area}");
+    private static bool OxyPlotTrackerWarning = false;
+
+    private static bool IsOxyPlotTrackerWarning(Avalonia.Logging.LogEventLevel level, string source)
+    {
+      // Notify once and then suppress subsequent warnings:
+      //   An error occurred binding A to "B" at "C":
+      //   "Could not find a matching property accessor for 'C' on 'D'."
+
+      if (level != Avalonia.Logging.LogEventLevel.Warning)
+      {
+        return false;
+      }
+
+      var sources = new[]
+      {
+        typeof(OxyPlot.Avalonia.TrackerControl).FullName,
+        typeof(Avalonia.Controls.TextBlock).FullName
+      };
+
+      if (!sources.Contains(source))
+      {
+        return false;
+      }
+
+      try
+      {
+        return OxyPlotTrackerWarning;
+      }
+      finally
+      {
+        OxyPlotTrackerWarning = true;
+      }
+    }
+
+    private static NLog.Logger? GetLogger(Avalonia.Logging.LogEventLevel level, string area, object? source)
+    {
+      var name = source?.ToString() ?? $"{nameof(Avalonia)}.{area}";
+
+      if (IsOxyPlotTrackerWarning(level, name))
+      {
+        return null;
+      }
+
+      return NLog.LogManager.GetLogger(name);
+    }
 
     public bool IsEnabled(Avalonia.Logging.LogEventLevel level, string area) =>
       level >= Avalonia.Logging.LogEventLevel.Warning;
 
     public void Log(Avalonia.Logging.LogEventLevel level, string area, object? source, string message) =>
-      GetLogger(area, source).Log(LogLevelMap[level], message);
+      GetLogger(level, area, source)?.Log(LogLevelMap[level], message);
 
     public void Log(Avalonia.Logging.LogEventLevel level, string area, object? source, string message, params object?[] args) =>
-      GetLogger(area, source).Log(LogLevelMap[level], message, args);
+      GetLogger(level, area, source)?.Log(LogLevelMap[level], message, args);
   }
 }
