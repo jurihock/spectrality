@@ -2,11 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:oxy="clr-namespace:OxyPlot.Avalonia;assembly=OxyPlot.Avalonia"
              x:Class="Spectrality.App"
-             xmlns:local="using:Spectrality"
+             xmlns:vm="using:Spectrality.ViewModels"
              RequestedThemeVariant="Dark">
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <vm:ViewLocator/>
     </Application.DataTemplates>
 
     <Application.Styles>
