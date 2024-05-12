@@ -14,10 +14,8 @@ public sealed class NoteSelectorViewModel : ViewModelBase
     get => octave;
     set
     {
-      if (SetAndNotifyIfChanged(ref octave, value))
-      {
-        Notify(nameof(NoteString), nameof(FrequencyString));
-      }
+      SetAndNotifyIfChanged(ref octave, value).AlsoNotify(
+        nameof(NoteString), nameof(FrequencyString));
     }
   }
 
@@ -27,10 +25,8 @@ public sealed class NoteSelectorViewModel : ViewModelBase
     get => note;
     set
     {
-      if (SetAndNotifyIfChanged(ref note, value ?? note))
-      {
-        Notify(nameof(NoteString), nameof(FrequencyString));
-      }
+      SetAndNotifyIfChanged(ref note, value ?? note).AlsoNotify(
+        nameof(NoteString), nameof(FrequencyString));
     }
   }
 
@@ -40,10 +36,8 @@ public sealed class NoteSelectorViewModel : ViewModelBase
     get => a4;
     set
     {
-      if (SetAndNotifyIfChanged(ref a4, value))
-      {
-        Notify(nameof(NoteString), nameof(FrequencyString));
-      }
+      SetAndNotifyIfChanged(ref a4, value).AlsoNotify(
+        nameof(NoteString), nameof(FrequencyString));
     }
   }
 

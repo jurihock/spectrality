@@ -7,8 +7,32 @@ namespace Spectrality.ViewModels;
 
 public abstract class ViewModelBase : ReactiveObject
 {
+  protected readonly struct PropertyChange(
+    ReactiveObject reactiveObject,
+    string propertyName,
+    bool isPropertyChanged)
+  {
+    public readonly ReactiveObject ReactiveObject = reactiveObject;
+    public readonly string PropertyName = propertyName;
+    public readonly bool IsPropertyChanged = isPropertyChanged;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void AlsoNotify(params string[] propertyNames)
+    {
+      if (!IsPropertyChanged)
+      {
+        return;
+      }
+
+      foreach (var propertyName in propertyNames)
+      {
+        ReactiveObject.RaisePropertyChanged(propertyName);
+      }
+    }
+  }
+
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  protected bool SetAndNotify<T>(
+  protected PropertyChange SetAndNotify<T>(
     ref T oldValue,
     T newValue,
     [CallerMemberName] string? propertyName = null)
@@ -19,11 +43,11 @@ public abstract class ViewModelBase : ReactiveObject
     oldValue = newValue;
 
     this.RaisePropertyChanged(propertyName);
-    return true;
+    return new PropertyChange(this, propertyName, true);
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  protected bool SetAndNotifyIfChanged<T>(
+  protected PropertyChange SetAndNotifyIfChanged<T>(
     ref T oldValue,
     T newValue,
     [CallerMemberName] string? propertyName = null)
@@ -32,34 +56,13 @@ public abstract class ViewModelBase : ReactiveObject
 
     if (EqualityComparer<T>.Default.Equals(oldValue, newValue))
     {
-      return false;
+      return new PropertyChange(this, propertyName, false);
     }
 
     this.RaisePropertyChanging(propertyName);
     oldValue = newValue;
 
     this.RaisePropertyChanged(propertyName);
-    return true;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  protected void Notify(
-    [CallerMemberName] string? propertyName = null)
-  {
-    ArgumentNullException.ThrowIfNull(propertyName);
-
-    this.RaisePropertyChanged(propertyName);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  protected void Notify(
-    params string[] propertyNames)
-  {
-    ArgumentNullException.ThrowIfNull(propertyNames);
-
-    foreach (var propertyName in propertyNames)
-    {
-      this.RaisePropertyChanged(propertyName);
-    }
+    return new PropertyChange(this, propertyName, true);
   }
 }
