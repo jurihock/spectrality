@@ -18,10 +18,11 @@
         <cv:NoteSelectorConverter x:Key="NoteSelectorConverter"/>
     </UserControl.Resources>
 
-    <Grid RowDefinitions="*,*,*" ColumnDefinitions="*">
+    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*">
 
         <Grid Grid.Row="0" Grid.Column="0"
               RowDefinitions="*,*" ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*"
+              Classes="my-md"
               ShowGridLines="False"
               ToolTip.Tip="Note">
 
@@ -79,7 +80,8 @@
                 ToolTip.Tip="Octave"/>
 
         <Grid Grid.Row="2" Grid.Column="0"
-              RowDefinitions="*,*" ColumnDefinitions="Auto,*">
+              RowDefinitions="*,*" ColumnDefinitions="Auto,*"
+              Classes="my-md">
 
             <TextBlock Grid.Row="0" Grid.Column="0"
                        Text="Note:&#160;"/>

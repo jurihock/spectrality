@@ -20,18 +20,48 @@
 
         <dia:DialogHost.DialogContent>
 
-            <Expander Header="Analysis frequency bandwidth">
-                <Expander.Content>
-                    <TabControl>
-                        <TabItem Header="Min frequency">
-                            <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
-                        </TabItem>
-                        <TabItem Header="Max frequency">
-                            <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
-                        </TabItem>
-                    </TabControl>
-                </Expander.Content>
-            </Expander>
+            <DockPanel MinWidth="400" MinHeight="300">
+
+                <DockPanel DockPanel.Dock="Bottom" Classes="mt-md">
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                        <Button>Reset</Button>
+                    </StackPanel>
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                        <Button Classes="mx-sm">Analyze</Button>
+                        <Button>Cancel</Button>
+                    </StackPanel>
+                    <Control/>
+                </DockPanel>
+
+                <ScrollViewer>
+                <StackPanel Orientation="Vertical">
+
+                    <Expander Header="Analysis frequency bandwidth" IsExpanded="True">
+                        <TabControl>
+                            <TabItem Header="Min frequency">
+                                <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
+                            </TabItem>
+                            <TabItem Header="Max frequency">
+                                <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
+                            </TabItem>
+                        </TabControl>
+                    </Expander>
+
+                    <Expander Header="Analysis frequency bandwidth" IsExpanded="False">
+                        <TabControl>
+                            <TabItem Header="Min frequency">
+                                <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
+                            </TabItem>
+                            <TabItem Header="Max frequency">
+                                <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
+                            </TabItem>
+                        </TabControl>
+                    </Expander>
+
+                </StackPanel>
+                </ScrollViewer>
+
+            </DockPanel>
 
         </dia:DialogHost.DialogContent>
 

@@ -1,6 +1,5 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:oxy="clr-namespace:OxyPlot.Avalonia;assembly=OxyPlot.Avalonia"
              xmlns:vm="using:Spectrality.ViewModels"
              x:Class="Spectrality.App"
              RequestedThemeVariant="Dark">
@@ -15,19 +14,11 @@
 
         <StyleInclude Source="avares://DialogHost.Avalonia/Styles.xaml"/>
         <StyleInclude Source="avares://OxyPlot.Avalonia/Themes/Default.axaml"/>
-        <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml" />
+        <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml"/>
 
-        <Style Selector="TabControl">
-            <Setter Property="Padding" Value="10"/>
-        </Style>
-
-        <Style Selector="oxy|TrackerControl">
-            <Setter Property="BorderBrush" Value="#A0FFFFFF"/>
-            <Setter Property="Background" Value="#D0FFFFFF"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="LineStroke" Value="#A0FFFFFF"/>
-            <Setter Property="FontFamily" Value="Courier New, Courier, Monospace"/>
-        </Style>
+        <StyleInclude Source="avares://Spectrality/Assets/Styles/Margin.axaml"/>
+        <StyleInclude Source="avares://Spectrality/Assets/Styles/OxyPlot.axaml"/>
+        <StyleInclude Source="avares://Spectrality/Assets/Styles/Semi.axaml"/>
 
     </Application.Styles>
 
