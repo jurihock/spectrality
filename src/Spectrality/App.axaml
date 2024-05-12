@@ -16,9 +16,9 @@
         <StyleInclude Source="avares://OxyPlot.Avalonia/Themes/Default.axaml"/>
         <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml"/>
 
-        <StyleInclude Source="avares://Spectrality/Assets/Styles/Margin.axaml"/>
-        <StyleInclude Source="avares://Spectrality/Assets/Styles/OxyPlot.axaml"/>
-        <StyleInclude Source="avares://Spectrality/Assets/Styles/Semi.axaml"/>
+        <StyleInclude Source="avares://Spectrality/Styles/Margin.axaml"/>
+        <StyleInclude Source="avares://Spectrality/Styles/OxyPlot.axaml"/>
+        <StyleInclude Source="avares://Spectrality/Styles/Semi.axaml"/>
 
     </Application.Styles>
 
