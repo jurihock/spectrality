@@ -1,0 +1,45 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+        xmlns:oxy="clr-namespace:OxyPlot.Avalonia;assembly=OxyPlot.Avalonia"
+        xmlns:v="using:Spectrality.Views"
+        xmlns:vm="using:Spectrality.ViewModels"
+        x:Class="Spectrality.Views.MainWindowView"
+        x:DataType="vm:MainWindowViewModel"
+        d:DesignWidth="800" d:DesignHeight="600" mc:Ignorable="d"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Spectrality">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <dia:DialogHost CloseOnClickAway="True" IsOpen="True">
+
+        <dia:DialogHost.DialogContent>
+
+            <Expander Header="Analysis frequency bandwidth">
+                <Expander.Content>
+                    <TabControl>
+                        <TabItem Header="Min frequency">
+                            <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
+                        </TabItem>
+                        <TabItem Header="Max frequency">
+                            <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
+                        </TabItem>
+                    </TabControl>
+                </Expander.Content>
+            </Expander>
+
+        </dia:DialogHost.DialogContent>
+
+        <Grid RowDefinitions="*,*" ColumnDefinitions="*">
+            <oxy:PlotView Grid.Row="0" Grid.Column="0" Model="{Binding PlotModel1}" Controller="{Binding PlotController}"/>
+            <oxy:PlotView Grid.Row="1" Grid.Column="0" Model="{Binding PlotModel2}" Controller="{Binding PlotController}"/>
+        </Grid>
+
+    </dia:DialogHost>
+
+</Window>

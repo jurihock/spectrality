@@ -5,9 +5,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Oxyplot.Avalonia" Version="2.1.0-Avalonia11" />
+    <PackageReference Include="Oxyplot.Core" Version="2.1.2"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Spectrality.Core\Spectrality.Core.csproj" />
+    <ProjectReference Include="..\Spectrality.Core\Spectrality.Core.csproj"/>
   </ItemGroup>
 </Project>

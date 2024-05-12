@@ -7,6 +7,9 @@ namespace Spectrality.Plot.Models;
 
 public sealed class SpectrogramPlotModel : PlotModel
 {
+  private static readonly OxyColor DefaultBackgroundColor = OxyColors.Black;
+  private static readonly OxyColor DefaultForegroundColor = OxyColors.White;
+
   public LinearAxis AxisX { get; init; }
   public LogarithmicAxis AxisY { get; init; }
 
@@ -20,14 +23,14 @@ public sealed class SpectrogramPlotModel : PlotModel
 
   public SpectrogramPlotModel()
   {
-    Background = OxyColors.Black;
-    TextColor = OxyColors.White;
-    PlotAreaBorderColor = OxyColors.White;
+    Background = DefaultBackgroundColor;
+    TextColor = DefaultForegroundColor;
+    PlotAreaBorderColor = DefaultForegroundColor;
 
     AxisX = new LinearAxis()
     {
       Position = AxisPosition.Bottom,
-      TicklineColor = OxyColors.White,
+      TicklineColor = DefaultForegroundColor,
       IsPanEnabled = true,
       IsZoomEnabled = true
     };
@@ -36,7 +39,7 @@ public sealed class SpectrogramPlotModel : PlotModel
     AxisY = new LogarithmicAxis()
     {
       Position = AxisPosition.Left,
-      TicklineColor = OxyColors.White,
+      TicklineColor = DefaultForegroundColor,
       IsPanEnabled = false,
       IsZoomEnabled = false
     };

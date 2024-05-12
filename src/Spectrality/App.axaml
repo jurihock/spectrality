@@ -1,8 +1,8 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:oxy="clr-namespace:OxyPlot.Avalonia;assembly=OxyPlot.Avalonia"
-             x:Class="Spectrality.App"
              xmlns:vm="using:Spectrality.ViewModels"
+             x:Class="Spectrality.App"
              RequestedThemeVariant="Dark">
 
     <Application.DataTemplates>
@@ -11,13 +11,14 @@
 
     <Application.Styles>
         <FluentTheme/>
+        <StyleInclude Source="avares://DialogHost.Avalonia/Styles.xaml"/>
         <StyleInclude Source="avares://OxyPlot.Avalonia/Themes/Default.axaml"/>
         <Style Selector="oxy|TrackerControl">
-            <Setter Property="BorderBrush" Value="#A0FFFFFF" />
-            <Setter Property="Background" Value="#D0FFFFFF" />
-            <Setter Property="Foreground" Value="Black" />
-            <Setter Property="LineStroke" Value="#A0FFFFFF" />
-            <Setter Property="FontFamily" Value="Courier New, Courier, Monospace" />
+            <Setter Property="BorderBrush" Value="#A0FFFFFF"/>
+            <Setter Property="Background" Value="#D0FFFFFF"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="LineStroke" Value="#A0FFFFFF"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, Monospace"/>
         </Style>
     </Application.Styles>
 

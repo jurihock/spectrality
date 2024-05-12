@@ -5,16 +5,16 @@ namespace Spectrality.Misc;
 
 public sealed class Scale
 {
-    public readonly string[] Notes =
+    public static readonly string[] Notes =
         [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" ];
 
-    public readonly int[] Octaves =
+    public static readonly int[] Octaves =
         Enumerable.Range(-1, 12).ToArray();
 
-    public readonly char[] ValidNoteChars =
+    public static readonly char[] ValidNoteChars =
         "#ABCDEFG".ToCharArray();
 
-    public readonly char[] ValidOctaveChars =
+    public static readonly char[] ValidOctaveChars =
         "-0123456789".ToCharArray();
 
     public double A4 { get; private set; }

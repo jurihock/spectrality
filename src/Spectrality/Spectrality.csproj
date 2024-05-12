@@ -8,18 +8,20 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
   </PropertyGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Assets\**" />
+    <AvaloniaResource Include="Assets\**"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.10" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.0.10" Condition="'$(Configuration)' == 'Debug'" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+    <PackageReference Include="Avalonia" Version="11.1.0-beta2"/>
+    <PackageReference Include="Avalonia.Desktop" Version="11.1.0-beta2"/>
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.1.0-beta2" Condition="'$(Configuration)' == 'Debug'"/>
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-beta2"/>
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.0-beta2"/>
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-beta2"/>
+    <PackageReference Include="DialogHost.Avalonia" Version="0.8.0-avalonia11dot1-1"/>
+    <PackageReference Include="Oxyplot.Avalonia" Version="2.1.0-Avalonia11"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Spectrality.Core\Spectrality.Core.csproj" />
-    <ProjectReference Include="..\Spectrality.Plot\Spectrality.Plot.csproj" />
+    <ProjectReference Include="..\Spectrality.Core\Spectrality.Core.csproj"/>
+    <ProjectReference Include="..\Spectrality.Plot\Spectrality.Plot.csproj"/>
   </ItemGroup>
 </Project>

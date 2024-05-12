@@ -9,7 +9,7 @@ using Spectrality.Plot.Models;
 
 namespace Spectrality.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public sealed class MainWindowViewModel : ViewModelBase
 {
   private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
@@ -17,6 +17,8 @@ public class MainWindowViewModel : ViewModelBase
   public SpectrogramPlotModel PlotModel2 { get; set; }
 
   public SyncPlotController PlotController { get; set; }
+
+  public NoteSelectorViewModel NoteSelector { get; set; } = new();
 
   public MainWindowViewModel()
   {

@@ -18,7 +18,7 @@ public sealed class SpectrumAnalyzer
     public IProgress<double>? Progress { get; init; }
     public CancellationToken? Cancellation { get; init; }
 
-    public (string, string) Bandwidth { get; init; } = ("A1", "A9");
+    public (string min, string max) Bandwidth { get; init; } = ("A1", "A9");
     public double Resolution { get; init; } = 12 * 4;
     public double Quality { get; init; } = -1;
 
@@ -92,7 +92,7 @@ public sealed class SpectrumAnalyzer
     var progress = bag.Progress;
     var cancellation = bag.Cancellation;
 
-    var bandwidth = (scale.GetFrequency(bag.Bandwidth.Item1), scale.GetFrequency(bag.Bandwidth.Item2));
+    var bandwidth = (scale.GetFrequency(bag.Bandwidth.min), scale.GetFrequency(bag.Bandwidth.max));
     var resolution = bag.Resolution;
     var quality = bag.Quality;
 

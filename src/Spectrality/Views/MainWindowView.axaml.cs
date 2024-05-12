@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Spectrality.Views;
 
-public partial class MainWindow : Window
+public sealed partial class MainWindowView : Window
 {
-  public MainWindow()
+  public MainWindowView()
   {
     InitializeComponent();
   }

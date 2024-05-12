@@ -47,10 +47,9 @@ public sealed class ChromesthesiaSpectrogramRenderer : ISpectrogramRenderer
     var intercept = min / (max - min);
 
     var scale = new Scale();
-
     var colors = Enumerable
       .Range(0, height)
-      .Select(_ => scale.GetOctaveRatio(freqs[_]) / scale.Octaves.Length)
+      .Select(_ => scale.GetOctaveRatio(freqs[_]) / Scale.Octaves.Length)
       .Select(_ => 1.0 - Math.Clamp(_, 0.0, 1.0))
       .ToArray();
 

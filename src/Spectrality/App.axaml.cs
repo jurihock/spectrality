@@ -6,7 +6,7 @@ using Spectrality.Views;
 
 namespace Spectrality;
 
-public partial class App : Application
+public sealed partial class App : Application
 {
   public override void Initialize()
   {
@@ -17,7 +17,7 @@ public partial class App : Application
   {
     if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
     {
-      desktop.MainWindow = new MainWindow
+      desktop.MainWindow = new MainWindowView
       {
         DataContext = new MainWindowViewModel(),
       };

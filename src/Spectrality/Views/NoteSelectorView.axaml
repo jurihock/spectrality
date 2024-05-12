@@ -1,0 +1,100 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:c="using:Spectrality.Controls"
+             xmlns:cv="using:Spectrality.Converters"
+             xmlns:v="using:Spectrality.Views"
+             xmlns:vm="using:Spectrality.ViewModels"
+             x:Class="Spectrality.Views.NoteSelectorView"
+             x:DataType="vm:NoteSelectorViewModel"
+            d:DesignWidth="800" d:DesignHeight="600" mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:NoteSelectorViewModel/>
+    </Design.DataContext>
+
+    <UserControl.Resources>
+        <cv:NoteSelectorConverter x:Key="NoteSelectorConverter"/>
+    </UserControl.Resources>
+
+    <Grid RowDefinitions="*,*,*" ColumnDefinitions="*">
+
+        <Grid Grid.Row="0" Grid.Column="0"
+              RowDefinitions="*,*" ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*"
+              ShowGridLines="False"
+              ToolTip.Tip="Note">
+
+            <c:NoteSelectorButton Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                                  Content="C#"
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='C#'}"/>
+            <c:NoteSelectorButton Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2"
+                                  Content="D#"
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='D#'}"/>
+            <c:NoteSelectorButton Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2"
+                                  Content="E#"
+                                  IsEnabled="False"
+                                  IsHitTestVisible="False"
+                                  Opacity="0"/>
+            <c:NoteSelectorButton Grid.Row="0" Grid.Column="7" Grid.ColumnSpan="2"
+                                  Content="F#"
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='F#'}"/>
+            <c:NoteSelectorButton Grid.Row="0" Grid.Column="9" Grid.ColumnSpan="2"
+                                  Content="G#"
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='G#'}"/>
+            <c:NoteSelectorButton Grid.Row="0" Grid.Column="11" Grid.ColumnSpan="2"
+                                  Content="A#"
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='A#'}"/>
+
+            <c:NoteSelectorButton Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Content=" C "
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='C'}"/>
+            <c:NoteSelectorButton Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                                  Content=" D "
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='D'}"/>
+            <c:NoteSelectorButton Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2"
+                                  Content=" E "
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='E'}"/>
+            <c:NoteSelectorButton Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2"
+                                  Content=" F "
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='F'}"/>
+            <c:NoteSelectorButton Grid.Row="1" Grid.Column="8" Grid.ColumnSpan="2"
+                                  Content=" G "
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='G'}"/>
+            <c:NoteSelectorButton Grid.Row="1" Grid.Column="10" Grid.ColumnSpan="2"
+                                  Content=" A "
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='A'}"/>
+            <c:NoteSelectorButton Grid.Row="1" Grid.Column="12" Grid.ColumnSpan="2"
+                                  Content=" B "
+                                  IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='B'}"/>
+
+        </Grid>
+
+        <Slider Grid.Row="1" Grid.Column="0"
+                Minimum="{Binding MinOctave}"
+                Maximum="{Binding MaxOctave}"
+                Value="{Binding Octave}"
+                IsSnapToTickEnabled="True"
+                TickFrequency="1"
+                ToolTip.Tip="Octave"/>
+
+        <Grid Grid.Row="2" Grid.Column="0"
+              RowDefinitions="*,*" ColumnDefinitions="Auto,10,*">
+
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       Text="Note:"/>
+
+            <TextBlock Grid.Row="0" Grid.Column="2"
+                       Text="{Binding NoteString}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0"
+                       Text="Frequency:"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="2"
+                       Text="{Binding FrequencyString}"/>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>
