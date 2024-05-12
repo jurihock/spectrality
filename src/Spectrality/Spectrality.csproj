@@ -19,6 +19,7 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-beta2"/>
     <PackageReference Include="DialogHost.Avalonia" Version="0.8.0-avalonia11dot1-1"/>
     <PackageReference Include="Oxyplot.Avalonia" Version="2.1.0-Avalonia11"/>
+    <PackageReference Include="Semi.Avalonia" Version="11.0.7.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Spectrality.Core\Spectrality.Core.csproj"/>

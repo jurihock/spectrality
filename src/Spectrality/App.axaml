@@ -10,9 +10,17 @@
     </Application.DataTemplates>
 
     <Application.Styles>
+
         <FluentTheme/>
+
         <StyleInclude Source="avares://DialogHost.Avalonia/Styles.xaml"/>
         <StyleInclude Source="avares://OxyPlot.Avalonia/Themes/Default.axaml"/>
+        <StyleInclude Source="avares://Semi.Avalonia/Themes/Index.axaml" />
+
+        <Style Selector="TabControl">
+            <Setter Property="Padding" Value="10"/>
+        </Style>
+
         <Style Selector="oxy|TrackerControl">
             <Setter Property="BorderBrush" Value="#A0FFFFFF"/>
             <Setter Property="Background" Value="#D0FFFFFF"/>
@@ -20,6 +28,7 @@
             <Setter Property="LineStroke" Value="#A0FFFFFF"/>
             <Setter Property="FontFamily" Value="Courier New, Courier, Monospace"/>
         </Style>
+
     </Application.Styles>
 
 </Application>
