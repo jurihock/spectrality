@@ -79,18 +79,18 @@
                 ToolTip.Tip="Octave"/>
 
         <Grid Grid.Row="2" Grid.Column="0"
-              RowDefinitions="*,*" ColumnDefinitions="Auto,10,*">
+              RowDefinitions="*,*" ColumnDefinitions="Auto,*">
 
             <TextBlock Grid.Row="0" Grid.Column="0"
-                       Text="Note:"/>
+                       Text="Note:&#160;"/>
 
-            <TextBlock Grid.Row="0" Grid.Column="2"
+            <TextBlock Grid.Row="0" Grid.Column="1"
                        Text="{Binding NoteString}"/>
 
             <TextBlock Grid.Row="1" Grid.Column="0"
-                       Text="Frequency:"/>
+                       Text="Frequency:&#160;"/>
 
-            <TextBlock Grid.Row="1" Grid.Column="2"
+            <TextBlock Grid.Row="1" Grid.Column="1"
                        Text="{Binding FrequencyString}"/>
 
         </Grid>
