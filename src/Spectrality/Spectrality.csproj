@@ -20,7 +20,6 @@
     <PackageReference Include="DialogHost.Avalonia" Version="0.8.0-avalonia11dot1-1"/>
     <PackageReference Include="FluentIcons.Avalonia" Version="1.1.239"/>
     <PackageReference Include="Oxyplot.Avalonia" Version="2.1.0-Avalonia11"/>
-    <PackageReference Include="Semi.Avalonia" Version="11.0.7.2"/>
     <PackageReference Include="SkiaSharp" Version="3.0.0-preview.3.1"/>
   </ItemGroup>
   <ItemGroup>
