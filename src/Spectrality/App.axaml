@@ -16,7 +16,6 @@
         <StyleInclude Source="avares://OxyPlot.Avalonia/Themes/Default.axaml"/>
 
         <StyleInclude Source="avares://Spectrality/Styles/Fluent.axaml"/>
-        <StyleInclude Source="avares://Spectrality/Styles/Margin.axaml"/>
         <StyleInclude Source="avares://Spectrality/Styles/OxyPlot.axaml"/>
 
     </Application.Styles>

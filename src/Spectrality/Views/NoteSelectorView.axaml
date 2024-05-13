@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:c="using:Spectrality.Controls"
              xmlns:cv="using:Spectrality.Converters"
+             xmlns:e="using:Spectrality.Extensions.Markup"
              xmlns:v="using:Spectrality.Views"
              xmlns:vm="using:Spectrality.ViewModels"
              x:Class="Spectrality.Views.NoteSelectorView"
@@ -22,7 +23,7 @@
 
         <Grid Grid.Row="0" Grid.Column="0"
               RowDefinitions="*,*" ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*"
-              Classes="my-md"
+              Margin="{e:Thickness 1, y}"
               ShowGridLines="False"
               ToolTip.Tip="Note">
 
@@ -72,6 +73,7 @@
         </Grid>
 
         <Slider Grid.Row="1" Grid.Column="0"
+                Margin="{e:Thickness 0, y}"
                 Minimum="{Binding MinOctave}"
                 Maximum="{Binding MaxOctave}"
                 Value="{Binding Octave}"
@@ -81,7 +83,7 @@
 
         <Grid Grid.Row="2" Grid.Column="0"
               RowDefinitions="*,*" ColumnDefinitions="Auto,*"
-              Classes="my-md">
+              Margin="{e:Thickness 1, y}">
 
             <TextBlock Grid.Row="0" Grid.Column="0"
                        Text="Note:&#160;"/>
