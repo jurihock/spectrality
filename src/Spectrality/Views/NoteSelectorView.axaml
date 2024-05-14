@@ -29,9 +29,11 @@
 
             <c:NoteSelectorButton Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
                                   Content="C#"
+                                  TabIndex="2"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='C#'}"/>
             <c:NoteSelectorButton Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2"
                                   Content="D#"
+                                  TabIndex="4"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='D#'}"/>
             <c:NoteSelectorButton Grid.Row="0" Grid.Column="5" Grid.ColumnSpan="2"
                                   Content="E#"
@@ -40,34 +42,44 @@
                                   Opacity="0"/>
             <c:NoteSelectorButton Grid.Row="0" Grid.Column="7" Grid.ColumnSpan="2"
                                   Content="F#"
+                                  TabIndex="7"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='F#'}"/>
             <c:NoteSelectorButton Grid.Row="0" Grid.Column="9" Grid.ColumnSpan="2"
                                   Content="G#"
+                                  TabIndex="9"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='G#'}"/>
             <c:NoteSelectorButton Grid.Row="0" Grid.Column="11" Grid.ColumnSpan="2"
                                   Content="A#"
+                                  TabIndex="11"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='A#'}"/>
 
             <c:NoteSelectorButton Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                   Content=" C "
+                                  TabIndex="1"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='C'}"/>
             <c:NoteSelectorButton Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
                                   Content=" D "
+                                  TabIndex="3"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='D'}"/>
             <c:NoteSelectorButton Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2"
                                   Content=" E "
+                                  TabIndex="5"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='E'}"/>
             <c:NoteSelectorButton Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="2"
                                   Content=" F "
+                                  TabIndex="6"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='F'}"/>
             <c:NoteSelectorButton Grid.Row="1" Grid.Column="8" Grid.ColumnSpan="2"
                                   Content=" G "
+                                  TabIndex="8"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='G'}"/>
             <c:NoteSelectorButton Grid.Row="1" Grid.Column="10" Grid.ColumnSpan="2"
                                   Content=" A "
+                                  TabIndex="10"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='A'}"/>
             <c:NoteSelectorButton Grid.Row="1" Grid.Column="12" Grid.ColumnSpan="2"
                                   Content=" B "
+                                  TabIndex="12"
                                   IsChecked="{Binding Note, Converter={StaticResource NoteSelectorConverter}, ConverterParameter='B'}"/>
 
         </Grid>
@@ -77,6 +89,7 @@
                 Minimum="{Binding MinOctave}"
                 Maximum="{Binding MaxOctave}"
                 Value="{Binding Octave}"
+                TabIndex="13"
                 IsSnapToTickEnabled="True"
                 TickFrequency="1"
                 ToolTip.Tip="Octave"/>
