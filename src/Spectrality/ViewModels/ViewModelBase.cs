@@ -8,11 +8,11 @@ namespace Spectrality.ViewModels;
 public abstract class ViewModelBase : ReactiveObject
 {
   protected readonly struct PropertyChange(
-    ReactiveObject reactiveObject,
+    ViewModelBase propertyOwner,
     string propertyName,
     bool isPropertyChanged)
   {
-    public readonly ReactiveObject ReactiveObject = reactiveObject;
+    public readonly ViewModelBase PropertyOwner = propertyOwner;
     public readonly string PropertyName = propertyName;
     public readonly bool IsPropertyChanged = isPropertyChanged;
 
@@ -26,7 +26,7 @@ public abstract class ViewModelBase : ReactiveObject
 
       foreach (var propertyName in propertyNames)
       {
-        ReactiveObject.RaisePropertyChanged(propertyName);
+        PropertyOwner.RaisePropertyChanged(propertyName);
       }
     }
   }
