@@ -10,6 +10,8 @@ namespace Spectrality.Controls;
 
 public abstract class TemplatedControlBase : TemplatedControl
 {
+  private IReadOnlyDictionary<string, (object Property, Action Raise)> DirectProperties { get; init; }
+
   protected readonly struct PropertyChange(
     TemplatedControlBase propertyOwner,
     string propertyName,
@@ -29,23 +31,65 @@ public abstract class TemplatedControlBase : TemplatedControl
 
       foreach (var propertyName in propertyNames)
       {
-        var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+        PropertyOwner.DirectProperties[propertyName].Raise();
+      }
+    }
+  }
 
-        var property = typeof(TemplatedControlBase)
-          .GetMethod(nameof(GetDirectProperty), 0, bindingFlags, null, [typeof(string)], null)!
-          .Invoke(PropertyOwner, [propertyName]);
+  protected TemplatedControlBase()
+  {
+    MethodInfo GetRaisePropertyChangedMethod()
+    {
+      var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+      var tempType = Type.MakeGenericMethodParameter(0);
+      var baseType = typeof(DirectPropertyBase<>).MakeGenericType(tempType);
+
+      var method = typeof(AvaloniaObject).GetMethod(
+        nameof(RaisePropertyChanged), 1, bindingFlags,
+        null, [baseType, tempType, tempType], null);
+
+      ArgumentNullException.ThrowIfNull(method);
+
+      return method;
+    }
+
+    IReadOnlyDictionary<string, (object Property, Action Raise)> GetDirectProperties()
+    {
+      var properties = new Dictionary<string, (object value, Action raise)>();
+
+      var bindingFlags = BindingFlags.Public | BindingFlags.Static;
+      var bindingFilter = (FieldInfo field) => field.Name.EndsWith("Property");
+
+      var propertyInfos = GetType().GetFields(bindingFlags).Where(bindingFilter);
+      var propertyRaiser = GetRaisePropertyChangedMethod();
+
+      foreach (var propertyInfo in propertyInfos)
+      {
+        var property = propertyInfo.GetValue(null);
 
         ArgumentNullException.ThrowIfNull(property);
 
-        var tempType = Type.MakeGenericMethodParameter(0);
-        var baseType = typeof(DirectPropertyBase<>).MakeGenericType(tempType);
+        ArgumentOutOfRangeException.ThrowIfNotEqual(
+          typeof(DirectPropertyBase<>)
+            .MakeGenericType(property.GetType().GenericTypeArguments.Last())
+            .IsAssignableFrom(property.GetType()),
+          true);
 
-        typeof(AvaloniaObject)
-          .GetMethod(nameof(RaisePropertyChanged), 1, bindingFlags, null, [baseType, tempType, tempType], null)!
-          .MakeGenericMethod(property.GetType().GenericTypeArguments.Last())
-          .Invoke(PropertyOwner, [property, default, default]);
+        var name = propertyInfo.Name[.. ^ "Property".Length];
+
+        var raiser = propertyRaiser.MakeGenericMethod(
+          property.GetType().GenericTypeArguments.Last());
+
+        var raise = () => { raiser.Invoke(this, [property, default, default]); };
+
+        properties.Add(name, (property, raise));
       }
+
+      return properties;
     }
+
+    DirectProperties = GetDirectProperties();
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -90,36 +134,9 @@ public abstract class TemplatedControlBase : TemplatedControl
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   private DirectPropertyBase<T> GetDirectProperty<T>(string propertyName)
   {
-    var property = GetDirectProperty(propertyName) as DirectPropertyBase<T>;
+    var property = DirectProperties[propertyName].Property as DirectPropertyBase<T>;
 
     ArgumentNullException.ThrowIfNull(property);
-
-    return property;
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  private object GetDirectProperty(string propertyName)
-  {
-    ArgumentNullException.ThrowIfNull(propertyName);
-
-    var bindingFlags = BindingFlags.Public | BindingFlags.Static;
-
-    var fieldFilter = (FieldInfo field) => string.Equals(
-      field.Name, $"{propertyName}Property", StringComparison.Ordinal);
-
-    var propertyInfo = GetType().GetFields(bindingFlags).FirstOrDefault(fieldFilter);
-
-    ArgumentNullException.ThrowIfNull(propertyInfo);
-
-    var property = propertyInfo.GetValue(null);
-
-    ArgumentNullException.ThrowIfNull(property);
-
-    ArgumentOutOfRangeException.ThrowIfNotEqual(
-      typeof(DirectPropertyBase<>)
-        .MakeGenericType(property.GetType().GenericTypeArguments.Last())
-        .IsAssignableFrom(property.GetType()),
-      true);
 
     return property;
   }
