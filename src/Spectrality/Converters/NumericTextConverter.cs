@@ -1,43 +1,20 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using Avalonia.Data;
 
 namespace Spectrality.Converters;
 
-public sealed class NoteSelectorConverter : ValueConverterBase
+public sealed class NumericTextConverter : ValueConverterBase
 {
+  private static readonly Dictionary<Type, Func<object?, object?>> SupportedNumericTypes = new()
+  {
+    { typeof(double), x => double.TryParse(x?.ToString(), out double y) ? y : null }
+  };
+
   protected override object? Convert(object value, Type srcType, Type dstType, object? parameter, CultureInfo culture)
   {
-    if (srcType != typeof(string))
-    {
-      return new BindingNotification(
-        new ArgumentOutOfRangeException(nameof(srcType)),
-        BindingErrorType.Error);
-    }
-
-    if (dstType != typeof(bool))
-    {
-      return new BindingNotification(
-        new ArgumentOutOfRangeException(nameof(dstType)),
-        BindingErrorType.Error);
-    }
-
-    if (parameter is not string)
-    {
-      return new BindingNotification(
-        new ArgumentOutOfRangeException(nameof(parameter)),
-        BindingErrorType.Error);
-    }
-
-    return string.Equals(
-      value.ToString(),
-      parameter.ToString(),
-      StringComparison.OrdinalIgnoreCase);
-  }
-
-  protected override object? ConvertBack(object value, Type srcType, Type dstType, object? parameter, CultureInfo culture)
-  {
-    if (srcType != typeof(bool))
+    if (!SupportedNumericTypes.ContainsKey(srcType))
     {
       return new BindingNotification(
         new ArgumentOutOfRangeException(nameof(srcType)),
@@ -51,13 +28,25 @@ public sealed class NoteSelectorConverter : ValueConverterBase
         BindingErrorType.Error);
     }
 
-    if (parameter is not string)
+    return value.ToString();
+  }
+
+  protected override object? ConvertBack(object value, Type srcType, Type dstType, object? parameter, CultureInfo culture)
+  {
+    if (srcType != typeof(string))
     {
       return new BindingNotification(
-        new ArgumentOutOfRangeException(nameof(parameter)),
+        new ArgumentOutOfRangeException(nameof(srcType)),
         BindingErrorType.Error);
     }
 
-    return (bool)value ? parameter.ToString() : null;
+    if (!SupportedNumericTypes.TryGetValue(dstType, out Func<object?, object?>? convert))
+    {
+      return new BindingNotification(
+        new ArgumentOutOfRangeException(nameof(dstType)),
+        BindingErrorType.Error);
+    }
+
+    return convert(value);
   }
 }
