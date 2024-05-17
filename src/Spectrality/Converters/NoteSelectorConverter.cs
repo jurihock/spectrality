@@ -58,6 +58,8 @@ public sealed class NoteSelectorConverter : ValueConverterBase
         BindingErrorType.Error);
     }
 
-    return (bool)value ? parameter.ToString() : null;
+    return (bool)value
+      ? parameter.ToString()
+      : null;
   }
 }

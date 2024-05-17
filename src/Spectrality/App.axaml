@@ -17,6 +17,8 @@
 
         <StyleInclude Source="avares://Spectrality/Styles/Fluent.axaml"/>
         <StyleInclude Source="avares://Spectrality/Styles/OxyPlot.axaml"/>
+
+        <StyleInclude Source="avares://Spectrality/Styles/NoteSelectorControl.axaml"/>
         <StyleInclude Source="avares://Spectrality/Styles/TimespanSelectorControl.axaml"/>
 
     </Application.Styles>
