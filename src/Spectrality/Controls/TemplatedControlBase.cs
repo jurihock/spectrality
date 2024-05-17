@@ -92,19 +92,23 @@ public abstract class TemplatedControlBase : TemplatedControl
 
         ArgumentNullException.ThrowIfNull(property);
 
+        var propertyType = property.GetType();
+        var valueType = propertyType.GenericTypeArguments.Last();
+
         ArgumentOutOfRangeException.ThrowIfNotEqual(
           typeof(DirectPropertyBase<>)
-            .MakeGenericType(property.GetType().GenericTypeArguments.Last())
-            .IsAssignableFrom(property.GetType()),
+            .MakeGenericType(valueType)
+            .IsAssignableFrom(propertyType),
           true);
 
-        var value = Activator.CreateInstance(
-          property.GetType().GenericTypeArguments.Last());
+        var value = valueType.IsValueType
+          ? Activator.CreateInstance(valueType)
+          : null;
 
         var name = propertyInfo.Name[.. ^ "Property".Length];
 
         var raiser = propertyRaiser.MakeGenericMethod(
-          property.GetType().GenericTypeArguments.Last());
+          valueType);
 
         var raise = () => { raiser.Invoke(this, [property, value, value]); };
 
