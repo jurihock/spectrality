@@ -3,6 +3,29 @@
 #include <dr_mp3.h>
 #include <dr_wav.h>
 
+#if defined(SPECTRALITY_AUDIO_ROUND_NEXT_SECOND)
+frames_t spectrality_audio_round_next_second(
+  const frames_t frames,
+  const samplerate_t samplerate)
+{
+  return static_cast<frames_t>(
+    std::ceil(1.0 * frames / samplerate) *
+    samplerate);
+}
+
+bool spectrality_audio_round_error(
+  const frames_t frames0,
+  const frames_t frames1,
+  const samplerate_t samplerate)
+{
+  auto error =
+    std::abs(1.0 * frames0 - 1.0 * frames1) /
+    samplerate;
+
+  return (error < 1.0) ? false : true;
+}
+#endif
+
 bool spectrality_audio_touch_mp3(
   const std::filesystem::path& path,
   samplerate_t* const samplerate,
@@ -20,6 +43,10 @@ bool spectrality_audio_touch_mp3(
   *samplerate = static_cast<samplerate_t>(mp3.sampleRate);
   *channels = static_cast<channels_t>(mp3.channels);
   *frames = static_cast<frames_t>(drmp3_get_pcm_frame_count(&mp3));
+
+  #if defined(SPECTRALITY_AUDIO_ROUND_NEXT_SECOND)
+  *frames = spectrality_audio_round_next_second(*frames, *samplerate);
+  #endif
 
   drmp3_uninit(&mp3);
   return true;
@@ -42,6 +69,10 @@ bool spectrality_audio_touch_wav(
   *samplerate = static_cast<samplerate_t>(wav.sampleRate);
   *channels = static_cast<channels_t>(wav.channels);
   *frames = static_cast<frames_t>(wav.totalPCMFrameCount);
+
+  #if defined(SPECTRALITY_AUDIO_ROUND_NEXT_SECOND)
+  *frames = spectrality_audio_round_next_second(*frames, *samplerate);
+  #endif
 
   drwav_uninit(&wav);
   return true;
@@ -89,6 +120,14 @@ bool spectrality_audio_read_mp3(
   auto frames0 = static_cast<drmp3_uint64>(*frames);
   auto frames1 = drmp3_read_pcm_frames_f32(&mp3, frames0, samples);
 
+  #if defined(SPECTRALITY_AUDIO_ROUND_NEXT_SECOND)
+  auto error = spectrality_audio_round_error(
+    static_cast<frames_t>(frames0),
+    static_cast<frames_t>(frames1),
+    static_cast<samplerate_t>(mp3.sampleRate));
+  frames1 = error ? frames1 : frames0;
+  #endif
+
   *frames = static_cast<frames_t>(frames1);
 
   drmp3_uninit(&mp3);
@@ -110,6 +149,14 @@ bool spectrality_audio_read_wav(
 
   auto frames0 = static_cast<drmp3_uint64>(*frames);
   auto frames1 = drwav_read_pcm_frames_f32(&wav, frames0, samples);
+
+  #if defined(SPECTRALITY_AUDIO_ROUND_NEXT_SECOND)
+  auto error = spectrality_audio_round_error(
+    static_cast<frames_t>(frames0),
+    static_cast<frames_t>(frames1),
+    static_cast<samplerate_t>(wav.sampleRate));
+  frames1 = error ? frames1 : frames0;
+  #endif
 
   *frames = static_cast<frames_t>(frames1);
 

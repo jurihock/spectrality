@@ -12,5 +12,8 @@
 
 #endif
 
+#define SPECTRALITY_AUDIO_ROUND_NEXT_SECOND
+
+#include <cmath>
 #include <filesystem>
 #include <string>
