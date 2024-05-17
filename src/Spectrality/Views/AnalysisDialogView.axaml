@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:c="using:Spectrality.Controls"
+             xmlns:cv="using:Spectrality.Converters"
+             xmlns:e="using:Spectrality.Extensions.Markup"
+             xmlns:v="using:Spectrality.Views"
+             xmlns:vm="using:Spectrality.ViewModels"
+             x:Class="Spectrality.Views.AnalysisDialogView"
+             x:DataType="vm:AnalysisDialogViewModel"
+            d:DesignWidth="800" d:DesignHeight="600" mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:AnalysisDialogViewModel/>
+    </Design.DataContext>
+
+    <DockPanel>
+
+        <DockPanel DockPanel.Dock="Bottom" Margin="{e:Thickness 1, t}">
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                <Button ToolTip.Tip="Use default analysis settings"
+                        Command="{Binding Reset}">
+                    <c:Icon Symbol="ArrowReset"/>
+                </Button>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                <Button Margin="{e:Thickness -1, x}">Analyze</Button>
+                <Button Command="{Binding Close}">Cancel</Button>
+            </StackPanel>
+            <Control/>
+        </DockPanel>
+
+        <ScrollViewer>
+        <StackPanel Orientation="Vertical">
+
+            <Expander Header="Analyze audio file" IsExpanded="False">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="File path:"/>
+                    <TextBox IsReadOnly="True"/>
+                    <TextBlock Text="Resolution"/>
+                    <TextBox/>
+                    <TextBlock Text="Quality"/>
+                    <TextBox/>
+                </StackPanel>
+            </Expander>
+
+            <Expander Header="Analysis range" IsExpanded="True">
+                <TabControl>
+                    <TabItem Header="Timespan">
+                        <c:TimespanSelectorControl Total="1000"/>
+                    </TabItem>
+                    <TabItem Header="Min frequency">
+                        <c:NoteSelectorControl/>
+                    </TabItem>
+                    <TabItem Header="Max frequency">
+                        <c:NoteSelectorControl/>
+                    </TabItem>
+                </TabControl>
+            </Expander>
+
+            <Expander Header="Analysis resolution" IsExpanded="False">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Time resolution"/>
+                    <TextBox/>
+                    <TextBlock Text="Frequency resolution"/>
+                    <TextBox/>
+                    <TextBlock Text="Spectrum quality factor"/>
+                    <TextBox/>
+                </StackPanel>
+            </Expander>
+
+        </StackPanel>
+        </ScrollViewer>
+
+    </DockPanel>
+
+</UserControl>

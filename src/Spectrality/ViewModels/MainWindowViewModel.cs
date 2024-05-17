@@ -18,7 +18,7 @@ public sealed class MainWindowViewModel : ViewModelBase
 
   public SyncPlotController PlotController { get; set; }
 
-  public NoteSelectorViewModel NoteSelector { get; set; } = new();
+  public AnalysisDialogViewModel AnalysisDialog { get; set; } = new();
 
   public MainWindowViewModel()
   {

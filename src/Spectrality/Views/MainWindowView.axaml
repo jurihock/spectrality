@@ -5,6 +5,7 @@
         xmlns:dia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
         xmlns:oxy="clr-namespace:OxyPlot.Avalonia;assembly=OxyPlot.Avalonia"
         xmlns:c="using:Spectrality.Controls"
+        xmlns:cv="using:Spectrality.Converters"
         xmlns:e="using:Spectrality.Extensions.Markup"
         xmlns:v="using:Spectrality.Views"
         xmlns:vm="using:Spectrality.ViewModels"
@@ -18,55 +19,10 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <dia:DialogHost CloseOnClickAway="True" IsOpen="True">
+    <dia:DialogHost IsOpen="{Binding AnalysisDialog.IsOpen}" CloseOnClickAway="False">
 
         <dia:DialogHost.DialogContent>
-
-            <DockPanel MinWidth="400" MinHeight="300">
-
-                <DockPanel DockPanel.Dock="Bottom" Margin="{e:Thickness 1, t}">
-                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                        <Button ToolTip.Tip="Use default analysis settings">
-                            <c:Icon Symbol="ArrowReset"/>
-                        </Button>
-                    </StackPanel>
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                        <Button Margin="{e:Thickness -1, x}">Analyze</Button>
-                        <Button>Cancel</Button>
-                    </StackPanel>
-                    <Control/>
-                </DockPanel>
-
-                <ScrollViewer>
-                <StackPanel Orientation="Vertical">
-
-                    <Expander Header="Analysis frequency bandwidth" IsExpanded="True">
-                        <TabControl>
-                            <TabItem Header="Min frequency">
-                                <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
-                            </TabItem>
-                            <TabItem Header="Max frequency">
-                                <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
-                            </TabItem>
-                        </TabControl>
-                    </Expander>
-
-                    <Expander Header="Analysis frequency bandwidth" IsExpanded="False">
-                        <TabControl>
-                            <TabItem Header="Min frequency">
-                                <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
-                            </TabItem>
-                            <TabItem Header="Max frequency">
-                                <v:NoteSelectorView DataContext="{Binding NoteSelector}"/>
-                            </TabItem>
-                        </TabControl>
-                    </Expander>
-
-                </StackPanel>
-                </ScrollViewer>
-
-            </DockPanel>
-
+            <v:AnalysisDialogView MinWidth="400" MinHeight="300" DataContext="{Binding AnalysisDialog}"/>
         </dia:DialogHost.DialogContent>
 
         <Grid RowDefinitions="*,*" ColumnDefinitions="*">

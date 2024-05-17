@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Spectrality.Views;
 
-public sealed partial class NoteSelectorView : UserControl
+public sealed partial class AnalysisDialogView : UserControl
 {
-  public NoteSelectorView()
+  public AnalysisDialogView()
   {
     InitializeComponent();
   }
