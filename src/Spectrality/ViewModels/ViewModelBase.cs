@@ -17,17 +17,39 @@ public abstract class ViewModelBase : ReactiveObject
     public readonly bool IsPropertyChanged = isPropertyChanged;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void AlsoNotify(params string[] propertyNames)
+    public PropertyChange AlsoInvoke(Action action)
     {
-      if (!IsPropertyChanged)
+      if (IsPropertyChanged)
       {
-        return;
+        action();
       }
 
-      foreach (var propertyName in propertyNames)
+      return this;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public PropertyChange AlsoInvoke(Action<string> action)
+    {
+      if (IsPropertyChanged)
       {
-        PropertyOwner.RaisePropertyChanged(propertyName);
+        action(PropertyName);
       }
+
+      return this;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public PropertyChange AlsoNotify(params string[] propertyNames)
+    {
+      if (IsPropertyChanged)
+      {
+        foreach (var propertyName in propertyNames)
+        {
+          PropertyOwner.RaisePropertyChanged(propertyName);
+        }
+      }
+
+      return this;
     }
   }
 

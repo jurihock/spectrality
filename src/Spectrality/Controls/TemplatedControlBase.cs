@@ -10,7 +10,7 @@ namespace Spectrality.Controls;
 
 public abstract class TemplatedControlBase : TemplatedControl
 {
-  private IReadOnlyDictionary<string, (object Property, Action Raise)> DirectProperties { get; init; }
+  protected IReadOnlyDictionary<string, (object Property, Action Raise)> DirectProperties { get; init; }
 
   protected readonly struct PropertyChange(
     TemplatedControlBase propertyOwner,
@@ -22,17 +22,39 @@ public abstract class TemplatedControlBase : TemplatedControl
     public readonly bool IsPropertyChanged = isPropertyChanged;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void AlsoNotify(params string[] propertyNames)
+    public PropertyChange AlsoInvoke(Action action)
     {
-      if (!IsPropertyChanged)
+      if (IsPropertyChanged)
       {
-        return;
+        action();
       }
 
-      foreach (var propertyName in propertyNames)
+      return this;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public PropertyChange AlsoInvoke(Action<string> action)
+    {
+      if (IsPropertyChanged)
       {
-        PropertyOwner.DirectProperties[propertyName].Raise();
+        action(PropertyName);
       }
+
+      return this;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public PropertyChange AlsoNotify(params string[] propertyNames)
+    {
+      if (IsPropertyChanged)
+      {
+        foreach (var propertyName in propertyNames)
+        {
+          PropertyOwner.DirectProperties[propertyName].Raise();
+        }
+      }
+
+      return this;
     }
   }
 
@@ -76,12 +98,15 @@ public abstract class TemplatedControlBase : TemplatedControl
             .IsAssignableFrom(property.GetType()),
           true);
 
+        var value = Activator.CreateInstance(
+          property.GetType().GenericTypeArguments.Last());
+
         var name = propertyInfo.Name[.. ^ "Property".Length];
 
         var raiser = propertyRaiser.MakeGenericMethod(
           property.GetType().GenericTypeArguments.Last());
 
-        var raise = () => { raiser.Invoke(this, [property, default, default]); };
+        var raise = () => { raiser.Invoke(this, [property, value, value]); };
 
         properties.Add(name, (property, raise));
       }
