@@ -1,0 +1,36 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="using:Spectrality.Controls"
+        xmlns:cv="using:Spectrality.Converters">
+
+    <Style Selector="c|TimespanSelectorControl">
+
+        <Style.Resources>
+            <cv:NumericTextConverter x:Key="NumericTextConverter"/>
+        </Style.Resources>
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Begin"/>
+                    <c:NumericTextBox Text="{Binding $parent[c:TimespanSelectorControl].Begin, Converter={StaticResource NumericTextConverter}}"/>
+                    <c:NumericSlider Value="{Binding $parent[c:TimespanSelectorControl].Begin}"
+                                     Minimum="0"
+                                     Maximum="{TemplateBinding Total}"/>
+                    <TextBlock Text="End"/>
+                    <c:NumericTextBox Text="{Binding $parent[c:TimespanSelectorControl].End, Converter={StaticResource NumericTextConverter}}"/>
+                    <c:NumericSlider Value="{Binding $parent[c:TimespanSelectorControl].End}"
+                                     Minimum="0"
+                                     Maximum="{TemplateBinding Total}"/>
+                    <TextBlock Text="Length"/>
+                    <c:NumericTextBox Text="{Binding $parent[c:TimespanSelectorControl].Length, Converter={StaticResource NumericTextConverter}}"/>
+                    <c:NumericSlider Value="{Binding $parent[c:TimespanSelectorControl].Length}"
+                                     Minimum="0"
+                                     Maximum="{TemplateBinding Total}"/>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+
+    </Style>
+
+</Styles>
