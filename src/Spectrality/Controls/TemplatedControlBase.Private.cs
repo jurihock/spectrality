@@ -9,7 +9,7 @@ namespace Spectrality.Controls;
 
 public abstract partial class TemplatedControlBase
 {
-  private IReadOnlyDictionary<string, (object Property, Action Raise)> DirectProperties { get; init; }
+  private Dictionary<string, (object Property, Action Raise)> DirectProperties { get; init; }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   private DirectPropertyBase<T> GetDirectProperty<T>(string propertyName)
@@ -37,7 +37,7 @@ public abstract partial class TemplatedControlBase
     return method;
   }
 
-  private IReadOnlyDictionary<string, (object Property, Action Raise)> GetDirectProperties()
+  private Dictionary<string, (object Property, Action Raise)> GetDirectProperties()
   {
     var properties = new Dictionary<string, (object value, Action raise)>();
 
