@@ -1,13 +1,10 @@
 using System;
-using System.Linq;
 using Avalonia;
 
 namespace Spectrality.Controls;
 
 public sealed partial class TimespanSelectorControl : TemplatedControlBase
 {
-  private readonly string[] AllProperties;
-
   public static readonly DirectProperty<TimespanSelectorControl, double?> BeginProperty =
     AvaloniaProperty.RegisterDirect<TimespanSelectorControl, double?>(
       nameof(Begin), _ => _.Begin, (_, value) => _.Begin = value);
@@ -29,12 +26,12 @@ public sealed partial class TimespanSelectorControl : TemplatedControlBase
     get
     {
       ArgumentNullException.ThrowIfNull(begin);
-      return begin;
+      return Get(ref begin);
     }
     set
     {
       if (value is null) { return; }
-      SetAndNotifyIfChanged(ref begin, value).AlsoInvoke(OnChange).AlsoNotify(AllProperties);
+      SetAndNotify(ref begin, value).AlsoInvoke(OnChange).AlsoNotifyOthers();
     }
   }
 
@@ -43,12 +40,12 @@ public sealed partial class TimespanSelectorControl : TemplatedControlBase
     get
     {
       ArgumentNullException.ThrowIfNull(end);
-      return end;
+      return Get(ref end);
     }
     set
     {
       if (value is null) { return; }
-      SetAndNotifyIfChanged(ref end, value).AlsoInvoke(OnChange).AlsoNotify(AllProperties);
+      SetAndNotify(ref end, value).AlsoInvoke(OnChange).AlsoNotifyOthers();
     }
   }
 
@@ -57,28 +54,23 @@ public sealed partial class TimespanSelectorControl : TemplatedControlBase
     get
     {
       ArgumentNullException.ThrowIfNull(length);
-      return length;
+      return Get(ref length);
     }
     set
     {
       if (value is null) { return; }
-      SetAndNotifyIfChanged(ref length, value).AlsoInvoke(OnChange).AlsoNotify(AllProperties);
+      SetAndNotify(ref length, value).AlsoInvoke(OnChange).AlsoNotifyOthers();
     }
   }
 
   public long Total
   {
-    get => total;
-    set => SetAndNotifyIfChanged(ref total, value).AlsoInvoke(OnChange).AlsoNotify(AllProperties);
+    get => Get(ref total);
+    set => SetAndNotify(ref total, value).AlsoInvoke(OnChange).AlsoNotifyOthers();
   }
 
   private double? begin = 0, end = 0, length = 0;
   private long total = 0;
-
-  public TimespanSelectorControl()
-  {
-    AllProperties = DirectProperties.Keys.ToArray();
-  }
 
   private void OnChange(string changedPropertyName)
   {

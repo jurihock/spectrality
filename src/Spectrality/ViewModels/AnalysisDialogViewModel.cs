@@ -6,25 +6,25 @@ public sealed class AnalysisDialogViewModel : ViewModelBase
   public bool IsOpen
   {
     get => Get(ref open);
-    set => SetAndNotifyIfChanged(ref open, value);
+    set => SetAndNotify(ref open, value);
   }
 
   public bool IsExpanderOpen1
   {
     get => Get(true);
-    set => SetAndNotifyIfChanged(value);
+    set => SetAndNotify(value);
   }
 
   public bool IsExpanderOpen2
   {
     get => Get(false);
-    set => SetAndNotifyIfChanged(value);
+    set => SetAndNotify(value);
   }
 
   public bool IsExpanderOpen3
   {
     get => Get(false);
-    set => SetAndNotifyIfChanged(value);
+    set => SetAndNotify(value);
   }
 
   public AnalysisDialogViewModel()

@@ -6,8 +6,6 @@ namespace Spectrality.Controls;
 
 public sealed partial class NoteSelectorControl : TemplatedControlBase
 {
-  private readonly string[] AllProperties;
-
   public static readonly DirectProperty<NoteSelectorControl, int> MinOctaveProperty =
     AvaloniaProperty.RegisterDirect<NoteSelectorControl, int>(
       nameof(MinOctave), _ => _.MinOctave);
@@ -41,20 +39,20 @@ public sealed partial class NoteSelectorControl : TemplatedControlBase
 
   public int Octave
   {
-    get => octave;
-    set => SetAndNotifyIfChanged(ref octave, value).AlsoNotify(AllProperties);
+    get => Get(ref octave);
+    set => SetAndNotify(ref octave, value).AlsoNotifyOthers();
   }
 
   public string Note
   {
-    get => note;
-    set => SetAndNotifyIfChanged(ref note, value ?? note).AlsoNotify(AllProperties);
+    get => Get(ref note);
+    set => SetAndNotify(ref note, value ?? note).AlsoNotifyOthers();
   }
 
   public double A4
   {
-    get => a4;
-    set => SetAndNotifyIfChanged(ref a4, value).AlsoNotify(AllProperties);
+    get => Get(ref a4);
+    set => SetAndNotify(ref a4, value).AlsoNotifyOthers();
   }
 
   public string NoteString => $"{Note}{Octave}";
@@ -63,9 +61,4 @@ public sealed partial class NoteSelectorControl : TemplatedControlBase
   private int octave = 0;
   private string note = "C";
   private double a4 = 440;
-
-  public NoteSelectorControl()
-  {
-    AllProperties = DirectProperties.Keys.ToArray();
-  }
 }
