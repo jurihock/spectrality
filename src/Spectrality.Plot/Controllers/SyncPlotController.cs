@@ -71,7 +71,7 @@ public sealed class SyncPlotController : PlotController
 
     var slaves = SyncPlotModels
       .Select(model => (model, series: model.Series.FirstOrDefault(filter)))
-      .Where(slave => slave.series != null)
+      .Where(slave => slave.series is not null)
       .Select(slave => (slave.model, series: cast(slave.series)))
       .ToList();
 
@@ -117,7 +117,7 @@ public sealed class SyncPlotController : PlotController
     var masterPlotManipulator = sender as PlotManipulator<OxyMouseEventArgs>;
     var masterPlotModel = masterPlotManipulator?.PlotView?.ActualModel;
 
-    if (masterPlotModel == null)
+    if (masterPlotModel is null)
     {
       return;
     }
@@ -132,7 +132,7 @@ public sealed class SyncPlotController : PlotController
     var slaves = SyncPlotModels
       .Where(model => model != masterPlotModel)
       .Select(model => (model, series: model.Series.FirstOrDefault(filter)))
-      .Where(slave => slave.series != null)
+      .Where(slave => slave.series is not null)
       .Select(slave => (slave.model, series: cast(slave.series)));
 
     foreach (var (slavePlotModel, slavePlotSeries) in slaves)
@@ -171,7 +171,7 @@ public sealed class SyncPlotController : PlotController
     var masterPlotManipulator = sender as PlotManipulator<OxyMouseEventArgs>;
     var masterPlotModel = masterPlotManipulator?.PlotView?.ActualModel;
 
-    if (masterPlotModel == null)
+    if (masterPlotModel is null)
     {
       return;
     }
@@ -186,14 +186,14 @@ public sealed class SyncPlotController : PlotController
     var slaves = SyncPlotModels
       .Where(model => model != masterPlotModel)
       .Select(model => (model, series: model.Series.FirstOrDefault(filter)))
-      .Where(slave => slave.series != null)
+      .Where(slave => slave.series is not null)
       .Select(slave => (slave.model, series: cast(slave.series)));
 
     foreach (var (slavePlotModel, slavePlotSeries) in slaves)
     {
       var worldPoint = args.WorldPoint;
 
-      if (worldPoint == null)
+      if (worldPoint is null)
       {
         slavePlotModel.PlotView?.HideTracker();
         continue;
@@ -203,7 +203,7 @@ public sealed class SyncPlotController : PlotController
 
       var hit = slavePlotSeries.GetNearestPoint(screenPoint, interpolate: false);
 
-      if (hit == null)
+      if (hit is null)
       {
         continue;
       }

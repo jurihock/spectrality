@@ -63,7 +63,7 @@ public sealed class NumericTextBox : TextBox
   {
     var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
 
-    if (clipboard != null)
+    if (clipboard is not null)
     {
       try { return await clipboard.GetTextAsync(); }
       catch (TimeoutException) {}

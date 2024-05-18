@@ -20,7 +20,7 @@ public sealed class SyncTrackerManipulator : MouseManipulator
   public SyncTrackerManipulator(IPlotView view) : base(view)
   {
     TrackableSeries = PlotView.ActualModel.Series.FirstOrDefault(series => series is ISyncSeries);
-    IsTrackerEnabled = TrackableSeries != null;
+    IsTrackerEnabled = TrackableSeries is not null;
   }
 
   public override void Started(OxyMouseEventArgs args)
@@ -69,7 +69,7 @@ public sealed class SyncTrackerManipulator : MouseManipulator
 
     var hit = GetNearestPoint(args.Position);
 
-    if (hit == null)
+    if (hit is null)
     {
       return;
     }

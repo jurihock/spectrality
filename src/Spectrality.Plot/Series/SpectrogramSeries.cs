@@ -26,7 +26,7 @@ public sealed class SpectrogramSeries : XYAxisSeries, ISyncSeries
       {
         spectrogram = value;
 
-        if (spectrogram == null)
+        if (spectrogram is null)
         {
           return;
         }
@@ -67,7 +67,7 @@ public sealed class SpectrogramSeries : XYAxisSeries, ISyncSeries
   {
     var spectrogram = Spectrogram;
 
-    if (spectrogram == null)
+    if (spectrogram is null)
     {
       return;
     }
@@ -84,7 +84,7 @@ public sealed class SpectrogramSeries : XYAxisSeries, ISyncSeries
   {
     var spectrogram = Spectrogram;
 
-    if (spectrogram == null)
+    if (spectrogram is null)
     {
       return;
     }
@@ -125,7 +125,7 @@ public sealed class SpectrogramSeries : XYAxisSeries, ISyncSeries
 
     var spectrogram = Spectrogram;
 
-    if (spectrogram == null)
+    if (spectrogram is null)
     {
       MinX = 0;
       MaxX = 0;
@@ -158,7 +158,7 @@ public sealed class SpectrogramSeries : XYAxisSeries, ISyncSeries
   {
     var spectrogram = Spectrogram;
 
-    if (spectrogram == null)
+    if (spectrogram is null)
     {
       return base.GetNearestPoint(screenPoint, interpolate);
     }
