@@ -45,7 +45,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander Header="Analysis range" IsExpanded="True">
+            <Expander Header="Analysis range" IsExpanded="False">
                 <TabControl>
                     <TabItem Header="Timespan">
                         <c:TimespanSelectorControl Total="1000"/>
@@ -59,14 +59,17 @@
                 </TabControl>
             </Expander>
 
-            <Expander Header="Analysis resolution" IsExpanded="False">
+            <Expander Header="Analysis resolution" IsExpanded="True">
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="Time resolution"/>
-                    <c:FocusableTextBox/>
-                    <TextBlock Text="Frequency resolution"/>
-                    <c:FocusableTextBox/>
-                    <TextBlock Text="Spectrum quality factor"/>
-                    <c:FocusableTextBox/>
+                    <TextBlock Text="Time resolution in milliseconds:"
+                               Margin="{e:Thickness 1, y}"/>
+                    <c:FocusableNumericUpDown Minimum="5" Maximum="100" Increment="5"/>
+                    <TextBlock Text="Frequency resolution in cents:"
+                               Margin="{e:Thickness 1, y}"/>
+                    <c:FocusableNumericUpDown Minimum="5" Maximum="100" Increment="5"/>
+                    <TextBlock Text="Quality factor:"
+                               Margin="{e:Thickness 1, y}"/>
+                    <c:FocusableNumericUpDown Minimum="-5" Maximum="50" Increment="5"/>
                 </StackPanel>
             </Expander>
 
