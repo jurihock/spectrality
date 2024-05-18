@@ -37,11 +37,11 @@
             <Expander Header="Analyze audio file" IsExpanded="False">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Text="File path:"/>
-                    <TextBox IsReadOnly="True"/>
+                    <c:FocusableTextBox IsReadOnly="True"/>
                     <TextBlock Text="Resolution"/>
-                    <TextBox/>
+                    <c:FocusableTextBox/>
                     <TextBlock Text="Quality"/>
-                    <TextBox/>
+                    <c:FocusableTextBox/>
                 </StackPanel>
             </Expander>
 
@@ -62,11 +62,11 @@
             <Expander Header="Analysis resolution" IsExpanded="False">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Text="Time resolution"/>
-                    <TextBox/>
+                    <c:FocusableTextBox/>
                     <TextBlock Text="Frequency resolution"/>
-                    <TextBox/>
+                    <c:FocusableTextBox/>
                     <TextBlock Text="Spectrum quality factor"/>
-                    <TextBox/>
+                    <c:FocusableTextBox/>
                 </StackPanel>
             </Expander>
 

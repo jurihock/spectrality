@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 
 namespace Spectrality.Controls;
 
@@ -17,6 +18,13 @@ public sealed class NumericTextBox : TextBox
       PastingFromClipboardEvent,
       OnPastingFromClipboard,
       RoutingStrategies.Bubble);
+  }
+
+  protected override void OnGotFocus(GotFocusEventArgs args)
+  {
+    Dispatcher.UIThread.Post(SelectAll);
+
+    base.OnGotFocus(args);
   }
 
   protected override void OnLostFocus(RoutedEventArgs args)

@@ -14,17 +14,16 @@
             <ControlTemplate>
 
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="Begin"/>
+                    <TextBlock Text="Begin, end and duration in seconds:"
+                               Margin="{e:Thickness 1, y}"/>
                     <c:NumericTextBox Text="{Binding $parent[c:TimespanSelectorControl].Begin, Converter={StaticResource NumericTextConverter}}"/>
                     <c:NumericSlider Value="{Binding $parent[c:TimespanSelectorControl].Begin}"
                                      Minimum="0"
                                      Maximum="{TemplateBinding Total}"/>
-                    <TextBlock Text="End"/>
                     <c:NumericTextBox Text="{Binding $parent[c:TimespanSelectorControl].End, Converter={StaticResource NumericTextConverter}}"/>
                     <c:NumericSlider Value="{Binding $parent[c:TimespanSelectorControl].End}"
                                      Minimum="0"
                                      Maximum="{TemplateBinding Total}"/>
-                    <TextBlock Text="Length"/>
                     <c:NumericTextBox Text="{Binding $parent[c:TimespanSelectorControl].Length, Converter={StaticResource NumericTextConverter}}"/>
                     <c:NumericSlider Value="{Binding $parent[c:TimespanSelectorControl].Length}"
                                      Minimum="0"

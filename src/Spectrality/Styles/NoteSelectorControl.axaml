@@ -17,7 +17,7 @@
 
                     <Grid Grid.Row="0" Grid.Column="0"
                           RowDefinitions="*,*" ColumnDefinitions="*,*,*,*,*,*,*,*,*,*,*,*,*,*"
-                          Margin="{e:Thickness 1, y}"
+                          Margin="{e:Thickness 1, t}"
                           ShowGridLines="False"
                           ToolTip.Tip="Note">
 
@@ -79,7 +79,6 @@
                     </Grid>
 
                     <Slider Grid.Row="1" Grid.Column="0"
-                            Margin="{e:Thickness 0, y}"
                             Minimum="{Binding $parent[c:NoteSelectorControl].MinOctave}"
                             Maximum="{Binding $parent[c:NoteSelectorControl].MaxOctave}"
                             Value="{Binding $parent[c:NoteSelectorControl].Octave}"
@@ -90,7 +89,7 @@
 
                     <Grid Grid.Row="2" Grid.Column="0"
                           RowDefinitions="*,*" ColumnDefinitions="Auto,*"
-                          Margin="{e:Thickness 1, y}">
+                          Margin="{e:Thickness 1, b}">
 
                         <TextBlock Grid.Row="0" Grid.Column="0"
                                    Text="Note:&#160;"/>
