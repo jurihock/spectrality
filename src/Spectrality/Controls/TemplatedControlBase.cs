@@ -10,7 +10,7 @@ namespace Spectrality.Controls;
 
 public abstract class TemplatedControlBase : TemplatedControl
 {
-  protected IReadOnlyDictionary<string, (object Property, Action Raise)> DirectProperties { get; init; }
+  protected IReadOnlyDictionary<string, (object Property, Action Raise)> DirectProperties { get; private init; }
 
   protected readonly struct PropertyChange(
     TemplatedControlBase propertyOwner,
@@ -120,6 +120,9 @@ public abstract class TemplatedControlBase : TemplatedControl
 
     DirectProperties = GetDirectProperties();
   }
+
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  protected static ref T Get<T>(ref T value) => ref value;
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   protected PropertyChange SetAndNotify<T>(

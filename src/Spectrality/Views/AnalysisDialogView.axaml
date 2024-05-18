@@ -34,7 +34,7 @@
         <ScrollViewer>
         <StackPanel Orientation="Vertical">
 
-            <Expander Header="Analyze audio file" IsExpanded="False">
+            <Expander Header="Analyze audio file" IsExpanded="{Binding IsExpanderOpen1}">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Text="File path:"/>
                     <c:FocusableTextBox IsReadOnly="True"/>
@@ -45,7 +45,7 @@
                 </StackPanel>
             </Expander>
 
-            <Expander Header="Analysis range" IsExpanded="False">
+            <Expander Header="Analysis range" IsExpanded="{Binding IsExpanderOpen2}">
                 <TabControl>
                     <TabItem Header="Timespan">
                         <c:TimespanSelectorControl Total="1000"/>
@@ -59,7 +59,7 @@
                 </TabControl>
             </Expander>
 
-            <Expander Header="Analysis resolution" IsExpanded="True">
+            <Expander Header="Analysis resolution" IsExpanded="{Binding IsExpanderOpen3}">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Text="Time resolution in milliseconds:"
                                Margin="{e:Thickness 1, y}"/>

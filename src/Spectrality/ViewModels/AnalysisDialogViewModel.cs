@@ -2,26 +2,30 @@ namespace Spectrality.ViewModels;
 
 public sealed class AnalysisDialogViewModel : ViewModelBase
 {
-  private bool isOpen = true;
+  private bool open = true;
   public bool IsOpen
   {
-    get => isOpen;
-    set => SetAndNotify(ref isOpen, value);
+    get => Get(ref open);
+    set => SetAndNotifyIfChanged(ref open, value);
   }
 
-  // private NoteSelectorViewModel bandwidthMin = new();
-  // public NoteSelectorViewModel BandwidthMin
-  // {
-  //   get => bandwidthMin;
-  //   set => SetAndNotify(ref bandwidthMin, value);
-  // }
+  public bool IsExpanderOpen1
+  {
+    get => Get(true);
+    set => SetAndNotifyIfChanged(value);
+  }
 
-  // private NoteSelectorViewModel bandwidthMax = new();
-  // public NoteSelectorViewModel BandwidthMax
-  // {
-  //   get => bandwidthMax;
-  //   set => SetAndNotify(ref bandwidthMax, value);
-  // }
+  public bool IsExpanderOpen2
+  {
+    get => Get(false);
+    set => SetAndNotifyIfChanged(value);
+  }
+
+  public bool IsExpanderOpen3
+  {
+    get => Get(false);
+    set => SetAndNotifyIfChanged(value);
+  }
 
   public AnalysisDialogViewModel()
   {
