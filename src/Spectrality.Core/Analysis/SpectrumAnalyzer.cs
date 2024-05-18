@@ -92,7 +92,7 @@ public sealed class SpectrumAnalyzer
     var progress = bag.Progress;
     var cancellation = bag.Cancellation;
 
-    var bandwidth = (scale.GetFrequency(bag.Bandwidth.min), scale.GetFrequency(bag.Bandwidth.max));
+    var bandwidth = (min: scale.GetFrequency(bag.Bandwidth.min), max: scale.GetFrequency(bag.Bandwidth.max));
     var resolution = bag.Resolution;
     var quality = bag.Quality;
 
@@ -103,7 +103,7 @@ public sealed class SpectrumAnalyzer
                 $"timestep={timestep:F3}" + ", " +
                 $"hopsize={Math.Ceiling(timestep * samplerate)}" + ", " +
                 $"dftsize={qdft.Size}" + ", " +
-                $"bandwidth=({bandwidth.Item1:F3}, {bandwidth.Item2:F3})" + ", " +
+                $"bandwidth=({bandwidth.min:F3}, {bandwidth.max:F3})" + ", " +
                 $"resolution={resolution}" + ", " +
                 $"quality={quality}" + $").");
 
