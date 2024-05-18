@@ -63,13 +63,13 @@
                 <StackPanel Orientation="Vertical">
                     <TextBlock Text="Time resolution in milliseconds:"
                                Margin="{e:Thickness 1, y}"/>
-                    <c:FocusableNumericUpDown Minimum="5" Maximum="100" Increment="5"/>
+                    <c:FocusableNumericUpDown Value="10" Minimum="5" Maximum="100" Increment="5"/>
                     <TextBlock Text="Frequency resolution in cents:"
                                Margin="{e:Thickness 1, y}"/>
-                    <c:FocusableNumericUpDown Minimum="5" Maximum="100" Increment="5"/>
+                    <c:FocusableNumericUpDown Value="25" Minimum="5" Maximum="100" Increment="5"/>
                     <TextBlock Text="Quality factor:"
                                Margin="{e:Thickness 1, y}"/>
-                    <c:FocusableNumericUpDown Minimum="-5" Maximum="50" Increment="5"/>
+                    <c:FocusableNumericUpDown Value="-5" Minimum="-5" Maximum="50" Increment="5"/>
                 </StackPanel>
             </Expander>
 

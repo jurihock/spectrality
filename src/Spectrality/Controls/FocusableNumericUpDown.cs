@@ -32,4 +32,16 @@ public sealed class FocusableNumericUpDown : NumericUpDown
 
     base.OnLostFocus(args);
   }
+
+  protected override void OnSpin(SpinEventArgs args)
+  {
+    base.OnSpin(args);
+
+    if (Value <= Minimum || Maximum <= Value)
+    {
+      TextBox?.Focus();
+    }
+
+    Dispatcher.UIThread.Post(SelectAll);
+  }
 }
