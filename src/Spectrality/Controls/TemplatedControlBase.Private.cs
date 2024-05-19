@@ -21,22 +21,6 @@ public abstract partial class TemplatedControlBase
     return property;
   }
 
-  private MethodInfo GetRaisePropertyChangedMethod()
-  {
-    var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
-
-    var tempType = Type.MakeGenericMethodParameter(0);
-    var baseType = typeof(DirectPropertyBase<>).MakeGenericType(tempType);
-
-    var method = typeof(AvaloniaObject).GetMethod(
-      nameof(RaisePropertyChanged), 1, bindingFlags,
-      null, [baseType, tempType, tempType], null);
-
-    ArgumentNullException.ThrowIfNull(method);
-
-    return method;
-  }
-
   private Dictionary<string, (object Property, Action Raise)> GetDirectProperties()
   {
     var properties = new Dictionary<string, (object value, Action raise)>();
@@ -77,5 +61,21 @@ public abstract partial class TemplatedControlBase
     }
 
     return properties;
+  }
+
+  private MethodInfo GetRaisePropertyChangedMethod()
+  {
+    var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+    var tempType = Type.MakeGenericMethodParameter(0);
+    var baseType = typeof(DirectPropertyBase<>).MakeGenericType(tempType);
+
+    var method = typeof(AvaloniaObject).GetMethod(
+      nameof(RaisePropertyChanged), 1, bindingFlags,
+      null, [baseType, tempType, tempType], null);
+
+    ArgumentNullException.ThrowIfNull(method);
+
+    return method;
   }
 }
