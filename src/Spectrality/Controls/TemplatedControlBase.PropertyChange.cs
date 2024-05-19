@@ -53,17 +53,12 @@ public abstract partial class TemplatedControlBase
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public PropertyChange AlsoNotifyOthers()
+    public PropertyChange AlsoNotifyAll()
     {
       if (IsPropertyChanged)
       {
         foreach (var propertyName in PropertyOwner.DirectProperties.Keys)
         {
-          if (propertyName == PropertyName)
-          {
-            continue;
-          }
-
           PropertyOwner.DirectProperties[propertyName].Raise();
         }
       }

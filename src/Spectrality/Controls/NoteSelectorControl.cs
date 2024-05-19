@@ -40,19 +40,19 @@ public sealed partial class NoteSelectorControl : TemplatedControlBase
   public int Octave
   {
     get => Get(ref octave);
-    set => SetAndNotify(ref octave, value).AlsoNotifyOthers();
+    set => SetAndNotify(ref octave, value).AlsoNotifyAll();
   }
 
   public string Note
   {
     get => Get(ref note);
-    set => SetAndNotify(ref note, value ?? note).AlsoNotifyOthers();
+    set => SetAndNotify(ref note, value ?? note).AlsoNotifyAll();
   }
 
   public double A4
   {
     get => Get(ref a4);
-    set => SetAndNotify(ref a4, value).AlsoNotifyOthers();
+    set => SetAndNotify(ref a4, value).AlsoNotifyAll();
   }
 
   public string NoteString => $"{Note}{Octave}";

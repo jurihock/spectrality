@@ -31,7 +31,7 @@ public sealed partial class TimespanSelectorControl : TemplatedControlBase
     set
     {
       if (value is null) { return; }
-      SetAndNotify(ref begin, value).AlsoInvoke(OnChange).AlsoNotifyOthers();
+      SetAndNotify(ref begin, value).AlsoInvoke(OnChange).AlsoNotifyAll();
     }
   }
 
@@ -45,7 +45,7 @@ public sealed partial class TimespanSelectorControl : TemplatedControlBase
     set
     {
       if (value is null) { return; }
-      SetAndNotify(ref end, value).AlsoInvoke(OnChange).AlsoNotifyOthers();
+      SetAndNotify(ref end, value).AlsoInvoke(OnChange).AlsoNotifyAll();
     }
   }
 
@@ -59,14 +59,14 @@ public sealed partial class TimespanSelectorControl : TemplatedControlBase
     set
     {
       if (value is null) { return; }
-      SetAndNotify(ref length, value).AlsoInvoke(OnChange).AlsoNotifyOthers();
+      SetAndNotify(ref length, value).AlsoInvoke(OnChange).AlsoNotifyAll();
     }
   }
 
   public long Total
   {
     get => Get(ref total);
-    set => SetAndNotify(ref total, value).AlsoInvoke(OnChange).AlsoNotifyOthers();
+    set => SetAndNotify(ref total, value).AlsoInvoke(OnChange).AlsoNotifyAll();
   }
 
   private double? begin = 0, end = 0, length = 0;
