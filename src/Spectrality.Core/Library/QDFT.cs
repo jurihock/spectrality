@@ -2,51 +2,36 @@ using System.Runtime.InteropServices;
 
 namespace Spectrality.Library;
 
-public static class QDFT
+public static partial class QDFT
 {
-  [DllImport(
-    Import.FileName,
-    CharSet = Import.DefaultCharSet,
-    CallingConvention = Import.DefaultCallingConvention,
-    EntryPoint = "spectrality_qdft_alloc")]
-  public static extern nint Alloc(
+  [LibraryImport("Spectrality.Library.dll", EntryPoint = "spectrality_qdft_alloc")]
+  [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+  public static partial nint Alloc(
     double samplerate,
     double bandwidth_min,
     double bandwidth_max,
     double resolution,
     double quality);
 
-  [DllImport(
-    Import.FileName,
-    CharSet = Import.DefaultCharSet,
-    CallingConvention = Import.DefaultCallingConvention,
-    EntryPoint = "spectrality_qdft_free")]
-  public static extern void Free(
+  [LibraryImport("Spectrality.Library.dll", EntryPoint = "spectrality_qdft_free")]
+  [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+  public static partial void Free(
     nint qdft);
 
-  [DllImport(
-    Import.FileName,
-    CharSet = Import.DefaultCharSet,
-    CallingConvention = Import.DefaultCallingConvention,
-    EntryPoint = "spectrality_qdft_size")]
-  public static extern int Size(
+  [LibraryImport("Spectrality.Library.dll", EntryPoint = "spectrality_qdft_size")]
+  [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+  public static partial int Size(
     nint qdft);
 
-  [DllImport(
-    Import.FileName,
-    CharSet = Import.DefaultCharSet,
-    CallingConvention = Import.DefaultCallingConvention,
-    EntryPoint = "spectrality_qdft_frequencies")]
-  public static extern void Frequencies(
+  [LibraryImport("Spectrality.Library.dll", EntryPoint = "spectrality_qdft_frequencies")]
+  [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+  public static partial void Frequencies(
     nint qdft,
     out double frequencies);
 
-  [DllImport(
-    Import.FileName,
-    CharSet = Import.DefaultCharSet,
-    CallingConvention = Import.DefaultCallingConvention,
-    EntryPoint = "spectrality_qdft_analyze_decibel")]
-  public static extern void AnalyzeDecibel(
+  [LibraryImport("Spectrality.Library.dll", EntryPoint = "spectrality_qdft_analyze_decibel")]
+  [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+  public static partial void AnalyzeDecibel(
     nint qdft,
     in float samples,
     out float decibels,

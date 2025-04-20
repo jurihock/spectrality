@@ -2,27 +2,23 @@ using System.Runtime.InteropServices;
 
 namespace Spectrality.Library;
 
-public static class Audio
+public static partial class Audio
 {
-  [DllImport(
-    Import.FileName,
-    CharSet = Import.DefaultCharSet,
-    CallingConvention = Import.DefaultCallingConvention,
-    EntryPoint = "spectrality_audio_touch")]
-  public static extern bool Touch(
-    byte[] pathchars,
+  [LibraryImport("Spectrality.Library.dll", EntryPoint = "spectrality_audio_touch")]
+  [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+  [return: MarshalAs(UnmanagedType.Bool)]
+  public static partial bool Touch(
+    [In] byte[] pathchars,
     int pathsize,
     out double samplerate,
     out int channels,
     out int frames);
 
-  [DllImport(
-    Import.FileName,
-    CharSet = Import.DefaultCharSet,
-    CallingConvention = Import.DefaultCallingConvention,
-    EntryPoint = "spectrality_audio_read")]
-  public static extern bool Read(
-    byte[] pathchars,
+  [LibraryImport("Spectrality.Library.dll", EntryPoint = "spectrality_audio_read")]
+  [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+  [return: MarshalAs(UnmanagedType.Bool)]
+  public static partial bool Read(
+    [In] byte[] pathchars,
     int pathsize,
     out float samples,
     ref int frames);
