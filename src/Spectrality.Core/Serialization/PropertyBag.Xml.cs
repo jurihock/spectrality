@@ -27,7 +27,8 @@ public partial class PropertyBag : IXmlSerializable
   {
     Encoding = Encoding.UTF8,
     Indent = true,
-    IndentChars = new string(' ', 2)
+    IndentChars = new string(' ', 2),
+    OmitXmlDeclaration = true
   };
 
   public XmlSchema? GetSchema() => null;

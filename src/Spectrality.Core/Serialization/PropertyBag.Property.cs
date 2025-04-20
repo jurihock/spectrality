@@ -4,17 +4,17 @@ namespace Spectrality.Serialization;
 
 public partial class PropertyBag
 {
-  public readonly struct Property(string key, Type type, object? value)
+  public readonly struct Property(string key, Type type, object value)
   {
     public string Key { get; init; } = key;
     public Type Type { get; init; } = type;
-    public object? Value { get; init; } = value;
+    public object Value { get; init; } = value;
 
-    public T? GetValue<T>()
+    public T GetValue<T>()
     {
       if (Type == typeof(T))
       {
-        return (T?)Value;
+        return (T)Value;
       }
 
       throw new ArgumentOutOfRangeException(nameof(T));

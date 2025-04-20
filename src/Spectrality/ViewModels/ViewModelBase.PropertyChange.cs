@@ -6,17 +6,21 @@ namespace Spectrality.ViewModels;
 
 public abstract partial class ViewModelBase
 {
-  protected readonly struct PropertyChange(
+  protected readonly struct PropertyChange<T>(
     ViewModelBase propertyOwner,
     string propertyName,
-    bool isPropertyChanged)
+    bool isPropertyChanged,
+    T oldPropertyValue,
+    T newPropertyValue)
   {
     public readonly ViewModelBase PropertyOwner = propertyOwner;
     public readonly string PropertyName = propertyName;
     public readonly bool IsPropertyChanged = isPropertyChanged;
+    public readonly T OldPropertyValue = oldPropertyValue;
+    public readonly T NewPropertyValue = newPropertyValue;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public PropertyChange AlsoInvoke(Action action)
+    public PropertyChange<T> AlsoInvoke(Action action)
     {
       if (IsPropertyChanged)
       {
@@ -27,7 +31,7 @@ public abstract partial class ViewModelBase
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public PropertyChange AlsoInvoke(Action<string> action)
+    public PropertyChange<T> AlsoInvoke(Action<string> action)
     {
       if (IsPropertyChanged)
       {
@@ -38,7 +42,7 @@ public abstract partial class ViewModelBase
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public PropertyChange AlsoNotify(params string[] propertyNames)
+    public PropertyChange<T> AlsoNotify(params string[] propertyNames)
     {
       ArgumentOutOfRangeException.ThrowIfZero(propertyNames.Length);
 

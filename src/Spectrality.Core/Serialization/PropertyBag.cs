@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Spectrality.Serialization;
@@ -34,8 +35,24 @@ public partial class PropertyBag(IEqualityComparer<string>? comparer = null)
     return false;
   }
 
-  public T? Get<T>(string key, T? fallback = default)
+  public bool TryGet<T>(string key, [MaybeNullWhen(false)] out T value)
   {
+    if (Properties.TryGetValue(key, out Property property))
+    {
+      value = property.GetValue<T>();
+      return true;
+    }
+    else
+    {
+      value = default;
+      return false;
+    }
+  }
+
+  public T Get<T>(string key, T fallback)
+  {
+    ArgumentNullException.ThrowIfNull(fallback, nameof(fallback));
+
     if (Properties.TryGetValue(key, out Property property))
     {
       return property.GetValue<T>();
@@ -46,6 +63,8 @@ public partial class PropertyBag(IEqualityComparer<string>? comparer = null)
 
   public Property Set<T>(string key, T value)
   {
+    ArgumentNullException.ThrowIfNull(value, nameof(value));
+
     var property = new Property(key, typeof(T), value);
 
     Action? notify = null;
