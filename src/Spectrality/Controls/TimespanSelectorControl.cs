@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using Avalonia;
+using Avalonia.Controls;
 
 namespace Spectrality.Controls;
 
@@ -74,6 +76,8 @@ public sealed partial class TimespanSelectorControl : TemplatedControlBase
 
   private void OnChange(string changedPropertyName)
   {
+    var slider = IsSliderChange();
+
     var begin = this.begin!.Value;
     var end = this.end!.Value;
     var length = this.length!.Value;
@@ -81,26 +85,84 @@ public sealed partial class TimespanSelectorControl : TemplatedControlBase
     switch (changedPropertyName)
     {
       case nameof(Begin):
-        begin = Math.Clamp(begin, 0, end);
-        length = end - begin;
+      {
+        if (begin <= end || !slider)
+        {
+          begin = Math.Clamp(begin, 0, end);
+          length = end - begin;
+        }
+        else
+        {
+          begin = end = Math.Clamp(begin, 0, total);
+          length = end - begin;
+        }
         break;
+      }
       case nameof(End):
-        end = Math.Clamp(end, begin, total);
-        length = end - begin;
+      {
+        if (end >= begin || !slider)
+        {
+          end = Math.Clamp(end, begin, total);
+          length = end - begin;
+        }
+        else
+        {
+          begin = end = Math.Clamp(end, 0, total);
+          length = end - begin;
+        }
         break;
+      }
       case nameof(Length):
-        length = Math.Clamp(length, 0, total - begin);
-        end = begin + length;
+      {
+        if (end < total || !slider)
+        {
+          length = Math.Clamp(length, 0, total - begin);
+          end = begin + length;
+        }
+        else
+        {
+          length = Math.Clamp(length, 0, total);
+          begin = end - length;
+        }
         break;
+      }
       case nameof(Total):
+      {
         begin = 0;
         end = total;
         length = total;
         break;
+      }
     }
 
     this.begin = begin;
     this.end = end;
     this.length = length;
+  }
+
+  private static bool IsSliderChange()
+  {
+    var trace = new StackTrace();
+    var frames = trace.GetFrames();
+
+    foreach (var frame in frames)
+    {
+      var whois = frame.GetMethod()?.DeclaringType?.FullName;
+
+      var slider = string.Equals(
+        whois,
+        typeof(Slider).FullName,
+        StringComparison.Ordinal);
+
+      var textbox = string.Equals(
+        whois,
+        typeof(TextBox).FullName,
+        StringComparison.Ordinal);
+
+      if (slider) { return true; }
+      else if (textbox) { return false; }
+    }
+
+    return false;
   }
 }
