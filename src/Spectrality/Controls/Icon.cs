@@ -9,8 +9,9 @@ public sealed class Icon : SymbolIcon
 
   public Icon()
   {
-    IsFilled = true;
-    UseSegoeMetrics = true;
+    // TODO deprecated props
+    // IsFilled = true;
+    // UseSegoeMetrics = true;
 
     Height = FontSize;
     Width = FontSize;
