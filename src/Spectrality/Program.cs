@@ -2,22 +2,22 @@
 using Avalonia.ReactiveUI;
 using Spectrality.Extensions;
 using System;
+using System.Globalization;
 
 namespace Spectrality;
 
 static class Program
 {
-  // Initialization code.
-  // Don't use any Avalonia, third-party APIs or any
-  // SynchronizationContext-reliant code before
-  // OnFrameworkInitializationCompleted is called.
-  // Things aren't initialized yet and stuff might break.
   [STAThread]
-  public static void Main(string[] args) => BuildAvaloniaApp()
-    .StartWithClassicDesktopLifetime(args);
+  public static void Main(string[] args)
+  {
+    CultureInfo.DefaultThreadCurrentCulture =
+    CultureInfo.DefaultThreadCurrentUICulture =
+    CultureInfo.InvariantCulture;
 
-  // Avalonia configuration.
-  // Don't remove, also used by visual designer.
+    BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+  }
+
   public static AppBuilder BuildAvaloniaApp() => AppBuilder
     .Configure<App>()
     .LogToConsole()
